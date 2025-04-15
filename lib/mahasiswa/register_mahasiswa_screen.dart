@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class RegisterMahasiswa extends StatelessWidget {
-  const RegisterMahasiswa({super.key});
+class RegisterMahasiswaScreen extends StatelessWidget {
+  const RegisterMahasiswaScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
