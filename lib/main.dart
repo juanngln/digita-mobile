@@ -1,3 +1,8 @@
+import 'package:digita_mobile/dosen/home_dosen_screen.dart';
+import 'package:digita_mobile/dosen/register_dosen_screen.dart';
+import 'package:digita_mobile/login.dart';
+import 'package:digita_mobile/mahasiswa/home_mahasiswa_screen.dart';
+import 'package:digita_mobile/mahasiswa/register_mahasiswa_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -19,6 +24,9 @@ class MyApp extends StatelessWidget {
           primary: Color(0x000F47AD),
           secondary: Color(0x00D9EEFF),
           surface: Colors.white,
+        ),
+        progressIndicatorTheme: ProgressIndicatorThemeData(
+          color: Color(0x000F47AD),
         ),
         textTheme: TextTheme(
           titleLarge: GoogleFonts.poppins(
@@ -42,6 +50,14 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
+      debugShowCheckedModeBanner: false,
+      routes: {
+        '/login': (context) => const Login(),
+        '/register_mahasiswa': (context) => const RegisterMahasiswaScreen(),
+        '/register_dosen': (context) => const RegisterDosenScreen(),
+        '/home_mahasiswa': (context) => const HomeMahasiswaScreen(),
+        '/home_dosen': (context) => const HomeDosenScreen(),
+      },
     );
   }
 }
