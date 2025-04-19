@@ -5,7 +5,7 @@ import 'package:digita_mobile/mahasiswa/home_mahasiswa_screen.dart';
 import 'package:digita_mobile/mahasiswa/register_mahasiswa_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:digita_mobile/login.dart';
+import 'package:digita_mobile/landing_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -53,11 +53,13 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       routes: {
+        '/': (context) => const LandingPage(),
         '/login': (context) => const LoginPage(),
         '/register_mahasiswa': (context) => const RegisterMahasiswaScreen(),
         '/register_dosen': (context) => const RegisterDosenScreen(),
         '/home_mahasiswa': (context) => const HomeMahasiswaScreen(),
         '/home_dosen': (context) => const HomeDosenScreen(),
+        '/landing': (context) => const LandingPage(),
       },
     );
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          const SizedBox(height: 30),
+          const SizedBox(height: 40),
           Center(
             child: Image.asset(
               'assets/img/digita.png',
@@ -61,6 +61,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.w800,
+                        letterSpacing: 2.0,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -219,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
                       height: 50,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[800],
+                          backgroundColor: const Color(0xFF0F47AD),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(32),
                           ),
@@ -231,9 +232,9 @@ class _LoginPageState extends State<LoginPage> {
                           "MASUK",
                           style: TextStyle(
                             fontSize: 18,
+                            fontFamily: 'Poppins',
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            letterSpacing: 1,
                           ),
                         ),
                       ),
