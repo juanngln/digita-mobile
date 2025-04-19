@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       routes: {
-        '/login': (context) => const Login(),
+        '/login': (context) => const LoginPage(),
         '/register_mahasiswa': (context) => const RegisterMahasiswaScreen(),
         '/register_dosen': (context) => const RegisterDosenScreen(),
         '/home_mahasiswa': (context) => const HomeMahasiswaScreen(),
