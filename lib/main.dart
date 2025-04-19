@@ -5,6 +5,7 @@ import 'package:digita_mobile/mahasiswa/home_mahasiswa_screen.dart';
 import 'package:digita_mobile/mahasiswa/register_mahasiswa_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:digita_mobile/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -59,5 +60,6 @@ class MyApp extends StatelessWidget {
         '/home_dosen': (context) => const HomeDosenScreen(),
       },
     );
+
   }
 }
