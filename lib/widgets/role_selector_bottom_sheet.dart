@@ -24,6 +24,9 @@ class RoleSelectionBottomSheet extends StatefulWidget {
 class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
   // Local state untuk manage pilihan role didalam sheet
   String? _tempSelectedRole;
+  static const Duration _animationDuration = Duration(
+    milliseconds: 200,
+  ); // durasi animasi
 
   @override
   void initState() {
@@ -80,6 +83,8 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
                     baseImageName = 'role_dosen';
                   }
 
+                  Color textColor = isSelected ? Colors.white : Colors.black;
+
                   // menentukan suffix gambar berdasarkan state
                   String stateSuffix = isSelected ? '_selected' : '_normal';
 
@@ -93,33 +98,56 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
                         _tempSelectedRole = role;
                       });
                     },
-                    child: Container(
+                    // --- Menggunakan AnimatedContainer untuk transisi warna background ---
+                    child: AnimatedContainer(
+                      duration: _animationDuration, // durasi animasi
+                      curve: Curves.easeInOut, // tipe transisi
+
                       width: 130,
                       padding: const EdgeInsets.symmetric(
                         vertical: 20.0,
                         horizontal: 8.0,
                       ),
+
+                      // properti animasi ada disini di decoration
                       decoration: BoxDecoration(
+                        // Transisi warna background role
                         color:
                             isSelected
-                                ? const Color(0xFF2E3E69)
-                                : Colors.grey[100],
+                                ? const Color(0xFF2E3E69) // dipilih
+                                : const Color(0xFFEFEFEF), // tidak dipilih
                         borderRadius: BorderRadius.circular(16.0),
+                        // Transisi warna shadow
+                        boxShadow:
+                            isSelected
+                                ? [
+                                  BoxShadow(
+                                    color: const Color(0xFF2E3E69),
+                                    spreadRadius: 1,
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                                : [],
                       ),
+
+                      // --- Child Column ---
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Image.asset(finalImagePath, height: 100, width: 100),
                           const SizedBox(height: 12),
-                          Text(
-                            role,
-                            textAlign: TextAlign.center,
+                          // ---  AnimatedDefaultTextStyle untuk transisi warna teks ---
+                          AnimatedDefaultTextStyle(
+                            duration: _animationDuration,
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: isSelected ? Colors.white : Colors.black87,
+                              color: textColor,
                             ),
+                            textAlign: TextAlign.center,
+                            child: Text(role),
                           ),
                         ],
                       ),
@@ -139,7 +167,7 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(32),
                 ),
-                disabledBackgroundColor: Colors.grey[400],
+                disabledBackgroundColor: const Color(0xFFEFEFEF),
                 elevation: 3,
               ),
               onPressed:
@@ -156,7 +184,7 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.bold,
                   color:
-                      _tempSelectedRole == null ? Colors.white70 : Colors.white,
+                      _tempSelectedRole == null ? Colors.black : Colors.white,
                 ),
               ),
             ),

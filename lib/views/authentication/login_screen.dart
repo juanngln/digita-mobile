@@ -26,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
       ),
+      backgroundColor: const Color(0xFFD9EEFF), // Warna bottom sheet
       builder: (BuildContext builderContext) {
         return RoleSelectionBottomSheet(
           roles: _roles,
