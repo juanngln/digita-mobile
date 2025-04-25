@@ -69,12 +69,24 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
             children:
                 widget.roles.map((role) {
                   bool isSelected = _tempSelectedRole == role;
-                  String imagePath;
+                  // --- Menentukan gambar yang ditampilkan berdasarkan role dan state (dipilih/tidak dipilih) ---
+                  String finalImagePath;
+
+                  // nama gambar dasar berdasarkan role
+                  String baseImageName;
                   if (role == 'Mahasiswa') {
-                    imagePath = 'assets/img/role_mahasiswa.png';
+                    baseImageName = 'role_mahasiswa';
                   } else {
-                    imagePath = 'assets/img/role_dosen.png';
+                    baseImageName = 'role_dosen';
                   }
+
+                  // menentukan suffix gambar berdasarkan state
+                  String stateSuffix = isSelected ? '_selected' : '_normal';
+
+                  // hasil akhir dari path gambar
+                  finalImagePath =
+                      'assets/img/$baseImageName$stateSuffix.png'; // nama dasar + suffix.png
+
                   return GestureDetector(
                     onTap: () {
                       setState(() {
@@ -97,7 +109,7 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Image.asset(imagePath, height: 100, width: 100),
+                          Image.asset(finalImagePath, height: 100, width: 100),
                           const SizedBox(height: 12),
                           Text(
                             role,
