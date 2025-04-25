@@ -1,3 +1,4 @@
+import 'package:digita_mobile/widgets/role_selector_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,6 +16,41 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final List<String> _roles = ['Mahasiswa', 'Dosen'];
 
+  /* 3312301051 - Muhammad Padanta Tarigan 25-04-2025:
+  --- Method untuk menampilkan Bottom Sheet pilih role ---
+  */
+  void _showRoleSelectionSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+      ),
+      builder: (BuildContext builderContext) {
+        return RoleSelectionBottomSheet(
+          roles: _roles,
+          initialSelectedRole: _selectedRole,
+          onRoleSelected: (role) {
+            // Fungsi ini dipanggil saat tombol LANJUT ditekan dan mengupdate role yang dipilih
+            setState(() {
+              _selectedRole = role;
+            });
+          },
+        );
+      },
+    );
+  }
+
+  /* 3312301051 - Muhammad Padanta Tarigan 25-04-2025:
+  --- Dispose controllers ---
+ */
+  @override
+  void dispose() {
+    _nimController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,12 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Column(
         children: [
           const SizedBox(height: 40),
-          Center(
-            child: Image.asset(
-              'assets/img/digita.png',
-              height: 250,
-            ),
-          ),
+          Center(child: Image.asset('assets/img/Digita.png', height: 250)),
           const SizedBox(height: 10),
           Expanded(
             child: Container(
@@ -64,68 +95,53 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    DropdownButtonFormField<String>(
-                      value: _selectedRole,
-                      hint: const Text(
-                        "Pilih Peran",
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold, // Biar gak terlalu besar
-                          color: Colors.black54,
+                    /* 3312301051 - Muhammad Padanta Tarigan 25-04-2025:
+                    --- Mengganti dropdown menjadi Role selector bottom sheet ---
+                    */
+                    GestureDetector(
+                      onTap: _showRoleSelectionSheet,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
                         ),
-                      ),
-                      items: _roles
-                          .map((role) => DropdownMenuItem(
-                                value: role,
-                                child: Text(
-                                  role,
-                                  style: const TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                    ),
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedRole = value;
-                        });
-                      },
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                        border: OutlineInputBorder(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              _selectedRole ?? "Pilih Peran",
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    _selectedRole != null
+                                        ? Colors
+                                            .black // Color when selected
+                                        : Colors.black54, // Hint text color
+                              ),
+                            ),
+                            const Icon(
+                              Icons.arrow_drop_down,
+                              color: Colors.grey,
+                            ),
+                          ],
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      dropdownColor: Colors.white,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
                       ),
                     ),
+                    // --- End of Replacement ---
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _nimController,
                       style: const TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                        fontFamily: 'Poppins',
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
                       decoration: InputDecoration(
                         hintText: "NIM/NIK",
@@ -137,7 +153,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -154,46 +173,51 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    style: const TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      ),
-                    decoration: InputDecoration(
-                      hintText: "Kata Sandi",
-                      hintStyle: const TextStyle(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      style: const TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black54,
+                        color: Colors.black,
                       ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      decoration: InputDecoration(
+                        hintText: "Kata Sandi",
+                        hintStyle: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black54,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
                         ),
                       ),
                     ),
