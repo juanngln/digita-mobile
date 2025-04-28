@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
@@ -15,40 +16,38 @@ class LandingScreen extends StatelessWidget {
               children: [
                 // Logo
                 Image.asset(
-                  'assets/img/logo_digita.png', 
+                  'assets/img/digita_logo.png', 
                   height: 300,
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'DigiTA, solusi simpel dan praktis\nuntuk bimbingan tugas akhir\nyang lebih teratur dan efisien!',
+                // Text
+                Text(
+                  'Solusi simpel dan praktis untuk bimbingan tugas akhir yang lebih teratur dan efisien!',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  softWrap: true,
+                  style: GoogleFonts.poppins(
                     fontSize: 18,
-                    fontFamily: 'Poppins',
-                    color: Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 48),
-
-                // Tombol MASUK
+                // Button Masuk
                 SizedBox(
                   width: double.infinity,
                   height: 50,
-                  child: ElevatedButton(
+                  child: TextButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/login');
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0F47AD), // Biru gelap
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFF0F47AD),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'MASUK',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 18,
-                        fontFamily: 'Poppins',
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -56,24 +55,24 @@ class LandingScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+                // Button Daftar
                 SizedBox(
                   width: double.infinity,
                   height: 50,
-                  child: ElevatedButton(
+                  child: TextButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/register');
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF9DCFF7), // Biru muda
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFF9DCFF7),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'DAFTAR',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Poppins',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),

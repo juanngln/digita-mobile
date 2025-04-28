@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
-/* 3312301051 - Muhammad Padanta Tarigan 25-04-2025:
-  --- Penambahan Widget Role Selection ---
-  */
+import 'package:google_fonts/google_fonts.dart';
 
 class RoleSelectionBottomSheet extends StatefulWidget {
   final List<String> roles;
@@ -38,7 +35,7 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16.0,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 32.0,
         left: 24.0,
         right: 24.0,
         top: 24.0,
@@ -47,22 +44,20 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          const Text(
+          Text(
             'Dashboard menyesuaikan peranmu,',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              fontFamily: 'Poppins',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
               color: Colors.black,
             ),
           ),
-          const Text(
+          Text(
             'Pilih Peranmu!',
-            style: TextStyle(
-              fontSize: 28,
+            style: GoogleFonts.poppins(
+              fontSize: 32,
               fontWeight: FontWeight.w800,
-              fontFamily: 'Poppins',
-              color: Colors.black87,
+              color: Colors.black,
             ),
           ),
           const SizedBox(height: 8),
@@ -74,7 +69,6 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
                   bool isSelected = _tempSelectedRole == role;
                   // --- Menentukan gambar yang ditampilkan berdasarkan role dan state (dipilih/tidak dipilih) ---
                   String finalImagePath;
-
                   // nama gambar dasar berdasarkan role
                   String baseImageName;
                   if (role == 'Mahasiswa') {
@@ -82,16 +76,12 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
                   } else {
                     baseImageName = 'role_dosen';
                   }
-
                   Color textColor = isSelected ? Colors.white : Colors.black;
-
                   // menentukan suffix gambar berdasarkan state
                   String stateSuffix = isSelected ? '_selected' : '_normal';
-
                   // hasil akhir dari path gambar
                   finalImagePath =
                       'assets/img/$baseImageName$stateSuffix.png'; // nama dasar + suffix.png
-
                   return GestureDetector(
                     onTap: () {
                       setState(() {
@@ -108,7 +98,6 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
                         vertical: 20.0,
                         horizontal: 8.0,
                       ),
-
                       // properti animasi ada disini di decoration
                       decoration: BoxDecoration(
                         // Transisi warna background role
@@ -130,7 +119,6 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
                                 ]
                                 : [],
                       ),
-
                       // --- Child Column ---
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -156,7 +144,6 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
                 }).toList(),
           ),
           const SizedBox(height: 32),
-
           // LANJUT Button
           SizedBox(
             width: double.infinity,

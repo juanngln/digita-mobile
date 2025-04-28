@@ -1,5 +1,6 @@
 import 'package:digita_mobile/widgets/role_selector_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,9 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final List<String> _roles = ['Mahasiswa', 'Dosen'];
 
-  /* 3312301051 - Muhammad Padanta Tarigan 25-04-2025:
-  --- Method untuk menampilkan Bottom Sheet pilih role ---
-  */
   void _showRoleSelectionSheet() {
     showModalBottomSheet(
       context: context,
@@ -26,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
       ),
-      backgroundColor: const Color(0xFFD9EEFF), // Warna bottom sheet
+      backgroundColor: const Color(0xFFD9EEFF),
       builder: (BuildContext builderContext) {
         return RoleSelectionBottomSheet(
           roles: _roles,
@@ -42,9 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  /* 3312301051 - Muhammad Padanta Tarigan 25-04-2025:
-  --- Dispose controllers ---
- */
   @override
   void dispose() {
     _nimController.dispose();
@@ -59,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Column(
         children: [
           const SizedBox(height: 40),
-          Center(child: Image.asset('assets/img/Digita.png', height: 250)),
+          Center(child: Image.asset('assets/img/digita.png', height: 250)),
           const SizedBox(height: 10),
           Expanded(
             child: Container(
@@ -77,28 +72,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 14),
-                    const Text(
+                    Text(
                       'MULAI BIMBINGAN',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600,
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        letterSpacing: 5.5,
+                        letterSpacing: 5,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'Masuk ke DigiTA',
-                      style: TextStyle(
+                      style: GoogleFonts.poppins(
                         fontSize: 36,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 2.0,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 24),
-                    /* 3312301051 - Muhammad Padanta Tarigan 25-04-2025:
-                    --- Mengganti dropdown menjadi Role selector bottom sheet ---
-                    */
+                    // Role Selection
                     GestureDetector(
                       onTap: _showRoleSelectionSheet,
                       child: Container(
@@ -134,20 +125,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    // --- End of Replacement ---
                     const SizedBox(height: 16),
+                    // Form Fields
                     TextFormField(
                       controller: _nimController,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                       decoration: InputDecoration(
                         hintText: "NIM/NIK",
-                        hintStyle: const TextStyle(
-                          fontFamily: 'Poppins',
+                        hintStyle: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.black54,
@@ -239,6 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
+                    // Button Masuk
                     SizedBox(
                       width: double.infinity,
                       height: 50,
