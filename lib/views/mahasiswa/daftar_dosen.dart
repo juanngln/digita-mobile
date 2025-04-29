@@ -1,0 +1,83 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class DaftarDosen extends StatefulWidget {
+  const DaftarDosen({super.key});
+
+  @override
+  State<DaftarDosen> createState() => _DaftarDosenState();
+}
+
+class _DaftarDosenState extends State<DaftarDosen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/img/waduh.png',
+                  height: 300,
+                ),
+                const SizedBox(height: 24),
+
+                const Text(
+                  'Waduh!!',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0F47AD),
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                const Text(
+                  'Sepertinya kamu belum ada\ndosen pembimbing\nDaftar dulu yuk!',
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.black87,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+
+                const SizedBox(height: 48),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/daftar_dosen');
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFF0F47AD),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      'CARI DOSEN PEMBIMBING',
+                      style: GoogleFonts.poppins(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ) 
+      ),
+    );
+  }
+}
