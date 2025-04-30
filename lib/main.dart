@@ -3,6 +3,9 @@ import 'package:digita_mobile/views/authentication/register_dosen_screen.dart';
 import 'package:digita_mobile/views/authentication/login_screen.dart';
 import 'package:digita_mobile/views/mahasiswa/home_mahasiswa_screen.dart';
 import 'package:digita_mobile/views/authentication/register_mahasiswa_screen.dart';
+import 'package:digita_mobile/views/mahasiswa/cari_dosen.dart';
+import 'package:digita_mobile/views/mahasiswa/daftar_dosen.dart';
+import 'package:digita_mobile/views/mahasiswa/status_pengajuan_dosen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digita_mobile/views/landing_screen.dart';
@@ -53,13 +56,16 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => const LandingScreen(),
+        '/': (context) => DaftarDosen(),
         '/landing_page': (context) => const LandingScreen(),
         '/login': (context) => const LoginScreen(),
         '/register_mahasiswa': (context) => const RegisterMahasiswaScreen(),
         '/register_dosen': (context) => const RegisterDosenScreen(),
         '/home_mahasiswa': (context) => const HomeMahasiswaScreen(),
         '/home_dosen': (context) => const HomeDosenScreen(),
+        '/cari_dosen': (context) => const CariDosen(),
+        '/daftar_dosen': (context) => DaftarDosen(),
+        '/status_pengajuan': (context) => const StatusPengajuan(),
       },
     );
   }

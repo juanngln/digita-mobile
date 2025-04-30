@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Column(
         children: [
           const SizedBox(height: 40),
-          Center(child: Image.asset('assets/img/digita.png', height: 250)),
+          Center(child: Image.asset('assets/img/Digita.png', height: 250)),
           const SizedBox(height: 10),
           Expanded(
             child: Container(
@@ -232,16 +232,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       height: 50,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/cari_dosen',); // Login logic di sini
+                        },
+                        style: TextButton.styleFrom(
                           backgroundColor: const Color(0xFF0F47AD),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(32),
+                            borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        onPressed: () {
-                          // Login logic di sini
-                        },
                         child: const Text(
                           "MASUK",
                           style: TextStyle(
