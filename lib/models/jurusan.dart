@@ -1,4 +1,3 @@
-// models/jurusan.dart (Create this new file)
 import 'package:flutter/foundation.dart';
 
 @immutable

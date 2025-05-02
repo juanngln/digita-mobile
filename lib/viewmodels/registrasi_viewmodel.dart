@@ -7,7 +7,6 @@ import 'package:digita_mobile/models/program_studi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-// --- Enums ---
 enum ViewState { idle, busy, error, success }
 
 enum RegistrationStatus {
@@ -22,68 +21,74 @@ enum RegistrationStatus {
 
 class RegistrationViewModel extends ChangeNotifier {
   // --- Base URL Configuration ---
-  // menggunakan 10.0.2.2 untuk Android emulator untuk mengakses localhost/127.0.0.1
+  // Gunakan 10.0.2.2 untuk Android emulator untuk access ke localhost/127.0.0.1
+  /* jika menggunakan android device asli
+     Ganti alamat ip menggunakan alamat ip laptop/komputermu
+     contoh: static const String _baseUrl = "http://192.168.1.15:8000"; */
   static const String _baseUrl = "http://10.0.2.2:8000";
 
-  // --- Program Studi State ---
+  // --- State Variables ---
   List<ProgramStudi> _programStudiList = [];
   int? _selectedProdiId;
   ViewState _prodiFetchState = ViewState.idle;
   String? _prodiFetchError;
 
-  // --- Jurusan State ---
   List<Jurusan> _jurusanList = [];
   int? _selectedJurusanId;
   ViewState _jurusanFetchState = ViewState.idle;
   String? _jurusanFetchError;
 
-  // --- Prodi Getters ---
+  ViewState _registrationState = ViewState.idle;
+  String? _registrationError;
+  RegistrationStatus _registrationStatus = RegistrationStatus.idle;
+
+  // --- ADD DISPOSED FLAG ---
+  bool _isDisposed = false;
+
+  // --- Getters ---
   List<ProgramStudi> get programStudiList => _programStudiList;
   int? get selectedProdiId => _selectedProdiId;
   ViewState get prodiFetchState => _prodiFetchState;
   String? get prodiFetchError => _prodiFetchError;
 
-  // --- Shared Registration State ---
-  ViewState _registrationState = ViewState.idle;
-  String? _registrationError;
-  RegistrationStatus _registrationStatus = RegistrationStatus.idle;
-
-  // --- Jurusan Getters ---
   List<Jurusan> get jurusanList => _jurusanList;
   int? get selectedJurusanId => _selectedJurusanId;
   ViewState get jurusanFetchState => _jurusanFetchState;
   String? get jurusanFetchError => _jurusanFetchError;
 
-  // Shared Registration getters
   ViewState get registrationState => _registrationState;
   String? get registrationError => _registrationError;
   RegistrationStatus get registrationStatus => _registrationStatus;
 
-  // --- Prodi Setters ---
+  // --- Setters ---
   void setSelectedProdiId(int? prodiId) {
+    if (_isDisposed) return; // Check if disposed
     if (_selectedProdiId != prodiId) {
       _selectedProdiId = prodiId;
-      _selectedJurusanId = null;
+      _selectedJurusanId = null; // Clear the other selection
       notifyListeners();
     }
   }
 
-  // --- Jurusan Setter ---
   void setSelectedJurusanId(int? jurusanId) {
+    if (_isDisposed) return; // Check if disposed
     if (_selectedJurusanId != jurusanId) {
       _selectedJurusanId = jurusanId;
-      _selectedProdiId = null;
+      _selectedProdiId = null; // Clear the other selection
       notifyListeners();
     }
   }
 
   // --- Data Fetching Methods ---
 
-  // Fetch Program Studi
   Future<void> fetchProgramStudi() async {
+    // Prevent re-entry if already busy or if disposed
+    if (_isDisposed || _prodiFetchState == ViewState.busy) return;
+
     _prodiFetchState = ViewState.busy;
     _prodiFetchError = null;
-    notifyListeners();
+    // Notify busy state only if not disposed
+    if (!_isDisposed) notifyListeners();
 
     final url = Uri.parse('$_baseUrl/api/users/program-studi/');
 
@@ -91,6 +96,8 @@ class RegistrationViewModel extends ChangeNotifier {
       final response = await http
           .get(url, headers: {'Accept': 'application/json'})
           .timeout(const Duration(seconds: 15));
+
+      if (_isDisposed) return; // Check after await
 
       if (response.statusCode == 200) {
         final List<dynamic> decodedData = jsonDecode(response.body);
@@ -103,37 +110,59 @@ class RegistrationViewModel extends ChangeNotifier {
                 .toList();
         _prodiFetchState = ViewState.success;
       } else {
-        // Handle errors... (existing logic is fine)
+        // Handle HTTP errors
         _prodiFetchError =
             "Gagal memuat data Prodi (Server Error: ${response.statusCode})";
         _prodiFetchState = ViewState.error;
+        if (kDebugMode) {
+          print(
+            "Error fetching prodi: ${response.statusCode} - ${response.body}",
+          );
+        }
       }
     } on SocketException {
+      if (_isDisposed) {
+        return; // Check after potential await in catch (less likely here)
+      }
       _prodiFetchError = "Koneksi internet bermasalah (Prodi).";
       _prodiFetchState = ViewState.error;
     } on HttpException {
+      if (_isDisposed) return;
       _prodiFetchError = "Tidak dapat menghubungi server (Prodi).";
       _prodiFetchState = ViewState.error;
     } on FormatException {
+      if (_isDisposed) return;
       _prodiFetchError = "Format data Prodi tidak valid.";
       _prodiFetchState = ViewState.error;
     } on TimeoutException {
+      if (_isDisposed) return;
       _prodiFetchError = "Koneksi timeout (Prodi).";
       _prodiFetchState = ViewState.error;
     } catch (e) {
+      if (_isDisposed) return;
       _prodiFetchError = "Kesalahan tidak terduga (Prodi): $e";
       _prodiFetchState = ViewState.error;
+      if (kDebugMode) {
+        print("Unknown error fetching prodi: $e");
+      }
     } finally {
-      notifyListeners();
+      // --- CHECK FLAG BEFORE FINAL NOTIFY ---
+      if (!_isDisposed) {
+        notifyListeners(); // Notify final state
+      }
     }
   }
 
-  // Fetch Jurusan
   Future<void> fetchJurusan() async {
+    // Prevent re-entry if already busy or if disposed
+    if (_isDisposed || _jurusanFetchState == ViewState.busy) return;
+
     _jurusanFetchState = ViewState.busy;
     _jurusanFetchError = null;
-    notifyListeners();
+    // Notify busy state only if not disposed
+    if (!_isDisposed) notifyListeners();
 
+    // *** IMPORTANT: Verify this is the correct endpoint for Jurusan ***
     final url = Uri.parse('$_baseUrl/api/users/jurusan/');
 
     try {
@@ -141,9 +170,10 @@ class RegistrationViewModel extends ChangeNotifier {
           .get(url, headers: {'Accept': 'application/json'})
           .timeout(const Duration(seconds: 15));
 
+      if (_isDisposed) return; // Check after await
+
       if (response.statusCode == 200) {
         final List<dynamic> decodedData = jsonDecode(response.body);
-        // Use the Jurusan.fromJson factory
         _jurusanList =
             decodedData
                 .map(
@@ -153,6 +183,7 @@ class RegistrationViewModel extends ChangeNotifier {
                 .toList();
         _jurusanFetchState = ViewState.success;
       } else {
+        // Handle HTTP errors
         _jurusanFetchError =
             "Gagal memuat data Jurusan (Server Error: ${response.statusCode})";
         _jurusanFetchState = ViewState.error;
@@ -163,45 +194,56 @@ class RegistrationViewModel extends ChangeNotifier {
         }
       }
     } on SocketException {
+      if (_isDisposed) return;
       _jurusanFetchError = "Koneksi internet bermasalah (Jurusan).";
       _jurusanFetchState = ViewState.error;
     } on HttpException {
+      if (_isDisposed) return;
       _jurusanFetchError = "Tidak dapat menghubungi server (Jurusan).";
       _jurusanFetchState = ViewState.error;
     } on FormatException {
+      if (_isDisposed) return;
       _jurusanFetchError = "Format data Jurusan tidak valid.";
       _jurusanFetchState = ViewState.error;
     } on TimeoutException {
+      if (_isDisposed) return;
       _jurusanFetchError = "Koneksi timeout (Jurusan).";
       _jurusanFetchState = ViewState.error;
     } catch (e) {
+      if (_isDisposed) return;
       _jurusanFetchError = "Kesalahan tidak terduga (Jurusan): $e";
       _jurusanFetchState = ViewState.error;
       if (kDebugMode) {
         print("Unknown error fetching jurusan: $e");
       }
     } finally {
-      notifyListeners();
+      // --- CHECK FLAG BEFORE FINAL NOTIFY ---
+      if (!_isDisposed) {
+        notifyListeners(); // Notify final state
+      }
     }
   }
 
   // --- Combined Registration Method ---
   Future<void> handleRegister({
-    required String role, // 'mahasiswa' or 'dosen'
+    required String role,
     required String namaLengkap,
     required String email,
-    String? nim, // untuk Mahasiswa
-    String? nik, // untuk Dosen
-    int? programStudiId, // untuk Mahasiswa
-    int? jurusanId, // untuk Dosen
-    // Common fields
+    String? nim,
+    String? nik,
+    int? programStudiId,
+    int? jurusanId,
     required String password,
     required String password2,
   }) async {
+    // Prevent re-entry if already busy or if disposed
+    if (_isDisposed || _registrationState == ViewState.busy) return;
+
     _registrationState = ViewState.busy;
     _registrationError = null;
     _registrationStatus = RegistrationStatus.idle;
-    notifyListeners();
+    // Notify busy state only if not disposed
+    if (!_isDisposed) notifyListeners();
 
     // --- Role-based Validation ---
     String? validationErrorMessage;
@@ -228,7 +270,6 @@ class RegistrationViewModel extends ChangeNotifier {
     if (validationErrorMessage == null && email.trim().isEmpty) {
       validationErrorMessage = "Email tidak boleh kosong.";
     }
-    // Basic email format check (optional but good)
     if (validationErrorMessage == null &&
         !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email.trim())) {
       validationErrorMessage = "Format email tidak valid.";
@@ -243,25 +284,26 @@ class RegistrationViewModel extends ChangeNotifier {
       validationErrorMessage = "Kata Sandi tidak cocok.";
     }
 
+    // If validation fails, set error state and notify (if not disposed)
     if (validationErrorMessage != null) {
       _registrationError = validationErrorMessage;
       _registrationState = ViewState.error;
       _registrationStatus = RegistrationStatus.validationError;
-      notifyListeners();
+      if (!_isDisposed) notifyListeners();
       return;
     }
 
-    // --- menentukan endpoint dan data berdasarkan role ---
+    // --- Determine Endpoint and Payload ---
     final String endpoint;
     final Map<String, dynamic> registrationData;
 
     if (role.toLowerCase() == 'mahasiswa') {
       endpoint = '/api/users/register/mahasiswa/';
       registrationData = {
-        "nim": nim!.trim(),
+        "nim": nim!.trim(), // Safe non-null assert after validation
         "nama_lengkap": namaLengkap.trim(),
         "email": email.trim().toLowerCase(),
-        "program_studi_id": programStudiId!,
+        "program_studi_id": programStudiId!, // Safe non-null assert
         "password": password,
         "password2": password2,
       };
@@ -269,10 +311,10 @@ class RegistrationViewModel extends ChangeNotifier {
       // role == 'dosen'
       endpoint = '/api/users/register/dosen/';
       registrationData = {
-        "nik": nik!.trim(),
+        "nik": nik!.trim(), // Safe non-null assert
         "nama_lengkap": namaLengkap.trim(),
         "email": email.trim().toLowerCase(),
-        "jurusan_id": jurusanId!,
+        "jurusan_id": jurusanId!, // Safe non-null assert
         "password": password,
         "password2": password2,
       };
@@ -298,6 +340,8 @@ class RegistrationViewModel extends ChangeNotifier {
           )
           .timeout(const Duration(seconds: 20));
 
+      if (_isDisposed) return; // Check after await
+
       if (kDebugMode) {
         print("Registration Response ($role): ${response.statusCode}");
         print("Response Body: ${response.body}");
@@ -310,37 +354,39 @@ class RegistrationViewModel extends ChangeNotifier {
       } else {
         // FAILURE
         _registrationState = ViewState.error;
-        _registrationStatus = RegistrationStatus.serverError;
+        _registrationStatus = RegistrationStatus.serverError; // Default
+        _registrationError = "Registrasi gagal."; // Default
+
         try {
           final errorBody = jsonDecode(response.body) as Map<String, dynamic>;
           List<String> errorMessages = [];
           errorBody.forEach((key, value) {
-            // Prioritize 'detail' or 'message' keys jika ada
             if (key == 'detail' || key == 'message') {
-              errorMessages.insert(
-                0,
-                value.toString(),
-              ); // Menampilkan pesan umum dahulu
+              errorMessages.insert(0, value.toString());
             } else if (value is List && value.isNotEmpty) {
               String fieldName = key
                   .replaceAll('_', ' ')
                   .split(' ')
                   .map((word) => word[0].toUpperCase() + word.substring(1))
                   .join(' ');
-              // membuat nama field lebih user-friendly
               if (key == 'nim' || key == 'nik') fieldName = key.toUpperCase();
               if (key == 'program_studi_id') fieldName = 'Program Studi';
               if (key == 'jurusan_id') fieldName = 'Jurusan';
-              errorMessages.add("$fieldName: ${value[0]}");
+              // Handle specific password error translation
+              if (key == 'password' &&
+                  value[0] == "This password is too common.") {
+                errorMessages.add("$fieldName: Kata sandi ini terlalu umum.");
+              } else {
+                errorMessages.add("$fieldName: ${value[0]}");
+              }
             } else if (value is String) {
-              // tangkapan pesan error lain
               errorMessages.add("$key: $value");
             }
           });
 
           if (errorMessages.isNotEmpty) {
             _registrationError = errorMessages.join('\n');
-            // cek apakah ada error validasi
+            // Determine if it's a validation error
             if (errorBody.containsKey('nim') ||
                 errorBody.containsKey('nik') ||
                 errorBody.containsKey('email') ||
@@ -358,7 +404,6 @@ class RegistrationViewModel extends ChangeNotifier {
           if (kDebugMode) {
             print("Error parsing error body: $e");
           }
-          // menggunakan response.body jika tidak bisa di-decode
           _registrationError =
               response.body.isNotEmpty
                   ? "Error ${response.statusCode}: ${response.body}"
@@ -370,22 +415,27 @@ class RegistrationViewModel extends ChangeNotifier {
         }
       }
     } on SocketException {
+      if (_isDisposed) return;
       _registrationError = "Koneksi internet bermasalah saat registrasi.";
       _registrationState = ViewState.error;
       _registrationStatus = RegistrationStatus.networkError;
     } on HttpException {
+      if (_isDisposed) return;
       _registrationError = "Tidak dapat menghubungi server registrasi.";
       _registrationState = ViewState.error;
       _registrationStatus = RegistrationStatus.networkError;
     } on FormatException {
+      if (_isDisposed) return;
       _registrationError = "Format respons server registrasi salah.";
       _registrationState = ViewState.error;
       _registrationStatus = RegistrationStatus.serverError;
     } on TimeoutException {
+      if (_isDisposed) return;
       _registrationError = "Koneksi timeout saat registrasi.";
       _registrationState = ViewState.error;
       _registrationStatus = RegistrationStatus.timeoutError;
     } catch (e) {
+      if (_isDisposed) return;
       _registrationError = "Terjadi kesalahan tidak dikenal: $e";
       _registrationState = ViewState.error;
       _registrationStatus = RegistrationStatus.unknownError;
@@ -393,12 +443,17 @@ class RegistrationViewModel extends ChangeNotifier {
         print("Unknown registration error: $e");
       }
     } finally {
-      notifyListeners();
+      // --- CHECK FLAG BEFORE FINAL NOTIFY ---
+      if (!_isDisposed) {
+        notifyListeners(); // Notify final state
+      }
     }
   }
 
   // --- Reset Status ---
   void resetRegistrationStatus() {
+    if (_isDisposed) return; // Check if disposed
+    // Only reset if not already idle
     if (_registrationStatus != RegistrationStatus.idle ||
         _registrationState != ViewState.idle) {
       if (kDebugMode) {
@@ -406,9 +461,24 @@ class RegistrationViewModel extends ChangeNotifier {
       }
       _registrationStatus = RegistrationStatus.idle;
       _registrationError = null;
+      // Only reset general state if it wasn't already reset or busy
       if (_registrationState != ViewState.busy) {
         _registrationState = ViewState.idle;
       }
+      // No need to notifyListeners() here as this is usually called
+      // *after* the UI has already reacted (e.g., after navigation or showing snackbar).
+      // If you *do* need the UI to rebuild immediately upon reset, uncomment the line below.
+      // notifyListeners();
     }
+  }
+
+  // --- OVERRIDE DISPOSE ---
+  @override
+  void dispose() {
+    if (kDebugMode) {
+      print("Disposing RegistrationViewModel (Instance hash: $hashCode)...");
+    }
+    _isDisposed = true; // Set the flag
+    super.dispose(); // Call the original dispose
   }
 }

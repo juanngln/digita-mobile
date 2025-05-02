@@ -61,6 +61,7 @@ class DaftarDosen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
           child: ListView(
+            clipBehavior: Clip.none, // fix shadow di pinggir kedip-kedip
             children: [
               const Text(
                 'Daftar Dosen Pembimbing',
@@ -97,66 +98,66 @@ class DaftarDosen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               ...dosenList.map((dosen) {
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
+                return Card(
+                  // Use Card instead of Container
+                  margin: const EdgeInsets.only(bottom: 16), // Keep margin
+                  elevation:
+                      4.0, // Set the desired elevation (adjust as needed)
+                  color: Colors.white, // Set background color
+                  shape: RoundedRectangleBorder(
+                    // Define the shape for rounded corners
                     borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black,
-                        spreadRadius: 2,
-                        blurRadius: 4,
-                        offset: const Offset(0, 0),
-                      ),
-                    ],
                   ),
-                  child: Row(
-                    children: [
-                      ClipOval(
-                        child: Image.asset(
-                          dosen.avatarPath,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
+                  child: Padding(
+                    // Apply padding to the child
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
+                    child: Row(
+                      // The content Row is now the child of Padding
+                      children: [
+                        ClipOval(
+                          child: Image.asset(
+                            dosen.avatarPath,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              dosen.nama,
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF0F47AD),
-                                fontFamily: 'Poppins',
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                dosen.nama,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF0F47AD),
+                                  fontFamily: 'Poppins',
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              dosen.jumlahMahasiswa,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black54,
-                                fontFamily: 'Poppins',
+                              const SizedBox(height: 4),
+                              Text(
+                                dosen.jumlahMahasiswa,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                  fontFamily: 'Poppins',
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const Icon(
-                        Icons.chevron_right_rounded,
-                        color: Colors.black87,
-                        size: 24,
-                      ),
-                    ],
+                        const Icon(
+                          Icons.chevron_right_rounded,
+                          color: Colors.black87,
+                          size: 24,
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }),

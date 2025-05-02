@@ -1,4 +1,3 @@
-// lib/widgets/program_studi_dropdown.dart
 import 'package:digita_mobile/models/program_studi.dart';
 import 'package:digita_mobile/viewmodels/registrasi_viewmodel.dart';
 import 'package:flutter/material.dart';

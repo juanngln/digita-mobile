@@ -14,15 +14,20 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // --- Base URL Configuration ---
+  // Gunakan 10.0.2.2 untuk Android emulator untuk access ke localhost/127.0.0.1
+  /* jika menggunakan android device asli
+     Ganti alamat ip menggunakan alamat ip laptop/komputermu
+     contoh: static const String _baseUrl = "http://192.168.1.15:8000"; */
+  static const String _baseUrl = "http://10.0.2.2:8000";
+
   final TextEditingController _nimController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
   String? _selectedRole;
-
   final List<String> _roles = ['Mahasiswa', 'Dosen'];
 
-  // untuk menampilkan snackbar
   void _showSnackBar(String message, {bool isError = true}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -52,7 +57,6 @@ class _LoginScreenState extends State<LoginScreen> {
           roles: _roles,
           initialSelectedRole: _selectedRole,
           onRoleSelected: (role) {
-            // Fungsi ini dipanggil saat tombol LANJUT ditekan dan mengupdate role yang dipilih
             setState(() {
               _selectedRole = role;
             });
@@ -75,7 +79,6 @@ class _LoginScreenState extends State<LoginScreen> {
         return RoleSelectionBottomSheet(
           roles: const ['Mahasiswa', 'Dosen'],
           onRoleSelected: (selectedRole) {
-            // Navigasi setelah bottom sheet ditutup
             Future.delayed(const Duration(milliseconds: 300), () {
               if (!context.mounted) return;
               final routeName =
@@ -97,6 +100,81 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  // --- Check Request Status ---
+  Future<void> _checkThesisRequestStatusAndNavigate(String token) async {
+    final requestStatusUrl = Uri.parse(
+      '$_baseUrl/api/thesis/request-dosen/pribadi/',
+    );
+    if (!mounted) {
+      return;
+    }
+
+    try {
+      final response = await http.get(
+        requestStatusUrl,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      if (response.statusCode == 200) {
+        final List<dynamic> responseData = jsonDecode(response.body);
+
+        if (responseData.isNotEmpty) {
+          final requestData = responseData[0] as Map<String, dynamic>;
+          final String? status = requestData['status'] as String?;
+
+          if (status == 'PENDING') {
+            Navigator.pushReplacementNamed(context, '/cari_dosen');
+          } else if (status == 'ACCEPTED') {
+            Navigator.pushReplacementNamed(context, '/home_mahasiswa');
+          } else {
+            _showSnackBar(
+              "Status permintaan dosen: $status. Mengarahkan ke halaman utama.",
+              isError: false,
+            );
+            Navigator.pushReplacementNamed(context, '/home_mahasiswa');
+          }
+        } else {
+          _showSnackBar(
+            "Anda belum mengajukan permintaan dosen pembimbing.",
+            isError: false,
+          );
+          Navigator.pushReplacementNamed(context, '/cari_dosen');
+        }
+      } else {
+        // Handle API error (e.g., 401 Unauthorized, 404 Not Found, 500 Server Error)
+        _showSnackBar(
+          "Gagal memeriksa status permintaan (Status: ${response.statusCode}). Anda mungkin perlu login ulang.",
+          isError: true,
+        );
+      }
+    } on SocketException {
+      if (!mounted) return;
+      _showSnackBar(
+        "Tidak dapat terhubung ke server untuk memeriksa status. Periksa koneksi.",
+      );
+    } on HttpException {
+      if (!mounted) return;
+      _showSnackBar("Gagal menemukan layanan status. Periksa alamat server.");
+    } on FormatException {
+      if (!mounted) return;
+      _showSnackBar("Format respons status dari server tidak valid.");
+    } catch (e) {
+      if (!mounted) return;
+      _showSnackBar(
+        "Terjadi kesalahan tidak diketahui saat memeriksa status: $e",
+      );
+    } finally {
+      if (mounted && _isLoading) {}
+    }
+  }
+
   // LOGIN LOGIC
   Future<void> _handleLogin() async {
     // Input Validation
@@ -114,10 +192,11 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     setState(() {
-      _isLoading = true; // menampilkan loading indicator
+      _isLoading = true;
     });
 
-    final url = Uri.parse('http://10.0.2.2:8000/api/users/login/');
+    // API URL login
+    final loginUrl = Uri.parse('$_baseUrl/api/users/login/');
     final String apiRole = _selectedRole!.toLowerCase();
 
     final Map<String, String> loginData = {
@@ -126,37 +205,63 @@ class _LoginScreenState extends State<LoginScreen> {
       "password": _passwordController.text,
     };
 
+    String? authToken;
+
     try {
       final response = await http.post(
-        url,
+        loginUrl,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(loginData), // Encode data ke JSON
+        body: jsonEncode(loginData),
       );
 
-      // Handle Response
-      if (!mounted) return; //
+      if (!mounted) return;
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        // SUCCESS ( status code 200 OK, 201 Created)
         _showSnackBar("Login berhasil!", isError: false);
 
-        /* Optional: Decode response if your API sends back data like a token
-        final responseBody = jsonDecode(response.body);
-        String token = responseBody['token']; // Example
-        Store the token securely (e.g., using flutter_secure_storage)
-        */
+        try {
+          final responseBody = jsonDecode(response.body);
+
+          if (responseBody is Map &&
+              responseBody.containsKey('tokens') &&
+              responseBody['tokens'] is Map) {
+            final tokensMap = responseBody['tokens'] as Map<String, dynamic>;
+            if (tokensMap.containsKey('access')) {
+              authToken = tokensMap['access'] as String?;
+
+              if (authToken == null) {
+                throw const FormatException(
+                  "Token value ('tokens'.'access') is null in login response",
+                );
+              }
+              // TODO: Store token menggunakan flutter secure storage
+            } else {
+              throw const FormatException(
+                "Token key 'access' not found inside 'tokens' object",
+              );
+            }
+          } else {
+            throw const FormatException(
+              "Token key 'tokens' not found or is not a Map in login response",
+            );
+          }
+        } catch (e) {
+          if (!mounted) return;
+          _showSnackBar(
+            "Login berhasil, tapi gagal memproses data sesi (token).",
+            isError: true,
+          );
+
+          return;
+        }
+
+        // Navigasi berdassakan peran
         if (apiRole == 'mahasiswa') {
-          Navigator.pushReplacementNamed(
-            context,
-            '/home_mahasiswa',
-          ); // navigasi ke home mahasiswa
+          await _checkThesisRequestStatusAndNavigate(authToken);
         } else if (apiRole == 'dosen') {
-          Navigator.pushReplacementNamed(
-            context,
-            '/home_dosen',
-          ); // navigasi ke home dosen
+          Navigator.pushReplacementNamed(context, '/home_dosen');
         } else {
           _showSnackBar(
             "Login berhasil, tetapi peran tidak dikenal.",
@@ -164,12 +269,15 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
       } else {
-        // FAILURE ( status code 400 Bad Request, 401 Unauthorized)
-        String errorMessage = "Login gagal."; // pesan error
+        String errorMessage = "Login gagal.";
         try {
-          // parse pesan error dari API response body
           final errorBody = jsonDecode(response.body);
+
           if (errorBody is Map &&
+              errorBody.containsKey('detail') &&
+              errorBody['detail'] is String) {
+            errorMessage = errorBody['detail'];
+          } else if (errorBody is Map &&
               errorBody.containsKey('error') &&
               errorBody['error'] is String) {
             errorMessage = errorBody['error'];
@@ -178,27 +286,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 "Terjadi kesalahan login (Status: ${response.statusCode})";
           }
         } catch (e) {
-          // jika tidak ada pesan error dari API
           errorMessage = "Login gagal (Status: ${response.statusCode})";
         }
         _showSnackBar(errorMessage);
       }
     } on SocketException {
-      // jika tidak bisa terhubung ke server
       if (!mounted) return;
       _showSnackBar(
         "Tidak dapat terhubung ke server. Periksa koneksi internet Anda.",
       );
     } on HttpException {
       if (!mounted) return;
-      _showSnackBar("Gagal menemukan layanan. Periksa alamat server.");
+      _showSnackBar("Gagal menemukan layanan login. Periksa alamat server.");
     } on FormatException {
       if (!mounted) return;
-      _showSnackBar("Format respons dari server tidak valid.");
+      _showSnackBar("Format respons login dari server tidak valid.");
     } catch (e) {
-      // menangani kesalahan lain yang tidak terduga
       if (!mounted) return;
-      _showSnackBar("Terjadi kesalahan yang tidak diketahui.");
+      _showSnackBar("Terjadi kesalahan yang tidak diketahui: $e");
     } finally {
       if (mounted) {
         setState(() {
@@ -252,14 +357,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 24),
                     // Role Selection
                     GestureDetector(
-                      onTap: _showRoleSelectionSheetSelectRole,
+                      onTap:
+                          _isLoading ? null : _showRoleSelectionSheetSelectRole,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 16,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color:
+                              _isLoading ? Colors.grey.shade200 : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -273,14 +380,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 fontWeight: FontWeight.bold,
                                 color:
                                     _selectedRole != null
-                                        ? Colors
-                                            .black // Color when selected
-                                        : Colors.black54, // Hint text color
+                                        ? Colors.black
+                                        : Colors.black54,
                               ),
                             ),
-                            const Icon(
+                            Icon(
                               Icons.arrow_drop_down,
-                              color: Colors.grey,
+                              color: _isLoading ? Colors.grey : Colors.black54,
                             ),
                           ],
                         ),
@@ -290,10 +396,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Form Fields
                     TextFormField(
                       controller: _nimController,
+                      enabled: !_isLoading,
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: _isLoading ? Colors.grey.shade600 : Colors.black,
                       ),
                       decoration: InputDecoration(
                         hintText: "NIM/NIK",
@@ -303,7 +410,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: Colors.black54,
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor:
+                            _isLoading ? Colors.grey.shade200 : Colors.white,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 16,
@@ -320,17 +428,22 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
-                      style: const TextStyle(
+                      enabled: !_isLoading,
+                      style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: _isLoading ? Colors.grey.shade600 : Colors.black,
                       ),
                       decoration: InputDecoration(
                         hintText: "Kata Sandi",
@@ -341,7 +454,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: Colors.black54,
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor:
+                            _isLoading ? Colors.grey.shade200 : Colors.white,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 16,
@@ -351,12 +465,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             _obscurePassword
                                 ? Icons.visibility_off
                                 : Icons.visibility,
+                            color: _isLoading ? Colors.grey : null,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
+                          onPressed:
+                              _isLoading
+                                  ? null
+                                  : () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -370,20 +488,28 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
+                        disabledBorder: OutlineInputBorder(
+                          // Style for disabled state
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: () {
-                          // Lupa password
-                        },
-                        child: const Text(
+                        onPressed:
+                            _isLoading
+                                ? null
+                                : () {
+                                  // Lupa password
+                                },
+                        child: Text(
                           "Lupa Password?",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             decoration: TextDecoration.underline,
-                            color: Colors.black,
+                            color: _isLoading ? Colors.grey : Colors.black,
                           ),
                         ),
                       ),
@@ -394,15 +520,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       height: 50,
                       child: TextButton(
-                        // memanggil fungsi login
                         onPressed: _isLoading ? null : _handleLogin,
                         style: TextButton.styleFrom(
                           backgroundColor:
                               _isLoading
                                   ? Colors.grey
-                                  : const Color(
-                                    0xFF0F47AD,
-                                  ), // berubah warna saat loading
+                                  : const Color(0xFF0F47AD),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
@@ -410,7 +533,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         child:
                             _isLoading
                                 ? const SizedBox(
-                                  //  menampilkan loading indicator
                                   height: 24,
                                   width: 24,
                                   child: CircularProgressIndicator(
@@ -419,7 +541,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 )
                                 : const Text(
-                                  // menampilkan teks Masuk
                                   "MASUK",
                                   style: TextStyle(
                                     fontSize: 18,
@@ -435,16 +556,25 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text("Belum punya akun ? "),
+                          Text(
+                            "Belum punya akun ? ",
+                            style: TextStyle(
+                              color: _isLoading ? Colors.grey : Colors.black,
+                            ),
+                          ),
                           GestureDetector(
-                            onTap: () {
-                              _showRoleSelectionSheetRegister(context);
-                            },
+                            onTap:
+                                _isLoading
+                                    ? null
+                                    : () {
+                                      _showRoleSelectionSheetRegister(context);
+                                    },
                             child: Text(
                               "Daftar Sekarang",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
+                                color: _isLoading ? Colors.grey : Colors.black,
                               ),
                             ),
                           ),

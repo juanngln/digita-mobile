@@ -99,8 +99,9 @@ void _showRoleSelectionBottomSheet(BuildContext context) {
         onRoleSelected: (selectedRole) {
           // Navigasi setelah bottom sheet ditutup
           Future.delayed(const Duration(milliseconds: 300), () {
-            if (!context.mounted)
-              return; // Check if the widget is still mounted
+            if (!context.mounted) {
+              return;
+            }
             final routeName =
                 selectedRole.toLowerCase() == 'mahasiswa'
                     ? '/register_mahasiswa'

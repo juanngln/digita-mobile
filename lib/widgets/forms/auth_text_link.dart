@@ -1,4 +1,3 @@
-// lib/widgets/secondary_auth_link.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
