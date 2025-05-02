@@ -100,13 +100,15 @@ class DaftarDosen extends StatelessWidget {
                 return Container(
                   margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 16),
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black,
                         spreadRadius: 2,
                         blurRadius: 4,
                         offset: const Offset(0, 0),
@@ -157,7 +159,7 @@ class DaftarDosen extends StatelessWidget {
                     ],
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),

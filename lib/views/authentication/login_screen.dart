@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:digita_mobile/widgets/role_selector_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,11 +17,29 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _nimController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
   String? _selectedRole;
 
   final List<String> _roles = ['Mahasiswa', 'Dosen'];
 
-  void _showRoleSelectionSheet() {
+  // untuk menampilkan snackbar
+  void _showSnackBar(String message, {bool isError = true}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: const TextStyle(color: Colors.white)),
+        backgroundColor: isError ? Colors.redAccent : Colors.green,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        margin: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 10.0),
+      ),
+    );
+  }
+
+  // untuk menampilkan role selector bottom sheet saat pilih role
+  void _showRoleSelectionSheetSelectRole() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -40,11 +62,150 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  // untuk menampilkan role selector bottom sheet saat tekan daftar sekarang
+  void _showRoleSelectionSheetRegister(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      backgroundColor: const Color(0xFFD9EEFF),
+      builder: (BuildContext builderContext) {
+        return RoleSelectionBottomSheet(
+          roles: const ['Mahasiswa', 'Dosen'],
+          onRoleSelected: (selectedRole) {
+            // Navigasi setelah bottom sheet ditutup
+            Future.delayed(const Duration(milliseconds: 300), () {
+              if (!context.mounted) return;
+              final routeName =
+                  selectedRole.toLowerCase() == 'mahasiswa'
+                      ? '/register_mahasiswa'
+                      : '/register_dosen';
+              Navigator.pushNamed(context, routeName);
+            });
+          },
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _nimController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  // LOGIN LOGIC
+  Future<void> _handleLogin() async {
+    // Input Validation
+    if (_selectedRole == null) {
+      _showSnackBar("Silakan pilih peran Anda.");
+      return;
+    }
+    if (_nimController.text.isEmpty) {
+      _showSnackBar("NIM/NIK tidak boleh kosong.");
+      return;
+    }
+    if (_passwordController.text.isEmpty) {
+      _showSnackBar("Kata sandi tidak boleh kosong.");
+      return;
+    }
+
+    setState(() {
+      _isLoading = true; // menampilkan loading indicator
+    });
+
+    final url = Uri.parse('http://10.0.2.2:8000/api/users/login/');
+    final String apiRole = _selectedRole!.toLowerCase();
+
+    final Map<String, String> loginData = {
+      "role": apiRole,
+      "identifier": _nimController.text,
+      "password": _passwordController.text,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(loginData), // Encode data ke JSON
+      );
+
+      // Handle Response
+      if (!mounted) return; //
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        // SUCCESS ( status code 200 OK, 201 Created)
+        _showSnackBar("Login berhasil!", isError: false);
+
+        /* Optional: Decode response if your API sends back data like a token
+        final responseBody = jsonDecode(response.body);
+        String token = responseBody['token']; // Example
+        Store the token securely (e.g., using flutter_secure_storage)
+        */
+        if (apiRole == 'mahasiswa') {
+          Navigator.pushReplacementNamed(
+            context,
+            '/home_mahasiswa',
+          ); // navigasi ke home mahasiswa
+        } else if (apiRole == 'dosen') {
+          Navigator.pushReplacementNamed(
+            context,
+            '/home_dosen',
+          ); // navigasi ke home dosen
+        } else {
+          _showSnackBar(
+            "Login berhasil, tetapi peran tidak dikenal.",
+            isError: true,
+          );
+        }
+      } else {
+        // FAILURE ( status code 400 Bad Request, 401 Unauthorized)
+        String errorMessage = "Login gagal."; // pesan error
+        try {
+          // parse pesan error dari API response body
+          final errorBody = jsonDecode(response.body);
+          if (errorBody is Map &&
+              errorBody.containsKey('error') &&
+              errorBody['error'] is String) {
+            errorMessage = errorBody['error'];
+          } else {
+            errorMessage =
+                "Terjadi kesalahan login (Status: ${response.statusCode})";
+          }
+        } catch (e) {
+          // jika tidak ada pesan error dari API
+          errorMessage = "Login gagal (Status: ${response.statusCode})";
+        }
+        _showSnackBar(errorMessage);
+      }
+    } on SocketException {
+      // jika tidak bisa terhubung ke server
+      if (!mounted) return;
+      _showSnackBar(
+        "Tidak dapat terhubung ke server. Periksa koneksi internet Anda.",
+      );
+    } on HttpException {
+      if (!mounted) return;
+      _showSnackBar("Gagal menemukan layanan. Periksa alamat server.");
+    } on FormatException {
+      if (!mounted) return;
+      _showSnackBar("Format respons dari server tidak valid.");
+    } catch (e) {
+      // menangani kesalahan lain yang tidak terduga
+      if (!mounted) return;
+      _showSnackBar("Terjadi kesalahan yang tidak diketahui.");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -91,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 24),
                     // Role Selection
                     GestureDetector(
-                      onTap: _showRoleSelectionSheet,
+                      onTap: _showRoleSelectionSheetSelectRole,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -233,24 +394,40 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       height: 50,
                       child: TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/cari_dosen',); // Login logic di sini
-                        },
+                        // memanggil fungsi login
+                        onPressed: _isLoading ? null : _handleLogin,
                         style: TextButton.styleFrom(
-                          backgroundColor: const Color(0xFF0F47AD),
+                          backgroundColor:
+                              _isLoading
+                                  ? Colors.grey
+                                  : const Color(
+                                    0xFF0F47AD,
+                                  ), // berubah warna saat loading
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child: const Text(
-                          "MASUK",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
+                        child:
+                            _isLoading
+                                ? const SizedBox(
+                                  //  menampilkan loading indicator
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 3,
+                                  ),
+                                )
+                                : const Text(
+                                  // menampilkan teks Masuk
+                                  "MASUK",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -261,9 +438,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           const Text("Belum punya akun ? "),
                           GestureDetector(
                             onTap: () {
-                              // Arahkan ke halaman daftar
+                              _showRoleSelectionSheetRegister(context);
                             },
-                            child: const Text(
+                            child: Text(
                               "Daftar Sekarang",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,

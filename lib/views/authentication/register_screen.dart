@@ -122,10 +122,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             borderRadius: BorderRadius.circular(32),
                           ),
                         ),
-                        onPressed: () {
-                          
-                          // TODO: Tambahkan logika daftar
-                        },
+                        onPressed: () {},
                         child: const Text(
                           "DAFTAR",
                           style: TextStyle(
@@ -151,10 +148,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {
-                             
-                              // TODO: Navigate ke halaman login
-                            },
+                            onTap: () {},
                             child: const Text(
                               "Masuk",
                               style: TextStyle(

@@ -1,6 +1,6 @@
+import 'package:digita_mobile/widgets/role_selector_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:digita_mobile/widgets/role_selector_bottom_sheet.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
@@ -99,6 +99,8 @@ void _showRoleSelectionBottomSheet(BuildContext context) {
         onRoleSelected: (selectedRole) {
           // Navigasi setelah bottom sheet ditutup
           Future.delayed(const Duration(milliseconds: 300), () {
+            if (!context.mounted)
+              return; // Check if the widget is still mounted
             final routeName =
                 selectedRole.toLowerCase() == 'mahasiswa'
                     ? '/register_mahasiswa'
