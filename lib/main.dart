@@ -1,4 +1,6 @@
+import 'package:digita_mobile/services/login_service.dart';
 import 'package:digita_mobile/services/registration_service.dart';
+import 'package:digita_mobile/viewmodels/login_viewmodel.dart';
 import 'package:digita_mobile/viewmodels/registration_viewmodel.dart';
 import 'package:digita_mobile/views/authentication/login_screen.dart';
 import 'package:digita_mobile/views/authentication/register_dosen_screen.dart';
@@ -61,7 +63,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         '/': (context) => LandingScreen(),
-        '/login': (context) => const LoginScreen(),
+        '/login':
+            (context) => ChangeNotifierProvider(
+              create: (context) => LoginViewModel(LoginService()),
+              child: const LoginScreen(),
+            ),
         '/register_mahasiswa':
             (context) => ChangeNotifierProvider(
               create: (context) => RegistrationViewModel(RegistrationService()),

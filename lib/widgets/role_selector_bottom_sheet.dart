@@ -47,10 +47,7 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
           Text(
             'Dashboard menyesuaikan peranmu,',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              color: Colors.black,
-            ),
+            style: GoogleFonts.poppins(fontSize: 18, color: Colors.black),
           ),
           Text(
             'Pilih Peranmu!',
@@ -162,7 +159,6 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
                       ? null
                       : () {
                         widget.onRoleSelected(_tempSelectedRole!);
-                        Navigator.pop(context);
                       },
               child: Text(
                 "LANJUT",

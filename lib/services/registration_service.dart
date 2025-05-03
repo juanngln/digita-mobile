@@ -33,10 +33,11 @@ class RegistrationService {
   // --- Base URL Configuration ---
   // Gunakan 10.0.2.2 untuk Android emulator untuk access ke localhost/127.0.0.1
   /* jika menggunakan android device asli
-     Ganti alamat ip menggunakan alamat ip laptop/komputermu
-     contoh: static const String _baseUrl = "http://192.168.1.15:8000"; */
+     Ganti alamat ip menggunakan alamat ip laptop/komputermu */
   static const String _baseUrl =
       kReleaseMode ? "_PRODUCTION_URL" : "http://10.0.2.2:8000";
+  // contoh menggunakan ip laptop/komputer:
+  // kReleaseMode ? "_PRODUCTION_URL" : "http://192.168.1.15:8000";
 
   final http.Client _client;
 

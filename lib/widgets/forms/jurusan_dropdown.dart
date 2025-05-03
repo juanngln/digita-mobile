@@ -1,13 +1,11 @@
+import 'package:digita_mobile/models/jurusan.dart';
+import 'package:digita_mobile/viewmodels/registration_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../models/jurusan.dart';
-// Adjust import paths as needed
-import '../../viewmodels/register_viewmodel.dart';
-
 class JurusanDropdown extends StatelessWidget {
   final RegistrationViewModel viewModel;
-  final bool isFormEnabled; // To disable interaction during registration
+  final bool isFormEnabled;
 
   const JurusanDropdown({
     super.key,
@@ -17,8 +15,6 @@ class JurusanDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if the dropdown itself can be interacted with
-    // Use Jurusan fetch state here
     final bool canInteract =
         isFormEnabled && (viewModel.jurusanFetchState == ViewState.success);
 
@@ -26,7 +22,7 @@ class JurusanDropdown extends StatelessWidget {
     if (viewModel.jurusanFetchState == ViewState.busy) {
       return InputDecorator(
         decoration: InputDecoration(
-          labelText: 'Memuat Jurusan...', // Changed text
+          labelText: 'Memuat Jurusan...',
           labelStyle: GoogleFonts.poppins(
             fontSize: 16,
             color: Colors.grey[600],
@@ -63,10 +59,8 @@ class JurusanDropdown extends StatelessWidget {
     else if (viewModel.jurusanFetchState == ViewState.error) {
       return InputDecorator(
         decoration: InputDecoration(
-          labelText: 'Jurusan', // Changed text
-          errorText:
-              viewModel.jurusanFetchError ??
-              "Gagal memuat", // Use Jurusan error
+          labelText: 'Jurusan',
+          errorText: viewModel.jurusanFetchError ?? "Gagal memuat",
           errorMaxLines: 2,
           filled: true,
           fillColor: Colors.red[50],
@@ -116,12 +110,11 @@ class JurusanDropdown extends StatelessWidget {
     // --- State 3: Successfully Loaded Jurusan ---
     else {
       return DropdownButtonFormField<int>(
-        // Use Jurusan state
         value: viewModel.selectedJurusanId,
         hint: Text(
           'PILIH JURUSAN',
           style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[500]),
-        ), // Changed text
+        ),
         isExpanded: true,
         icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[500]),
         style: GoogleFonts.poppins(
@@ -164,25 +157,24 @@ class JurusanDropdown extends StatelessWidget {
             borderSide: BorderSide.none,
           ),
         ),
-        // Call setSelectedJurusanId on change
+
         onChanged:
             canInteract
                 ? (int? newValue) => viewModel.setSelectedJurusanId(newValue)
                 : null,
-        // Build items from jurusanList
+
         items:
             viewModel.jurusanList.map<DropdownMenuItem<int>>((Jurusan jurusan) {
-              // Use Jurusan type
               return DropdownMenuItem<int>(
                 value: jurusan.id,
-                // Use namaJurusan (or whatever the field name is in your Jurusan model)
+
                 child: Text(
                   jurusan.namaJurusan,
                   overflow: TextOverflow.ellipsis,
                 ),
               );
             }).toList(),
-        // Update validator message
+
         validator:
             (value) => value == null ? 'Jurusan tidak boleh kosong' : null,
         autovalidateMode: AutovalidateMode.onUserInteraction,
