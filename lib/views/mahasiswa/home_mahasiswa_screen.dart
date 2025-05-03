@@ -1,3 +1,4 @@
+import 'package:digita_mobile/widgets/bottom_navbar/bottom_navbar_mahasiswa.dart';
 import 'package:digita_mobile/widgets/information_card.dart';
 import 'package:digita_mobile/widgets/profile_section.dart';
 import 'package:digita_mobile/widgets/upcoming_card.dart';
@@ -12,6 +13,8 @@ class HomeMahasiswaScreen extends StatefulWidget {
 }
 
 class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
+  int _page = 0;
+
   final List<Map<String, String>> informationCards = [
     {
       'title': 'Buku Panduan',
@@ -40,30 +43,18 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
   ];
 
   final List<Map<String, String>> upcomingCards = [
-    {
-      'title': 'Bimbingan dengan dosen',
-      'description': 'Besok, 14:00 WIB',
-    },
+    {'title': 'Bimbingan dengan dosen', 'description': 'Besok, 14:00 WIB'},
     {
       'title': 'Pengumpulan Daftar isi',
       'description': '12 September, 23:59 WIB',
     },
-    {
-      'title': 'Bimbingan dengan dosen',
-      'description': 'Besok, 14:00 WIB',
-    },
-    {
-      'title': 'Bimbingan dengan dosen',
-      'description': 'Besok, 14:00 WIB',
-    },
+    {'title': 'Bimbingan dengan dosen', 'description': 'Besok, 14:00 WIB'},
+    {'title': 'Bimbingan dengan dosen', 'description': 'Besok, 14:00 WIB'},
     {
       'title': 'Pengumpulan Daftar isi',
       'description': '12 September, 23:59 WIB',
     },
-    {
-      'title': 'Bimbingan dengan dosen',
-      'description': 'Besok, 14:00 WIB',
-    },
+    {'title': 'Bimbingan dengan dosen', 'description': 'Besok, 14:00 WIB'},
   ];
 
   @override
@@ -80,7 +71,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 20.0),
                   child: ProfileSection(
-                    name: 'Udin Prakoso Bakti', 
+                    name: 'Udin Prakoso Bakti',
                     status: 'Mahasiswa Teknik Informatika',
                   ),
                 ),
@@ -228,6 +219,14 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: BottomNavbarMahasiswa(
+        currentIndex: _page,
+        onTap: (index) {
+            setState(() {
+              _page = index;
+            });
+          },
       ),
     );
   }
