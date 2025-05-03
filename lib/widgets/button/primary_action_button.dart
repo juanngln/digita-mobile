@@ -21,7 +21,7 @@ class PrimaryActionButton extends StatelessWidget {
         backgroundColor: isLoading ? Colors.grey : const Color(0xFF0F47AD),
         padding: const EdgeInsets.symmetric(vertical: 15.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(30.0),
         ),
         elevation: isLoading ? 0 : 1,
         minimumSize: const Size(double.infinity, 50),
@@ -40,7 +40,7 @@ class PrimaryActionButton extends StatelessWidget {
                 text,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),

@@ -1,11 +1,10 @@
-// screens/register_mahasiswa_screen.dart
-import 'package:digita_mobile/viewmodels/registrasi_viewmodel.dart';
+import 'package:digita_mobile/viewmodels/registration_viewmodel.dart';
 import 'package:digita_mobile/widgets/animated_logo.dart';
+import 'package:digita_mobile/widgets/button/primary_action_button.dart';
 import 'package:digita_mobile/widgets/forms/auth_text_link.dart';
 import 'package:digita_mobile/widgets/forms/password_field.dart';
 import 'package:digita_mobile/widgets/forms/prodi_dropdown.dart';
 import 'package:digita_mobile/widgets/forms/text_field.dart';
-import 'package:digita_mobile/widgets/primary_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';

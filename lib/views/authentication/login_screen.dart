@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:digita_mobile/widgets/button/primary_action_button.dart';
+import 'package:digita_mobile/widgets/forms/password_field.dart';
+import 'package:digita_mobile/widgets/forms/text_field.dart';
 import 'package:digita_mobile/widgets/role_selector_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,7 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final TextEditingController _nimController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _obscurePassword = true;
   bool _isLoading = false;
   String? _selectedRole;
   final List<String> _roles = ['Mahasiswa', 'Dosen'];
@@ -394,106 +396,33 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 16),
                     // Form Fields
-                    TextFormField(
+                    CustomTextField(
                       controller: _nimController,
-                      enabled: !_isLoading,
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _isLoading ? Colors.grey.shade600 : Colors.black,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: "NIM/NIK",
-                        hintStyle: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54,
-                        ),
-                        filled: true,
-                        fillColor:
-                            _isLoading ? Colors.grey.shade200 : Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 16,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
+                      hintText: "NIM/NIK",
+                      enabled: !_isLoading, // Pass the enabled state
+                      keyboardType: TextInputType.number,
+
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'NIM/NIK tidak boleh kosong';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
+                    PasswordInputField(
                       controller: _passwordController,
-                      obscureText: _obscurePassword,
+                      hintText: "Kata Sandi",
                       enabled: !_isLoading,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: _isLoading ? Colors.grey.shade600 : Colors.black,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: "Kata Sandi",
-                        hintStyle: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54,
-                        ),
-                        filled: true,
-                        fillColor:
-                            _isLoading ? Colors.grey.shade200 : Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 16,
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: _isLoading ? Colors.grey : null,
-                          ),
-                          onPressed:
-                              _isLoading
-                                  ? null
-                                  : () {
-                                    setState(() {
-                                      _obscurePassword = !_obscurePassword;
-                                    });
-                                  },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        disabledBorder: OutlineInputBorder(
-                          // Style for disabled state
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Kata sandi tidak boleh kosong';
+                        }
+                        if (value.length < 6) {
+                          return 'Kata sandi minimal 8 karakter';
+                        }
+                        return null;
+                      },
                     ),
                     Align(
                       alignment: Alignment.centerRight,
@@ -516,40 +445,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     // Button Masuk
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: TextButton(
-                        onPressed: _isLoading ? null : _handleLogin,
-                        style: TextButton.styleFrom(
-                          backgroundColor:
-                              _isLoading
-                                  ? Colors.grey
-                                  : const Color(0xFF0F47AD),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child:
-                            _isLoading
-                                ? const SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 3,
-                                  ),
-                                )
-                                : const Text(
-                                  "MASUK",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontFamily: 'Poppins',
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                      ),
+                    PrimaryActionButton(
+                      text: "MASUK",
+                      isLoading: _isLoading,
+                      onPressed: _handleLogin,
                     ),
                     const SizedBox(height: 16),
                     Center(

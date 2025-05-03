@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/jurusan.dart';
 // Adjust import paths as needed
-import '../../viewmodels/registrasi_viewmodel.dart';
+import '../../viewmodels/register_viewmodel.dart';
 
 class JurusanDropdown extends StatelessWidget {
   final RegistrationViewModel viewModel;

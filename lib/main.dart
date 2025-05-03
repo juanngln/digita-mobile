@@ -1,4 +1,5 @@
-import 'package:digita_mobile/viewmodels/registrasi_viewmodel.dart';
+import 'package:digita_mobile/services/registration_service.dart';
+import 'package:digita_mobile/viewmodels/registration_viewmodel.dart';
 import 'package:digita_mobile/views/authentication/login_screen.dart';
 import 'package:digita_mobile/views/authentication/register_dosen_screen.dart';
 import 'package:digita_mobile/views/authentication/register_mahasiswa_screen.dart';
@@ -63,12 +64,12 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register_mahasiswa':
             (context) => ChangeNotifierProvider(
-              create: (context) => RegistrationViewModel(),
+              create: (context) => RegistrationViewModel(RegistrationService()),
               child: const RegisterMahasiswaScreen(),
             ),
         '/register_dosen':
             (context) => ChangeNotifierProvider(
-              create: (context) => RegistrationViewModel(),
+              create: (context) => RegistrationViewModel(RegistrationService()),
               child: const RegisterDosenScreen(),
             ),
         '/home_mahasiswa': (context) => const HomeMahasiswaScreen(),

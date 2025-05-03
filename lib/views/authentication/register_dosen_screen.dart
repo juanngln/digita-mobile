@@ -1,24 +1,21 @@
-import 'package:digita_mobile/viewmodels/registrasi_viewmodel.dart';
+import 'package:digita_mobile/viewmodels/registration_viewmodel.dart';
 import 'package:digita_mobile/widgets/animated_logo.dart';
+import 'package:digita_mobile/widgets/button/primary_action_button.dart';
 import 'package:digita_mobile/widgets/forms/auth_text_link.dart';
 import 'package:digita_mobile/widgets/forms/jurusan_dropdown.dart';
 import 'package:digita_mobile/widgets/forms/password_field.dart';
 import 'package:digita_mobile/widgets/forms/text_field.dart';
-import 'package:digita_mobile/widgets/primary_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-// --- Rename Class ---
 class RegisterDosenScreen extends StatefulWidget {
   const RegisterDosenScreen({super.key});
 
   @override
-  // --- Rename State Class returned ---
   State<RegisterDosenScreen> createState() => _RegisterDosenScreenState();
 }
 
-// --- Rename State Class ---
 class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
   final _formKey = GlobalKey<FormState>();
   RegistrationViewModel? _viewModelInstance;
@@ -57,14 +54,13 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
     super.initState();
   }
 
-  // _handleRegistrationStatusChange remains the same as it checks generic status
   void _handleRegistrationStatusChange() {
     if (!mounted) return;
     final viewModel = context.read<RegistrationViewModel>();
 
     if (viewModel.registrationStatus == RegistrationStatus.success) {
       _showSnackBar(
-        "Registrasi Dosen berhasil! Anda akan diarahkan ke halaman Masuk.", // Updated text slightly
+        "Registrasi Dosen berhasil! Anda akan diarahkan ke halaman Masuk.",
         isError: false,
       );
       Future.delayed(const Duration(seconds: 2), () {
@@ -87,7 +83,7 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
     _viewModelInstance?.removeListener(_handleRegistrationStatusChange);
     _namaController.dispose();
     _emailController.dispose();
-    _nikController.dispose(); // Dispose RENAMED controller
+    _nikController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -108,7 +104,6 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
     );
   }
 
-  // Modify _submitRegistration for Dosen
   void _submitRegistration() {
     if (!_formKey.currentState!.validate()) {
       _showSnackBar('Harap periksa kembali data yang Anda masukkan.');
@@ -116,17 +111,14 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
     }
     final viewModel = context.read<RegistrationViewModel>();
 
-    // Call handleRegister with 'dosen' role and relevant data
     viewModel.handleRegister(
-      role: 'dosen', // Set role to 'dosen'
-      // Pass Dosen specific fields
-      nik: _nikController.text, // Use nik controller
-      jurusanId: viewModel.selectedJurusanId, // Use selected Jurusan ID
-      // Pass Mahasiswa specific fields as null
+      role: 'dosen',
+
+      nik: _nikController.text,
+      jurusanId: viewModel.selectedJurusanId,
       nim: null,
       programStudiId: null,
 
-      // Pass common fields
       namaLengkap: _namaController.text,
       email: _emailController.text,
       password: _passwordController.text,
@@ -154,7 +146,6 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Logo section remains the same
                         const Padding(
                           padding: EdgeInsets.only(top: 10.0),
                           child: AnimatedLogo(
@@ -183,7 +174,7 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Header remains the same
+                                // Header
                                 Text(
                                   'MULAI BIMBINGAN',
                                   style: GoogleFonts.poppins(
@@ -207,8 +198,7 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
                                 // Input Fields
                                 CustomTextField(
                                   controller: _namaController,
-                                  hintText:
-                                      'NAMA LENGKAP (Beserta Gelar)', // Updated hint
+                                  hintText: 'NAMA LENGKAP (Beserta Gelar)',
                                   enabled: isFormEnabled,
                                   validator:
                                       (v) =>
@@ -219,7 +209,7 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
                                 const SizedBox(height: 20),
                                 CustomTextField(
                                   controller: _emailController,
-                                  hintText: 'EMAIL', // Updated hint
+                                  hintText: 'EMAIL',
                                   keyboardType: TextInputType.emailAddress,
                                   enabled: isFormEnabled,
                                   validator: (v) {
@@ -243,14 +233,11 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
                                 ),
                                 const SizedBox(height: 20),
 
-                                // NIK FIELD (changed from NIM)
+                                // NIK FIELD
                                 CustomTextField(
-                                  controller:
-                                      _nikController, // Use NIK controller
-                                  hintText: 'NIK', // Changed hint
-                                  keyboardType:
-                                      TextInputType
-                                          .number, // Assuming NIK is numeric
+                                  controller: _nikController,
+                                  hintText: 'NIK',
+                                  keyboardType: TextInputType.number,
                                   enabled: isFormEnabled,
                                   validator:
                                       (v) =>
@@ -260,7 +247,7 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
                                 ),
                                 const SizedBox(height: 20),
 
-                                // Password fields remain the same (using PasswordInputField widget)
+                                // Password fields
                                 PasswordInputField(
                                   controller: _passwordController,
                                   hintText: 'Kata Sandi',
@@ -292,9 +279,9 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
                                 ),
                                 const SizedBox(height: 30),
 
-                                // Button & Link remain the same structure
+                                // Button & Link
                                 PrimaryActionButton(
-                                  text: 'DAFTAR', // Changed text
+                                  text: 'DAFTAR',
                                   isLoading: isRegistering,
                                   onPressed: _submitRegistration,
                                 ),
