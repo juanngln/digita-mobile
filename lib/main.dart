@@ -26,13 +26,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Color(0x000F47AD),
-          primary: Color(0x000F47AD),
-          secondary: Color(0x00D9EEFF),
+          seedColor: Color(0xFF0F47AD),
+          primary: Color(0xFF0F47AD),
+          secondary: Color(0xFFD9EEFF),
           surface: Colors.white,
         ),
         progressIndicatorTheme: ProgressIndicatorThemeData(
-          color: Color(0x000F47AD),
+          color: Color(0xFF0F47AD),
         ),
         textTheme: TextTheme(
           titleLarge: GoogleFonts.poppins(
@@ -46,13 +46,14 @@ class MyApp extends StatelessWidget {
             color: Colors.black,
           ),
           titleSmall: GoogleFonts.poppins(
+            fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Color(0x000F47AD),
+            color: Colors.black,
           ),
           bodyLarge: GoogleFonts.poppins(
             fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0F47AD),
           ),
         ),
       ),
