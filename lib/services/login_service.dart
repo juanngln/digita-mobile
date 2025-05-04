@@ -116,7 +116,7 @@ class LoginService {
   // --- Method to Check Mahasiswa Request Status  ---
   Future<Map<String, dynamic>?> checkThesisRequestStatus(String token) async {
     final requestStatusUrl = Uri.parse(
-      '$_baseUrl/api/thesis/request-dosen/pribadi/',
+      '$_baseUrl/api/ta/request-dosen/pribadi/',
     );
     if (kDebugMode) print("Checking thesis status from: $requestStatusUrl");
 
