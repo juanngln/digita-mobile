@@ -63,11 +63,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         '/': (context) => LandingScreen(),
-        '/login':
-            (context) => ChangeNotifierProvider(
-              create: (context) => LoginViewModel(LoginService()),
-              child: const LoginScreen(),
-            ),
+        '/login': (context) => const LoginScreen(),
         '/register_mahasiswa':
             (context) => ChangeNotifierProvider(
               create: (context) => RegistrationViewModel(RegistrationService()),
@@ -82,7 +78,7 @@ class MyApp extends StatelessWidget {
         '/home_dosen': (context) => const HomeDosenScreen(),
         '/cari_dosen': (context) => const CariDosen(),
         '/daftar_dosen': (context) => DaftarDosen(),
-        '/status_pengajuan': (context) => const StatusPengajuan(),
+        '/status_pengajuan_dosen': (context) => const StatusPengajuan(),
       },
     );
   }

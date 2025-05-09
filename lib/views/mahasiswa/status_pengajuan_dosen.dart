@@ -42,13 +42,13 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
                   textAlign: TextAlign.center,
                   softWrap: true,
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     color: Colors.black87,
                     fontFamily: 'Poppins',
                   ),
                 ),
 
-                const SizedBox(height: 48),
+                const SizedBox(height: 32),
 
                 SizedBox(
                   width: double.infinity,
@@ -66,7 +66,7 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
                     child: Text(
                       'LIHAT STATUS PENGAJUAN',
                       style: GoogleFonts.poppins(
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),

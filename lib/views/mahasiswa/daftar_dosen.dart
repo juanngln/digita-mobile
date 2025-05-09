@@ -98,72 +98,183 @@ class DaftarDosen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               ...dosenList.map((dosen) {
-                return Card(
-                  // Use Card instead of Container
-                  margin: const EdgeInsets.only(bottom: 16), // Keep margin
-                  elevation:
-                      4.0, // Set the desired elevation (adjust as needed)
-                  color: Colors.white, // Set background color
-                  shape: RoundedRectangleBorder(
-                    // Define the shape for rounded corners
-                    borderRadius: BorderRadius.circular(12),
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
                   ),
-                  child: Padding(
-                    // Apply padding to the child
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 16,
-                    ),
-                    child: Row(
-                      // The content Row is now the child of Padding
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            dosen.avatarPath,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black,
+                        spreadRadius: 2,
+                        blurRadius: 4,
+                        offset: const Offset(0, 0),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      ClipOval(
+                        child: Image.asset(
+                          dosen.avatarPath,
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                dosen.nama,
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF0F47AD),
-                                  fontFamily: 'Poppins',
-                                ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              dosen.nama,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF0F47AD),
+                                fontFamily: 'Poppins',
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                dosen.jumlahMahasiswa,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                  fontFamily: 'Poppins',
-                                ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              dosen.jumlahMahasiswa,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black54,
+                                fontFamily: 'Poppins',
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        const Icon(
-                          Icons.chevron_right_rounded,
-                          color: Colors.black87,
-                          size: 24,
-                        ),
-                      ],
-                    ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: Colors.black87,
+                        size: 24,
+                      ),
+                    ],
                   ),
                 );
               }),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class FormPengajuanDosen extends StatelessWidget {
+  final String pilihDosen;
+  const FormPengajuanDosen({super.key, required this.pilihDosen});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        top: 24,
+        left: 16,
+        right: 16,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 90,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Pengajuan Dosen Pembimbing',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Poppins',
+              ),
+            ),
+            const SizedBox(height: 16),
+            buildTextField('Dosen Pembimbing', pilihDosen, readOnly: true),
+            buildTextField('Program Studi', ''),
+            buildTextField('Rencana Judul TA', ''),
+            buildTextField('Deskripsi Singkat', '', maxLines: 4),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0F47AD),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context, 
+                    '/status_pengajuan_dosen',
+                    arguments: 'Pengajuan Dosen Pembimbing Berhasil Terkirim',);                 
+                },
+                child: const Text(
+                  'AJUKAN',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildTextField(String label, String initialValue, {int maxLines = 1, bool readOnly = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            readOnly: readOnly,
+            initialValue: initialValue,
+            maxLines: maxLines,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: readOnly ? Colors.grey[300] : const Color(0xFFD9EEFF),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
