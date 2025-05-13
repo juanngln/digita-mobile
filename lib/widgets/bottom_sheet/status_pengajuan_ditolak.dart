@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class StatusPengajuanDitolak extends StatefulWidget{
+class StatusPengajuanDitolak extends StatefulWidget {
   const StatusPengajuanDitolak({super.key});
 
   @override
@@ -19,10 +19,7 @@ class _StatusPengajuanDitolakState extends State<StatusPengajuanDitolak> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(
-            'assets/img/ditolak.png',
-            height: 300,
-          ),
+          Image.asset('assets/img/pengajuan_dosen_ditolak.png', height: 300),
           const SizedBox(height: 24),
           const Text(
             'Yah, Pengajuanmu Ditolak!',
@@ -62,6 +59,7 @@ class _StatusPengajuanDitolakState extends State<StatusPengajuanDitolak> {
                 'Cari Dosen Pembimbing',
                 style: TextStyle(
                   fontSize: 16,
+                  fontWeight: FontWeight.bold,
                   color: Colors.white,
                   fontFamily: 'Poppins',
                 ),
@@ -72,4 +70,4 @@ class _StatusPengajuanDitolakState extends State<StatusPengajuanDitolak> {
       ),
     );
   }
-} 
+}

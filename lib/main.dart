@@ -63,7 +63,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         '/': (context) => LandingScreen(),
-        '/login': (context) => const LoginScreen(),
+        '/login':
+            (context) => ChangeNotifierProvider(
+              create: (context) => LoginViewModel(LoginService()),
+
+              child: const LoginScreen(),
+            ),
         '/register_mahasiswa':
             (context) => ChangeNotifierProvider(
               create: (context) => RegistrationViewModel(RegistrationService()),

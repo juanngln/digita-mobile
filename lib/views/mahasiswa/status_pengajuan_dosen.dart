@@ -1,3 +1,4 @@
+import 'package:digita_mobile/widgets/bottom_sheet/status_pengajuan_ditolak.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -6,6 +7,17 @@ class StatusPengajuan extends StatefulWidget {
 
   @override
   State<StatusPengajuan> createState() => _StatusPengajuanState();
+}
+
+void _showStatusSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (BuildContext bc) {
+      return StatusPengajuanDitolak();
+    },
+  );
 }
 
 class _StatusPengajuanState extends State<StatusPengajuan> {
@@ -20,10 +32,7 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset(
-                  'assets/img/terkirim.png',
-                  height: 300,
-                ),
+                Image.asset('assets/img/terkirim.png', height: 300),
                 const SizedBox(height: 24),
 
                 const Text(
@@ -55,7 +64,7 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
                   height: 50,
                   child: TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/daftar_dosen');
+                      _showStatusSheet(context);
                     },
                     style: TextButton.styleFrom(
                       backgroundColor: const Color(0xFF0F47AD),
@@ -72,11 +81,11 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
                       ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
-        ) 
+        ),
       ),
     );
   }

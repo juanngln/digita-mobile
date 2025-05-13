@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class CustomTextField extends StatelessWidget {
+class TextAreaField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
+  final int? maxLines;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
   final bool enabled;
-  final bool obscureText;
   final Widget? suffixIcon;
   final Color? fillColor;
 
-  const CustomTextField({
+  const TextAreaField({
     super.key,
     required this.controller,
     required this.hintText,
-    this.keyboardType = TextInputType.text,
+    this.maxLines,
+    this.keyboardType = TextInputType.multiline,
     this.validator,
     this.enabled = true,
-    this.obscureText = false,
     this.suffixIcon,
     this.fillColor,
   });
@@ -68,7 +68,7 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       enabled: enabled,
-      obscureText: obscureText,
+      maxLines: maxLines,
       style: GoogleFonts.poppins(
         fontSize: 16,
         fontWeight: FontWeight.bold,

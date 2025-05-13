@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
-class StatusPengajuanMenunggu extends StatefulWidget{
+class StatusPengajuanMenunggu extends StatefulWidget {
   const StatusPengajuanMenunggu({super.key});
 
   @override
-  State<StatusPengajuanMenunggu> createState() => _StatusPengajuanMenungguState();
+  State<StatusPengajuanMenunggu> createState() =>
+      _StatusPengajuanMenungguState();
 }
 
 class _StatusPengajuanMenungguState extends State<StatusPengajuanMenunggu> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 32),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -19,10 +20,7 @@ class _StatusPengajuanMenungguState extends State<StatusPengajuanMenunggu> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(
-            'assets/img/menunggu.png',
-            height: 300,
-          ),
+          Image.asset('assets/img/pengajuan_dosen_pending.png', height: 300),
           const SizedBox(height: 24),
           const Text(
             'Sedang Menunggu Konfirmasi',
