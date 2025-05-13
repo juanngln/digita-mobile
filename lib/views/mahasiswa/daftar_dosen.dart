@@ -1,84 +1,85 @@
-import 'package:digita_mobile/widgets/button/primary_action_button.dart';
-import 'package:digita_mobile/widgets/forms/text_area_field.dart';
-import 'package:digita_mobile/widgets/forms/text_field.dart';
+// lib/screens/daftar_dosen.dart
+import 'package:digita_mobile/models/dosen.dart';
+import 'package:digita_mobile/services/dosen_service.dart';
+import 'package:digita_mobile/services/secure_storage_service.dart';
+import 'package:digita_mobile/widgets/bottom_sheet/form_pengajuan_dosen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Dosen {
-  final String nama;
-  final String jumlahMahasiswa;
-  final String avatarPath;
+class DaftarDosen extends StatefulWidget {
+  const DaftarDosen({super.key});
 
-  Dosen({
-    required this.nama,
-    required this.jumlahMahasiswa,
-    required this.avatarPath,
-  });
+  @override
+  State<DaftarDosen> createState() => _DaftarDosenState();
 }
 
-class DaftarDosen extends StatelessWidget {
-  DaftarDosen({super.key});
+class _DaftarDosenState extends State<DaftarDosen> {
+  final DosenService _dosenService = DosenService();
+  final SecureStorageService _secureStorageService = SecureStorageService();
 
-  final List<Dosen> dosenList = [
-    Dosen(
-      nama: 'Agus Hartoyo, S.T., M.Sc., Ph.D.',
-      jumlahMahasiswa: '2 Mahasiswa',
-      avatarPath: 'assets/img/dosen_pria.png',
-    ),
-    Dosen(
-      nama: 'Trisha Amalya, S. Eng',
-      jumlahMahasiswa: '5 Mahasiswa',
-      avatarPath: 'assets/img/dosen_wanita.png',
-    ),
-    Dosen(
-      nama: 'Agung Cahyadi, S.Kom',
-      jumlahMahasiswa: '7 Mahasiswa',
-      avatarPath: 'assets/img/dosen_pria.png',
-    ),
-    Dosen(
-      nama: 'Ari Moesrami, S.Kom., M.T.',
-      jumlahMahasiswa: '5 Mahasiswa',
-      avatarPath: 'assets/img/dosen_pria.png',
-    ),
-    Dosen(
-      nama: 'Aniq Atiqi Rohma, S.Si., M.Si.',
-      jumlahMahasiswa: '8 Mahasiswa',
-      avatarPath: 'assets/img/dosen_wanita.png',
-    ),
-    Dosen(
-      nama: 'Febriyanti Sthevanie, S.T., M.T.',
-      jumlahMahasiswa: '9 Mahasiswa',
-      avatarPath: 'assets/img/dosen_wanita.png',
-    ),
-    Dosen(
-      nama: 'Endro Ariyanto, S.T., M.T.',
-      jumlahMahasiswa: '6 Mahasiswa',
-      avatarPath: 'assets/img/dosen_pria.png',
-    ),
-  ];
+  List<Dosen> _dosenList = [];
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDosenList();
+  }
+
+  Future<void> _fetchDosenList() async {
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+    try {
+      final token = await _secureStorageService.getAccessToken();
+      if (token == null) {
+        throw Exception("Token tidak ditemukan. Silakan login kembali.");
+      }
+      final List<Dosen> dosenData = await _dosenService.getDosenList(token);
+      if (!mounted) return;
+      setState(() {
+        _dosenList = dosenData;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _errorMessage = e.toString();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(
+          'Daftar Dosen Pembimbing',
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontSize: 22,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 1,
+        iconTheme: const IconThemeData(color: Colors.black87),
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-          child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Daftar Dosen Pembimbing',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 16),
               Row(
                 children: [
                   Text(
-                    'Pilih Dosen Pembimbingmu',
+                    'Pilih Dosen Pembimbing',
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       color: Colors.black87,
@@ -98,261 +99,145 @@ class DaftarDosen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              ...dosenList.map((dosen) {
-                return GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(30),
-                        ),
-                      ),
-                      builder:
-                          (context) =>
-                              FormPengajuanDosen(pilihDosen: dosen.nama),
-                    );
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 16,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          spreadRadius: 2,
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            dosen.avatarPath,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                dosen.nama,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF0F47AD),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                dosen.jumlahMahasiswa,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Icon(
-                          Icons.chevron_right_rounded,
-                          color: Colors.black87,
-                          size: 24,
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
+              Expanded(child: _buildDosenListWidget()),
             ],
           ),
         ),
       ),
     );
   }
-}
 
-class FormPengajuanDosen extends StatefulWidget {
-  final String pilihDosen;
-  const FormPengajuanDosen({super.key, required this.pilihDosen});
-
-  @override
-  State<FormPengajuanDosen> createState() => _FormPengajuanDosenState();
-}
-
-class _FormPengajuanDosenState extends State<FormPengajuanDosen> {
-  final _formKey = GlobalKey<FormState>();
-  late TextEditingController _dosenPembimbingController;
-  final TextEditingController _programStudiController = TextEditingController();
-  final TextEditingController _rencanaJudulController = TextEditingController();
-  final TextEditingController _deskripsiSingkatController =
-      TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _dosenPembimbingController = TextEditingController(text: widget.pilihDosen);
-  }
-
-  @override
-  void dispose() {
-    _dosenPembimbingController.dispose();
-    _programStudiController.dispose();
-    _rencanaJudulController.dispose();
-    _deskripsiSingkatController.dispose();
-    super.dispose();
-  }
-
-  void _submitPengajuan() {
-    if (_formKey.currentState!.validate()) {
-      Navigator.pushNamed(context, '/status_pengajuan_dosen');
+  Widget _buildDosenListWidget() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        top: 30.0,
-        left: 30.0,
-        right: 30.0,
-      ),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
+    if (_errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Center(
-                child: Container(
-                  width: 90,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[400],
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 25),
               Text(
-                'Pengajuan Dosen Pembimbing',
+                "Oops! Terjadi kesalahan:\n$_errorMessage",
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 30),
-              Text(
-                'Dosen Pembimbing',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 8),
-              CustomTextField(
-                controller: _dosenPembimbingController,
-                hintText: 'DOSEN PEMBIMBING',
-                enabled: false,
-
-                fillColor: Colors.grey[200],
+                style: const TextStyle(color: Colors.red, fontSize: 16),
               ),
               const SizedBox(height: 20),
-              Text(
-                'Program Studi',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0F47AD),
+                ),
+                onPressed: _fetchDosenList,
+                child: const Text(
+                  "COBA LAGI",
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
-              const SizedBox(height: 8),
-              CustomTextField(
-                controller: _programStudiController,
-                hintText: 'PROGRAM STUDI',
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Program Studi tidak boleh kosong';
-                  }
-                  return null;
-                },
-
-                fillColor: const Color(0xFFD9EEFF),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Rencana Judul TA',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 8),
-              CustomTextField(
-                controller: _rencanaJudulController,
-                hintText: 'RENCANA JUDUL TA',
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Rencana Judul TA tidak boleh kosong';
-                  }
-                  return null;
-                },
-
-                fillColor: const Color(0xFFD9EEFF),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Deskripsi Singkat',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextAreaField(
-                controller: _deskripsiSingkatController,
-                hintText: 'DESKRIPSI SINGKAT',
-                maxLines: 7,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Deskripsi Singkat tidak boleh kosong';
-                  }
-                  return null;
-                },
-
-                fillColor: const Color(0xFFD9EEFF),
-              ),
-              const SizedBox(height: 30),
-              PrimaryActionButton(
-                text: 'AJUKAN',
-                isLoading: false,
-                onPressed: _submitPengajuan,
-              ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
-      ),
+      );
+    }
+    if (_dosenList.isEmpty) {
+      return const Center(
+        child: Text(
+          "Tidak ada dosen yang tersedia saat ini.",
+          style: TextStyle(fontSize: 16, color: Colors.black54),
+        ),
+      );
+    }
+    return ListView.builder(
+      itemCount: _dosenList.length,
+      itemBuilder: (context, index) {
+        final dosen = _dosenList[index];
+        return GestureDetector(
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.white,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+              ),
+              builder:
+                  (context) => FormPengajuanDosenWidget(selectedDosen: dosen),
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey,
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                ClipOval(
+                  child: Image.asset(
+                    dosen.avatarPath,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey[300],
+                        ),
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.grey[600],
+                          size: 30,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        dosen.nama,
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF0F47AD),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        dosen.jumlahMahasiswaForDisplay,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: Colors.black54,
+                  size: 28,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

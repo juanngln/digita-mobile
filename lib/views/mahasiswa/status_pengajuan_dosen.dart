@@ -1,3 +1,5 @@
+// lib/screens/status_pengajuan_dosen.dart
+
 import 'package:digita_mobile/services/login_service.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:digita_mobile/widgets/bottom_sheet/status_pengajuan_ditolak.dart';
@@ -13,23 +15,26 @@ class StatusPengajuan extends StatefulWidget {
 }
 
 class _StatusPengajuanState extends State<StatusPengajuan> {
-  final LoginService _loginService = LoginService();
+  final LoginService _thesisStatusService = LoginService();
   final SecureStorageService _secureStorageService = SecureStorageService();
-  bool _isLoadingStatus = false;
+  bool _isLoadingButton = false;
 
   Future<String?> _getAuthToken() async {
     return await _secureStorageService.getAccessToken();
   }
 
-  void _showStatusSheet(BuildContext context) async {
-    if (_isLoadingStatus) return;
+  Future<void> _fetchAndUpdateStatus({
+    bool showBottomSheetOnClick = false,
+  }) async {
+    if (!mounted) return;
 
-    setState(() {
-      _isLoadingStatus = true;
-    });
+    if (showBottomSheetOnClick) {
+      setState(() {
+        _isLoadingButton = true;
+      });
+    }
 
     String? authToken = await _getAuthToken();
-
     if (authToken == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -37,51 +42,62 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
             content: Text("Gagal memuat status: Token tidak ditemukan."),
           ),
         );
-        setState(() {
-          _isLoadingStatus = false;
-        });
+        if (showBottomSheetOnClick) setState(() => _isLoadingButton = false);
       }
       return;
     }
 
     try {
-      final statusData = await _loginService.checkThesisRequestStatus(
+      final statusData = await _thesisStatusService.checkThesisRequestStatus(
         authToken,
       );
-      Widget bottomSheetWidget;
+
+      if (!mounted) return;
 
       if (statusData != null && statusData.containsKey('status')) {
         final String? status = statusData['status']?.toString().toUpperCase();
-        if (status == 'REJECTED') {
-          bottomSheetWidget = const StatusPengajuanDitolak();
-        } else if (status == 'PENDING') {
-          bottomSheetWidget = const StatusPengajuanMenunggu();
-        } else {
-          bottomSheetWidget = const StatusPengajuanMenunggu();
+
+        if (status == 'DISETUJUI' || status == 'ACCEPTED') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Pengajuan telah disetujui!"),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              margin: const EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 10.0),
+            ),
+          );
+
+          Navigator.pushReplacementNamed(context, '/home_mahasiswa');
+          return;
+        }
+
+        if (showBottomSheetOnClick) {
+          Widget bottomSheetWidget;
+          if (status == 'REJECTED' || status == 'DITOLAK') {
+            bottomSheetWidget = const StatusPengajuanDitolak();
+          } else if (status == 'PENDING') {
+            bottomSheetWidget = const StatusPengajuanMenunggu();
+          } else {
+            bottomSheetWidget = const StatusPengajuanMenunggu();
+          }
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (BuildContext bc) => bottomSheetWidget,
+          );
         }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("Tidak dapat menemukan status pengajuan."),
+              content: Text("Tidak ada pengajuan aktif yang ditemukan."),
             ),
           );
         }
-        setState(() {
-          _isLoadingStatus = false;
-        });
-        return;
-      }
-
-      if (mounted) {
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (BuildContext bc) {
-            return bottomSheetWidget;
-          },
-        );
       }
     } catch (e) {
       if (mounted) {
@@ -90,10 +106,8 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
         );
       }
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoadingStatus = false;
-        });
+      if (mounted && showBottomSheetOnClick) {
+        setState(() => _isLoadingButton = false);
       }
     }
   }
@@ -102,69 +116,99 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset('assets/img/terkirim.png', height: 300),
-                const SizedBox(height: 24),
 
-                const Text(
-                  'Wah, Terkirim!',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F47AD),
-                    fontFamily: 'Poppins',
+      body: RefreshIndicator(
+        onRefresh: () => _fetchAndUpdateStatus(showBottomSheetOnClick: false),
+        color: const Color(0xFF0F47AD),
+        child: SafeArea(
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: (MediaQuery.of(context).size.height * 0.2).clamp(
+                    50.0,
+                    200.0,
                   ),
                 ),
-                const SizedBox(height: 16),
-
-                const Text(
-                  'Pengajuan Dosen Pembimbingmu\nsudah terkirim\nYuk, cek status pengajuanmu\nsekarang!',
-                  textAlign: TextAlign.center,
-                  softWrap: true,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-
-                const SizedBox(height: 32),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: TextButton(
-                    onPressed:
-                        _isLoadingStatus
-                            ? null
-                            : () {
-                              _showStatusSheet(context);
-                            },
-                    style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFF0F47AD),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-
-                    child: Text(
-                      'LIHAT STATUS PENGAJUAN',
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/img/terkirim.png', height: 250),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Pengajuan Terkirim!',
                       style: GoogleFonts.poppins(
-                        fontSize: 16,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: const Color(0xFF0F47AD),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Pengajuan dosen pembimbingmu telah berhasil dikirim.\nSilakan cek status pengajuanmu secara berkala.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: Colors.black54,
+                        height: 1.5,
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 32),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed:
+                            _isLoadingButton
+                                ? null
+                                : () => _fetchAndUpdateStatus(
+                                  showBottomSheetOnClick: true,
+                                ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0F47AD),
+                          disabledBackgroundColor: Colors.grey.shade400,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child:
+                            _isLoadingButton
+                                ? const SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 3,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                                : Text(
+                                  'LIHAT STATUS PENGAJUAN',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      "Tarik ke bawah untuk menyegarkan status.",
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
