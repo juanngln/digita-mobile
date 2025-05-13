@@ -41,7 +41,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (viewModel.state == ViewState.error && viewModel.errorMessage != null) {
       _showSnackBar(viewModel.errorMessage!, isError: true);
-
       Future.delayed(const Duration(milliseconds: 100), () {
         if (mounted) {
           viewModel.resetLoginStatus();
@@ -61,6 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
             break;
           case LoginResult.successMahasiswaCariDosen:
             Navigator.pushReplacementNamed(context, '/cari_dosen');
+            didNavigate = true;
+            break;
+          case LoginResult.successMahasiswaStatusPengajuan:
+            Navigator.pushReplacementNamed(context, '/status_pengajuan_dosen');
             didNavigate = true;
             break;
           case LoginResult.successDosenHome:

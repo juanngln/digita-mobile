@@ -1,4 +1,5 @@
 import 'package:digita_mobile/services/login_service.dart';
+import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 
 enum ViewState { idle, busy, error, success }
@@ -7,13 +8,14 @@ enum LoginResult {
   idle,
   successMahasiswaHome,
   successMahasiswaCariDosen,
+  successMahasiswaStatusPengajuan,
   successDosenHome,
   failed,
 }
 
 class LoginViewModel extends ChangeNotifier {
   final LoginService _loginService;
-
+  final SecureStorageService _secureStorageService = SecureStorageService();
   LoginViewModel(this._loginService);
 
   // --- State Variables ---
@@ -21,7 +23,7 @@ class LoginViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? _selectedRole;
   LoginResult _loginResult = LoginResult.idle;
-  String? _authToken; // Store the auth token
+  String? _authToken;
 
   // --- Getters ---
   ViewState get state => _state;
@@ -67,17 +69,23 @@ class LoginViewModel extends ChangeNotifier {
         identifier: identifier,
         password: password,
       );
+      final String? accessToken = loginResponse['tokens']?['access'] as String?;
+      final String? refreshToken =
+          loginResponse['tokens']?['refresh'] as String?;
 
       // --- Process Successful Login ---
 
-      _authToken = loginResponse['tokens']?['access'] as String?;
-
-      if (_authToken == null) {
+      if (accessToken == null) {
         throw AuthenticationException(
           "Token tidak ditemukan dalam respons login.",
         );
       }
-      // TODO: Persist the token securely (e.g., flutter_secure_storage) here or pass it back
+
+      _authToken = accessToken;
+      await _secureStorageService.saveAccessToken(accessToken);
+      if (refreshToken != null) {
+        await _secureStorageService.saveRefreshToken(refreshToken);
+      }
 
       // --- Role-Based Navigation Logic ---
       if (_selectedRole!.toLowerCase() == 'mahasiswa') {
@@ -101,20 +109,34 @@ class LoginViewModel extends ChangeNotifier {
   Future<void> _checkThesisStatusAndSetResult() async {
     if (_authToken == null) {
       _setError("Tidak dapat memeriksa status: token tidak tersedia.");
+      _loginResult = LoginResult.failed;
+      _setState(ViewState.error);
       return;
     }
+
+    _setState(ViewState.busy);
 
     try {
       final statusData = await _loginService.checkThesisRequestStatus(
         _authToken!,
       );
 
-      if (statusData != null) {
-        final String? status = statusData['status'] as String?;
-        if (status == 'PENDING' || status == null) {
-          _loginResult = LoginResult.successMahasiswaCariDosen;
-        } else {
-          _loginResult = LoginResult.successMahasiswaHome;
+      if (statusData != null && statusData.containsKey('status')) {
+        final String? status = statusData['status']?.toString().toUpperCase();
+
+        switch (status) {
+          case 'PENDING':
+            _loginResult = LoginResult.successMahasiswaStatusPengajuan;
+            break;
+          case 'REJECTED':
+            _loginResult = LoginResult.successMahasiswaStatusPengajuan;
+            break;
+          case 'ACCEPTED':
+            _loginResult = LoginResult.successMahasiswaHome;
+            break;
+          default:
+            _loginResult = LoginResult.successMahasiswaCariDosen;
+            break;
         }
       } else {
         _loginResult = LoginResult.successMahasiswaCariDosen;
@@ -124,7 +146,6 @@ class LoginViewModel extends ChangeNotifier {
       _setError(
         "Login berhasil, tapi gagal memeriksa status bimbingan: ${e.toString()}",
       );
-
       _loginResult = LoginResult.failed;
       _setState(ViewState.error);
     } catch (e) {
@@ -134,6 +155,25 @@ class LoginViewModel extends ChangeNotifier {
       _loginResult = LoginResult.failed;
       _setState(ViewState.error);
     }
+  }
+
+  // --- Logout (Example) ---
+  // Future<void> logout() async {
+  //   await _secureStorageService.deleteAllTokensAndData();
+  //   _authToken = null;
+  //   _selectedRole = null;
+  //   // Reset other states and navigate to login screen
+  //   _loginResult = LoginResult.idle;
+  //   _setState(ViewState.idle);
+  //   notifyListeners();
+  // }
+
+  // --- Method to load token on app start  ---
+  Future<String?> tryLoadTokenAndSetAuthStatus() async {
+    final token = await _secureStorageService.getAccessToken();
+    _authToken = token;
+    notifyListeners();
+    return token;
   }
 
   // --- Helper Methods for State ---
