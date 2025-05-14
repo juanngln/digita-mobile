@@ -35,9 +35,9 @@ class RegistrationService {
   /* jika menggunakan android device asli
      Ganti alamat ip menggunakan alamat ip laptop/komputermu */
   static const String _baseUrl =
-      kReleaseMode ? "_PRODUCTION_URL" : "http://10.0.2.2:8000";
-  // contoh menggunakan ip laptop/komputer:
-  // kReleaseMode ? "_PRODUCTION_URL" : "http://192.168.1.15:8000";
+      kReleaseMode
+          ? "_PRODUCTION_URL"
+          : "https://djangodigitaadmin-development.up.railway.app";
 
   final http.Client _client;
 

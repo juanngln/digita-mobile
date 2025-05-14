@@ -15,14 +15,14 @@ class NetworkException implements Exception {
 }
 
 class DosenService {
-  // IMPORTANT: Use 10.0.2.2 for Android emulator to access localhost on host machine.
-  // If you are using a physical device or iOS simulator, replace 127.0.0.1 with your computer's IP address.
+  // --- Base URL Configuration ---
+  // Gunakan 10.0.2.2 untuk Android emulator untuk access ke localhost/127.0.0.1
+  /* jika menggunakan android device asli
+     Ganti alamat ip menggunakan alamat ip laptop/komputermu */
   static const String _baseUrl =
       kReleaseMode
-          ? "YOUR_PRODUCTION_API_URL" // Replace with your actual production URL
-          : "http://10.0.2.2:8000"; // For Android Emulator
-  // Example for physical device/iOS simulator:
-  // : "http://192.168.1.105:8000"; // Replace with your computer's local IP
+          ? "YOUR_PRODUCTION_API_URL"
+          : "https://djangodigitaadmin-development.up.railway.app";
 
   final http.Client _client;
 
