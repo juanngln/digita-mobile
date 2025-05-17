@@ -1,3 +1,4 @@
+import 'package:digita_mobile/views/mahasiswa/notification_mahasiswa_screen.dart';
 import 'package:digita_mobile/widgets/bottom_navbar/bottom_navbar_mahasiswa.dart';
 import 'package:digita_mobile/widgets/information_card.dart';
 import 'package:digita_mobile/widgets/profile_section.dart';
@@ -73,6 +74,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                   child: ProfileSection(
                     name: 'Udin Prakoso Bakti',
                     status: 'Mahasiswa Teknik Informatika',
+                    page: NotificationMahasiswaScreen(),
                   ),
                 ),
                 // Quote Section

@@ -1,3 +1,4 @@
+import 'package:digita_mobile/views/dosen/notification_dosen_screen.dart';
 import 'package:digita_mobile/widgets/bottom_navbar/bottom_navbar_dosen.dart';
 import 'package:digita_mobile/widgets/information_card.dart';
 import 'package:digita_mobile/widgets/profile_section.dart';
@@ -73,6 +74,7 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
                   child: ProfileSection(
                     name: 'Dr. Budi Santoso',
                     status: 'Dosen Teknik Informatika',
+                    page: NotificationDosenScreen(),
                   ),
                 ),
                 // Counter Section

@@ -37,6 +37,14 @@ class MyApp extends StatelessWidget {
         progressIndicatorTheme: ProgressIndicatorThemeData(
           color: Color(0xFF0F47AD),
         ),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white,
+          titleTextStyle: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),        
+        ),
         textTheme: TextTheme(
           titleLarge: GoogleFonts.poppins(
             fontSize: 28,
@@ -62,11 +70,10 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => LandingScreen(),
+        '/': (context) => const LandingScreen(),
         '/login':
             (context) => ChangeNotifierProvider(
               create: (context) => LoginViewModel(LoginService()),
-
               child: const LoginScreen(),
             ),
         '/register_mahasiswa':
@@ -82,7 +89,7 @@ class MyApp extends StatelessWidget {
         '/home_mahasiswa': (context) => const HomeMahasiswaScreen(),
         '/home_dosen': (context) => const HomeDosenScreen(),
         '/cari_dosen': (context) => const CariDosen(),
-        '/daftar_dosen': (context) => DaftarDosen(),
+        '/daftar_dosen': (context) => const DaftarDosen(),
         '/status_pengajuan_dosen': (context) => const StatusPengajuan(),
       },
     );
