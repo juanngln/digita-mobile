@@ -1,5 +1,4 @@
 import 'package:digita_mobile/views/mahasiswa/notification_mahasiswa_screen.dart';
-import 'package:digita_mobile/widgets/bottom_navbar/bottom_navbar_mahasiswa.dart';
 import 'package:digita_mobile/widgets/information_card.dart';
 import 'package:digita_mobile/widgets/profile_section.dart';
 import 'package:digita_mobile/widgets/upcoming_card.dart';
@@ -14,8 +13,6 @@ class HomeMahasiswaScreen extends StatefulWidget {
 }
 
 class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
-  int _page = 0;
-
   final List<Map<String, String>> informationCards = [
     {
       'title': 'Buku Panduan',
@@ -221,14 +218,6 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavbarMahasiswa(
-        currentIndex: _page,
-        onTap: (index) {
-            setState(() {
-              _page = index;
-            });
-          },
       ),
     );
   }

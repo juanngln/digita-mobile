@@ -5,11 +5,11 @@ import 'package:digita_mobile/viewmodels/registration_viewmodel.dart';
 import 'package:digita_mobile/views/authentication/login_screen.dart';
 import 'package:digita_mobile/views/authentication/register_dosen_screen.dart';
 import 'package:digita_mobile/views/authentication/register_mahasiswa_screen.dart';
-import 'package:digita_mobile/views/dosen/home_dosen_screen.dart';
+import 'package:digita_mobile/views/dosen/main_layout_dosen.dart';
 import 'package:digita_mobile/views/landing_screen.dart';
 import 'package:digita_mobile/views/mahasiswa/cari_dosen.dart';
 import 'package:digita_mobile/views/mahasiswa/daftar_dosen.dart';
-import 'package:digita_mobile/views/mahasiswa/home_mahasiswa_screen.dart';
+import 'package:digita_mobile/views/mahasiswa/main_layout_mahasiswa.dart';
 import 'package:digita_mobile/views/mahasiswa/status_pengajuan_dosen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.black,
-          ),        
+          ),
         ),
         textTheme: TextTheme(
           titleLarge: GoogleFonts.poppins(
@@ -86,8 +86,8 @@ class MyApp extends StatelessWidget {
               create: (context) => RegistrationViewModel(RegistrationService()),
               child: const RegisterDosenScreen(),
             ),
-        '/home_mahasiswa': (context) => const HomeMahasiswaScreen(),
-        '/home_dosen': (context) => const HomeDosenScreen(),
+        '/home_mahasiswa': (context) => const MainMahasiswaLayoutScreen(),
+        '/home_dosen': (context) => const MainDosenLayoutScreen(),
         '/cari_dosen': (context) => const CariDosen(),
         '/daftar_dosen': (context) => const DaftarDosen(),
         '/status_pengajuan_dosen': (context) => const StatusPengajuan(),
