@@ -185,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
           body: Column(
             children: [
               const SizedBox(height: 40),
-              Center(child: Image.asset('assets/img/Digita.png', height: 250)),
+              Center(child: Image.asset('assets/img/digita.png', height: 250)),
               const SizedBox(height: 10),
               Expanded(
                 child: Container(

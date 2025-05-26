@@ -156,175 +156,177 @@ class _RegisterMahasiswaScreenState extends State<RegisterMahasiswaScreen> {
         final bool isFormEnabled = !isRegistering;
 
         return Scaffold(
-          body: LayoutBuilder(
-            builder: (context, viewportConstraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: viewportConstraints.maxHeight,
-                  ),
-                  child: IntrinsicHeight(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // --- Top Logo Section ---
-                        const Padding(
-                          padding: EdgeInsets.only(top: 10.0),
-                          child: AnimatedLogo(
-                            imagePath: 'assets/img/Digita.png',
-                          ),
-                        ),
-
-                        // --- Form Section ---
-                        Container(
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFD9EEFF),
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(30.0),
+          body: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, viewportConstraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: viewportConstraints.maxHeight,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // --- Top Logo Section ---
+                          const Padding(
+                            padding: EdgeInsets.only(top: 6.0),
+                            child: AnimatedLogo(
+                              imagePath: 'assets/img/digita.png',
                             ),
                           ),
-                          padding: const EdgeInsets.fromLTRB(
-                            30.0,
-                            30.0,
-                            30.0,
-                            20.0,
-                          ),
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                // --- Form Header ---
-                                Text(
-                                  'MULAI BIMBINGAN',
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    letterSpacing: 5,
-                                    color: Colors.black87,
+            
+                          // --- Form Section ---
+                          Container(
+                            width: double.infinity,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFD9EEFF),
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(30.0),
+                              ),
+                            ),
+                            padding: const EdgeInsets.fromLTRB(
+                              30.0,
+                              30.0,
+                              30.0,
+                              20.0,
+                            ),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // --- Form Header ---
+                                  Text(
+                                    'MULAI BIMBINGAN',
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      letterSpacing: 5,
+                                      color: Colors.black87,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  'Daftar di DigiTA',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    'Daftar di DigiTA',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 30),
-
-                                // --- Input Fields ---
-                                CustomTextField(
-                                  controller: _namaController,
-                                  hintText: 'NAMA LENGKAP',
-                                  enabled: isFormEnabled,
-                                  validator:
-                                      (v) =>
-                                          (v == null || v.trim().isEmpty)
-                                              ? 'Nama Lengkap tidak boleh kosong'
-                                              : null,
-                                ),
-                                const SizedBox(height: 20),
-                                CustomTextField(
-                                  controller: _emailController,
-                                  hintText: 'EMAIL',
-                                  keyboardType: TextInputType.emailAddress,
-                                  enabled: isFormEnabled,
-                                  validator: (v) {
-                                    if (v == null || v.trim().isEmpty) {
-                                      return 'Email tidak boleh kosong';
-                                    }
-                                    if (!RegExp(
-                                      r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-                                    ).hasMatch(v.trim())) {
-                                      return 'Format email tidak valid';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 20),
-                                ProgramStudiDropdown(
-                                  viewModel: viewModel,
-                                  isFormEnabled: isFormEnabled,
-                                ),
-                                const SizedBox(height: 20),
-                                CustomTextField(
-                                  controller: _nimController,
-                                  hintText: 'NIM',
-                                  keyboardType: TextInputType.number,
-                                  enabled: isFormEnabled,
-                                  validator:
-                                      (v) =>
-                                          (v == null || v.trim().isEmpty)
-                                              ? 'NIM tidak boleh kosong'
-                                              : null,
-                                ),
-                                const SizedBox(height: 20),
-                                PasswordInputField(
-                                  controller: _passwordController,
-                                  hintText: 'Kata Sandi',
-                                  enabled: isFormEnabled,
-                                  validator: (v) {
-                                    if (v == null || v.isEmpty) {
-                                      return 'Kata Sandi tidak boleh kosong';
-                                    }
-                                    if (v.length < 8) {
-                                      return 'Kata Sandi minimal 8 karakter';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 20),
-                                PasswordInputField(
-                                  controller: _confirmPasswordController,
-                                  hintText: 'Konfirmasi Kata Sandi',
-                                  enabled: isFormEnabled,
-                                  validator: (v) {
-                                    if (v == null || v.isEmpty) {
-                                      return 'Konfirmasi tidak boleh kosong';
-                                    }
-                                    if (v != _passwordController.text) {
-                                      return 'Kata Sandi tidak cocok';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(height: 30),
-
-                                // --- Button & Link  ---
-                                PrimaryActionButton(
-                                  // Use new button widget
-                                  text: 'DAFTAR',
-                                  isLoading: isRegistering,
-                                  onPressed: _submitRegistration,
-                                ),
-                                const SizedBox(height: 20),
-                                SecondaryAuthLink(
-                                  // Use new link widget
-                                  leadingText: 'Sudah punya akun? ',
-                                  linkText: 'Masuk',
-                                  isLoading: isRegistering,
-                                  onPressed:
-                                      () => Navigator.pushReplacementNamed(
-                                        context,
-                                        '/login',
-                                      ),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
+                                  const SizedBox(height: 30),
+            
+                                  // --- Input Fields ---
+                                  CustomTextField(
+                                    controller: _namaController,
+                                    hintText: 'NAMA LENGKAP',
+                                    enabled: isFormEnabled,
+                                    validator:
+                                        (v) =>
+                                            (v == null || v.trim().isEmpty)
+                                                ? 'Nama Lengkap tidak boleh kosong'
+                                                : null,
+                                  ),
+                                  const SizedBox(height: 20),
+                                  CustomTextField(
+                                    controller: _emailController,
+                                    hintText: 'EMAIL',
+                                    keyboardType: TextInputType.emailAddress,
+                                    enabled: isFormEnabled,
+                                    validator: (v) {
+                                      if (v == null || v.trim().isEmpty) {
+                                        return 'Email tidak boleh kosong';
+                                      }
+                                      if (!RegExp(
+                                        r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+                                      ).hasMatch(v.trim())) {
+                                        return 'Format email tidak valid';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 20),
+                                  ProgramStudiDropdown(
+                                    viewModel: viewModel,
+                                    isFormEnabled: isFormEnabled,
+                                  ),
+                                  const SizedBox(height: 20),
+                                  CustomTextField(
+                                    controller: _nimController,
+                                    hintText: 'NIM',
+                                    keyboardType: TextInputType.number,
+                                    enabled: isFormEnabled,
+                                    validator:
+                                        (v) =>
+                                            (v == null || v.trim().isEmpty)
+                                                ? 'NIM tidak boleh kosong'
+                                                : null,
+                                  ),
+                                  const SizedBox(height: 20),
+                                  PasswordInputField(
+                                    controller: _passwordController,
+                                    hintText: 'Kata Sandi',
+                                    enabled: isFormEnabled,
+                                    validator: (v) {
+                                      if (v == null || v.isEmpty) {
+                                        return 'Kata Sandi tidak boleh kosong';
+                                      }
+                                      if (v.length < 8) {
+                                        return 'Kata Sandi minimal 8 karakter';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 20),
+                                  PasswordInputField(
+                                    controller: _confirmPasswordController,
+                                    hintText: 'Konfirmasi Kata Sandi',
+                                    enabled: isFormEnabled,
+                                    validator: (v) {
+                                      if (v == null || v.isEmpty) {
+                                        return 'Konfirmasi tidak boleh kosong';
+                                      }
+                                      if (v != _passwordController.text) {
+                                        return 'Kata Sandi tidak cocok';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 30),
+            
+                                  // --- Button & Link  ---
+                                  PrimaryActionButton(
+                                    // Use new button widget
+                                    text: 'DAFTAR',
+                                    isLoading: isRegistering,
+                                    onPressed: _submitRegistration,
+                                  ),
+                                  const SizedBox(height: 20),
+                                  SecondaryAuthLink(
+                                    // Use new link widget
+                                    leadingText: 'Sudah punya akun? ',
+                                    linkText: 'Masuk',
+                                    isLoading: isRegistering,
+                                    onPressed:
+                                        () => Navigator.pushReplacementNamed(
+                                          context,
+                                          '/login',
+                                        ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         );
       },
