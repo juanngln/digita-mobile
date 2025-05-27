@@ -172,11 +172,10 @@ class _DaftarDosenState extends State<DaftarDosen> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey,
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
-                ),
+                color: Colors.black12,
+                blurRadius: 8,
+                offset: Offset(0, 2),
+                )
               ],
             ),
             child: Row(

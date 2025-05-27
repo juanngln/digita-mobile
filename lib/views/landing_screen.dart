@@ -23,7 +23,7 @@ class LandingScreen extends StatelessWidget {
                   'Solusi simpel dan praktis untuk bimbingan tugas akhir yang lebih teratur dan efisien!',
                   textAlign: TextAlign.center,
                   softWrap: true,
-                  style: GoogleFonts.poppins(fontSize: 18),
+                  style: GoogleFonts.poppins(fontSize: 16),
                 ),
                 const SizedBox(height: 48),
                 // Button Masuk
