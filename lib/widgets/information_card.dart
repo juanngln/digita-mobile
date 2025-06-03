@@ -81,7 +81,7 @@ class _InformationCardState extends State<InformationCard> {
                 child: Text(
                   'Lihat',
                   style: GoogleFonts.poppins(
-                    fontSize: 10,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),

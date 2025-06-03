@@ -199,7 +199,7 @@ class _StatusDokumenState extends State<StatusDokumen>
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
-            blurRadius: 8,
+            blurRadius: 5,
             offset: Offset(0, 2),
           )
         ],
@@ -258,9 +258,12 @@ class _StatusDokumenState extends State<StatusDokumen>
           ),
           SizedBox(height: 12),
           Container(
-            height: 3,
             width: double.infinity,
-            color: Color(0xFF0F47AD),
+            height: 4,
+            decoration: BoxDecoration(
+            color: const Color(0xFF0F47AD),
+            borderRadius: BorderRadius.circular(2),
+            ),
           ),
           SizedBox(height: 12),
           buildActionButtons(dokumen),

@@ -112,7 +112,7 @@ class PengajuanMahasiswaState extends State<PengajuanMahasiswa> {
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black12,
-                          blurRadius: 8,
+                          blurRadius: 5,
                           offset: Offset(0, 2),
                         ),
                       ],

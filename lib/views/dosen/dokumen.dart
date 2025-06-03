@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:digita_mobile/views/dosen/status_dokumen.dart';
 
-class DaftarMahasiswa extends StatefulWidget {
-  const DaftarMahasiswa({super.key});
+class DokumenDosen extends StatefulWidget {
+  const DokumenDosen({super.key});
 
   @override
-  State<DaftarMahasiswa> createState() => _DaftarMahasiswaState();
+  State<DokumenDosen> createState() => _DokumenDosenState();
 }
 
-class _DaftarMahasiswaState extends State<DaftarMahasiswa> {
+class _DokumenDosenState extends State<DokumenDosen> {
 
   final List<Mahasiswa> mahasiswaList = [
     Mahasiswa(
@@ -108,7 +108,7 @@ class _DaftarMahasiswaState extends State<DaftarMahasiswa> {
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black12,
-                          blurRadius: 8,
+                          blurRadius: 5,
                           offset: Offset(0, 2),
                         ),
                       ],
