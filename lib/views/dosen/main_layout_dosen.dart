@@ -1,4 +1,7 @@
+import 'package:digita_mobile/views/dosen/dokumen_dosen_screen.dart';
 import 'package:digita_mobile/views/dosen/home_dosen_screen.dart';
+import 'package:digita_mobile/views/dosen/jadwal_dosen_screen.dart';
+import 'package:digita_mobile/views/dosen/pengajuan_mahasiswa_screen.dart';
 import 'package:digita_mobile/widgets/bottom_navbar/bottom_navbar_dosen.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +17,9 @@ class _MainLayoutDosen extends State<MainLayoutDosen> {
 
   final List<Widget> _pages = <Widget>[
     const HomeDosenScreen(),
+    const JadwalDosenScreen(),
+    const DokumenDosenScreen(),
+    const PengajuanMahasiswaScreen(),
   ];
 
   void _onItemTapped(int index) {
