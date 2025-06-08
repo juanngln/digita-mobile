@@ -1,56 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:digita_mobile/widgets/bottom_sheet/form_pengajuan_mahasiswa.dart';
+import 'package:digita_mobile/views/dosen/status_dokumen_dosen_screen.dart';
 
-class Mahasiswa {
-  final String nama;
-  final String informasiMahasiswa;
-  final String avatarPath;
-
-  Mahasiswa({
-    required this.nama,
-    required this.informasiMahasiswa,
-    required this.avatarPath,
-  });
-}
-
-class PengajuanMahasiswa extends StatefulWidget {
-  const PengajuanMahasiswa({super.key});
+class DokumenDosenScreen extends StatefulWidget {
+  const DokumenDosenScreen({super.key});
 
   @override
-  State<PengajuanMahasiswa> createState() => PengajuanMahasiswaState();
+  State<DokumenDosenScreen> createState() => _DokumenDosenState();
 }
 
-class PengajuanMahasiswaState extends State<PengajuanMahasiswa> {
+class _DokumenDosenState extends State<DokumenDosenScreen> {
+
   final List<Mahasiswa> mahasiswaList = [
     Mahasiswa(
-      nama: 'Kageyama Tobio',
-      informasiMahasiswa: '4412301127 - TRPL',
+      nama: 'Udin Prakoso Bakti',
+      informasiMahasiswa: '3342301827 - Teknik Informatika',
       avatarPath: 'assets/img/mhs_pria.png',
     ),
     Mahasiswa(
-      nama: 'Dimas Prasetya',
-      informasiMahasiswa: '4412112019 - Animasi',
+      nama: 'Abyan Putra Tama',
+      informasiMahasiswa: '4467152497 - Animasi',
       avatarPath: 'assets/img/mhs_pria.png',
     ),
     Mahasiswa(
-      nama: 'Arumi Salsabila',
-      informasiMahasiswa: '3309871645 - Animasi',
+      nama: 'Siska Putri Nymas',
+      informasiMahasiswa: '3309871645 - Teknologi Geomatika',
       avatarPath: 'assets/img/mhs_wanita.png',
     ),
     Mahasiswa(
-      nama: 'Bintang Pratama',
+      nama: 'Anggara Putra Nugroho',
       informasiMahasiswa: '4316332414 - RKS',
       avatarPath: 'assets/img/mhs_pria.png',
     ),
     Mahasiswa(
-      nama: 'Quinetana Putri',
+      nama: 'Wildha Siti Nur',
       informasiMahasiswa: '3312401824 - Teknik Informatika',
       avatarPath: 'assets/img/mhs_wanita.png',
     ),
     Mahasiswa(
-      nama: 'Paramitha Putri',
-      informasiMahasiswa: '3312401824 - Teknik Informatika',
-      avatarPath: 'assets/img/mhs_wanita.png',
+      nama: 'Boy Arnez Araby',
+      informasiMahasiswa: '4342301827 - TRM',
+      avatarPath: 'assets/img/mhs_pria.png',
     ),
   ];
 
@@ -64,7 +53,7 @@ class PengajuanMahasiswaState extends State<PengajuanMahasiswa> {
           child: ListView(
             children: [
               const Text(
-                'Pengajuan Mahasiswa',
+                'Dokumen Tugas Akhir',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
@@ -76,7 +65,7 @@ class PengajuanMahasiswaState extends State<PengajuanMahasiswa> {
               Row(
                 children: [
                   const Text(
-                    'Daftar Mahasiswa',
+                    'Pilih Mahasiswa',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.black87,
@@ -100,7 +89,14 @@ class PengajuanMahasiswaState extends State<PengajuanMahasiswa> {
               ...mahasiswaList.map((mahasiswa) {
                 return GestureDetector(
                   onTap: () {
-                    _showFormPengajuanBottomSheet(context, mahasiswa);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => StatusDokumenDosenScreen(
+                          mahasiswa: mahasiswa,
+                        ),
+                      ),
+                    );
                   },
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 16),
@@ -162,21 +158,10 @@ class PengajuanMahasiswaState extends State<PengajuanMahasiswa> {
                     ),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _showFormPengajuanBottomSheet(BuildContext context, Mahasiswa mahasiswa) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => FormPengajuanMahasiswaWidget(
-        selectedDosen: mahasiswa, 
       ),
     );
   }

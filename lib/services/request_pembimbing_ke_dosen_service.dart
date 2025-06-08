@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-// Custom Exceptions
 class NetworkException implements Exception {
   final String message;
   NetworkException(this.message);
@@ -13,7 +12,7 @@ class NetworkException implements Exception {
   String toString() => message;
 }
 
-class ThesisSubmissionService {
+class RequestPembimbingKeDosenService {
   // --- Base URL Configuration ---
   // Gunakan 10.0.2.2 untuk Android emulator untuk access ke localhost/127.0.0.1
   /* jika menggunakan android device asli
@@ -21,11 +20,13 @@ class ThesisSubmissionService {
   static const String _baseUrl =
       kReleaseMode
           ? "YOUR_PRODUCTION_API_URL"
-          : "https://djangodigitaadmin-development.up.railway.app";
+          : "https://digita-admin-api.onrender.com";
+          //: "http://10.0.2.2:8000";
+
 
   final http.Client _client;
 
-  ThesisSubmissionService({http.Client? client})
+  RequestPembimbingKeDosenService({http.Client? client})
     : _client = client ?? http.Client();
 
   Future<void> submitPengajuan({

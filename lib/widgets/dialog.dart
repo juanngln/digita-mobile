@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title;
-  final String message;
+  final Widget contentWidget;
   final String cancelText;
   final String confirmText;
   final VoidCallback onCancel;
   final VoidCallback onConfirm;
-  
+
   const CustomDialog({
-    Key? key,
+    super.key,
     required this.title,
-    required this.message,
+    required this.contentWidget,
     this.cancelText = 'Batal',
     required this.confirmText,
     required this.onCancel,
-    required this.onConfirm, required bool underlineText, required bool underlineMessage,
-  }) : super(key: key);
+    required this.onConfirm,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +31,7 @@ class CustomDialog extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Title
             Text(
@@ -44,21 +45,10 @@ class CustomDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),            
-              child: Text(
-                message,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontFamily: 'Poppins',
-                  height: 1.4,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
+            contentWidget,
+
             const SizedBox(height: 24),
-            // Button
+            // Buttons
             Row(
               children: [
                 Expanded(

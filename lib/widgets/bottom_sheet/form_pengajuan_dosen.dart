@@ -1,7 +1,6 @@
-// lib/widgets/form_pengajuan_dosen_widget.dart
 
-import 'package:digita_mobile/models/dosen.dart';
-import 'package:digita_mobile/services/pengajuan_dosen_service.dart';
+import 'package:digita_mobile/models/dosen_model.dart';
+import 'package:digita_mobile/services/request_pembimbing_ke_dosen_service.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:digita_mobile/widgets/button/primary_action_button.dart';
 import 'package:digita_mobile/widgets/forms/text_area_field.dart';
@@ -29,8 +28,8 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
       TextEditingController();
 
   bool _isSubmitting = false;
-  final ThesisSubmissionService _thesisSubmissionService =
-      ThesisSubmissionService();
+  final RequestPembimbingKeDosenService _thesisSubmissionService =
+  RequestPembimbingKeDosenService();
   final SecureStorageService _secureStorageService = SecureStorageService();
 
   @override
@@ -144,7 +143,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
                 style: GoogleFonts.poppins(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 24),
@@ -153,7 +152,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black54,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 8),
@@ -161,7 +160,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
                 controller: _dosenPembimbingController,
                 hintText: 'Nama Dosen Pembimbing',
                 enabled: false,
-                fillColor: disabledFieldFillColor, // Disabled field color
+                fillColor: disabledFieldFillColor,
               ),
               const SizedBox(height: 16),
 
@@ -170,7 +169,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black54,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 8),
@@ -193,7 +192,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black54,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 8),
@@ -206,7 +205,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
                   }
                   return null;
                 },
-                fillColor: activeFieldFillColor, // Active field color
+                fillColor: activeFieldFillColor,
               ),
               const SizedBox(height: 16),
 
@@ -215,7 +214,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black54,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 8),
@@ -229,7 +228,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
                   }
                   return null;
                 },
-                fillColor: activeFieldFillColor, // Active field color
+                fillColor: activeFieldFillColor,
               ),
               const SizedBox(height: 24),
               PrimaryActionButton(

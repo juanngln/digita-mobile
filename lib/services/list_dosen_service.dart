@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:digita_mobile/models/dosen.dart';
+import 'package:digita_mobile/models/dosen_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,7 +22,8 @@ class DosenService {
   static const String _baseUrl =
       kReleaseMode
           ? "YOUR_PRODUCTION_API_URL"
-          : "https://djangodigitaadmin-development.up.railway.app";
+          : "https://digita-admin-api.onrender.com";
+          //: "http://10.0.2.2:8000";
 
   final http.Client _client;
 

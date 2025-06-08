@@ -1,4 +1,4 @@
-import 'package:digita_mobile/models/jurusan.dart';
+import 'package:digita_mobile/models/jurusan_model.dart';
 import 'package:digita_mobile/viewmodels/registration_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

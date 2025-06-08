@@ -1,6 +1,6 @@
 // lib/screens/daftar_dosen.dart
-import 'package:digita_mobile/models/dosen.dart';
-import 'package:digita_mobile/services/dosen_service.dart';
+import 'package:digita_mobile/models/dosen_model.dart';
+import 'package:digita_mobile/services/list_dosen_service.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:digita_mobile/widgets/bottom_sheet/form_pengajuan_dosen.dart';
 import 'package:flutter/material.dart';

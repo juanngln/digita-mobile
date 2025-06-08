@@ -1,3 +1,5 @@
+import 'package:digita_mobile/services/secure_storage_service.dart';
+import 'package:digita_mobile/services/status_pengajuan_service.dart';
 import 'package:flutter/material.dart';
 
 class StatusPengajuanDitolak extends StatefulWidget {
@@ -8,6 +10,24 @@ class StatusPengajuanDitolak extends StatefulWidget {
 }
 
 class _StatusPengajuanDitolakState extends State<StatusPengajuanDitolak> {
+  final StatusPengajuanService _service = StatusPengajuanService();
+  final SecureStorageService _storage = SecureStorageService();
+  late Future<String> _reasonFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _reasonFuture = _fetchReason();
+  }
+
+  Future<String> _fetchReason() async {
+    final token = await _storage.getAccessToken();
+    if (token == null) {
+      throw Exception("Autentikasi gagal. Silakan login kembali.");
+    }
+    return await _service.getRejectionReason(token);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,15 +52,63 @@ class _StatusPengajuanDitolakState extends State<StatusPengajuanDitolak> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Pengajuan Ditolak.\nYuk, cari dosen\npembimbing baru!\n',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
-              fontFamily: 'Poppins',
-            ),
+
+          FutureBuilder<String>(
+            future: _reasonFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (snapshot.hasError) {
+                return Text(
+                  'Gagal memuat alasan: ${snapshot.error}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 16, color: Colors.red, fontFamily: 'Poppins'),
+                );
+              }
+
+              if (snapshot.hasData) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Alasan:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black,
+                        fontFamily: 'Poppins',
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '"${snapshot.data!}"',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+              return const SizedBox.shrink();
+            },
           ),
+
           const SizedBox(height: 32),
           SizedBox(
             width: double.infinity,

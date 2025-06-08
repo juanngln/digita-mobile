@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:digita_mobile/models/jurusan.dart';
-import 'package:digita_mobile/models/program_studi.dart';
+import 'package:digita_mobile/models/jurusan_model.dart';
+import 'package:digita_mobile/models/program_studi_model.dart';
 import 'package:digita_mobile/services/registration_service.dart';
 import 'package:flutter/foundation.dart';
 

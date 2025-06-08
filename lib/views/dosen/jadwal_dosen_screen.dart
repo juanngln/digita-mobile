@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:digita_mobile/widgets/bottom_sheet/pengajuan_jadwal_bimbingan.dart';
 import 'package:digita_mobile/widgets/bottom_sheet/catatan_bimbingan.dart';
 
-class JadwalDosen extends StatefulWidget {
-  const JadwalDosen({super.key});
+class JadwalDosenScreen extends StatefulWidget {
+  const JadwalDosenScreen({super.key});
 
   @override
-  State<JadwalDosen> createState() => _JadwalDosenState();
+  State<JadwalDosenScreen> createState() => _JadwalDosenState();
 }
 
-class _JadwalDosenState extends State<JadwalDosen> {
+class _JadwalDosenState extends State<JadwalDosenScreen> {
   List<BimbinganItem> bimbinganList = [
     BimbinganItem(
       title: 'Diskusi Pendahuluan',
@@ -153,7 +153,7 @@ class _JadwalDosenState extends State<JadwalDosen> {
             offset: Offset(0, 2),
           ),
         ],
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
+        border: Border.all(color: Colors.grey),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),

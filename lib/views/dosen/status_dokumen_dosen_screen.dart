@@ -28,16 +28,16 @@ class DokumenItem {
   });
 }
 
-class StatusDokumen extends StatefulWidget {
+class StatusDokumenDosenScreen extends StatefulWidget {
   final Mahasiswa mahasiswa;
 
-  const StatusDokumen({super.key, required this.mahasiswa});
+  const StatusDokumenDosenScreen({super.key, required this.mahasiswa});
 
   @override
-  State<StatusDokumen> createState() => _StatusDokumenState();
+  State<StatusDokumenDosenScreen> createState() => _StatusDokumenState();
 }
 
-class _StatusDokumenState extends State<StatusDokumen>
+class _StatusDokumenState extends State<StatusDokumenDosenScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -368,11 +368,17 @@ class _StatusDokumenState extends State<StatusDokumen>
       builder: (BuildContext context) {
         return CustomDialog(
           title: 'Unduh File Dokumen',
-          message: '$namaFile.pdf',
+          contentWidget: Text(
+            '$namaFile.pdf',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 15,
+              fontFamily: 'Poppins',
+              height: 1.4,
+            ),
+          ),
           cancelText: 'Batal',
           confirmText: 'Unduh',
-          underlineText: true,
-          underlineMessage: true,
           onCancel: () => Navigator.of(context).pop(),
           onConfirm: () {
             Navigator.of(context).pop();
@@ -424,7 +430,7 @@ void showRevisiBottomSheet(DokumenItem dokumen) {
     setState(() {
       dokumen.status = "Disetujui";
     });
-    _tabController.animateTo(1); // Pindah ke tab Disetujui
+    _tabController.animateTo(1);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text("Dokumen telah disetujui"),

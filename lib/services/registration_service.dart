@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:digita_mobile/models/jurusan.dart';
-import 'package:digita_mobile/models/program_studi.dart';
+import 'package:digita_mobile/models/jurusan_model.dart';
+import 'package:digita_mobile/models/program_studi_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
@@ -37,7 +37,8 @@ class RegistrationService {
   static const String _baseUrl =
       kReleaseMode
           ? "_PRODUCTION_URL"
-          : "https://djangodigitaadmin-development.up.railway.app";
+          : "https://digita-admin-api.onrender.com";
+          //: "http://10.0.2.2:8000";
 
   final http.Client _client;
 
@@ -83,7 +84,6 @@ class RegistrationService {
 
   // --- Fetch Jurusan ---
   Future<List<Jurusan>> fetchJurusan() async {
-    // *** Verify this endpoint is correct ***
     final url = Uri.parse('$_baseUrl/api/users/jurusan/');
     if (kDebugMode) print("Fetching Jurusan from: $url");
 

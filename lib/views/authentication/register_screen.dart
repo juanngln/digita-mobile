@@ -40,7 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Column(
         children: [
           const SizedBox(height: 40),
-          Center(child: Image.asset('assets/img/Digita.png', height: 100)),
+          Center(child: Image.asset('assets/img/digita.png', height: 100)),
           const SizedBox(height: 10),
           Expanded(
             child: Container(
