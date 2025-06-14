@@ -1,8 +1,8 @@
 import 'package:digita_mobile/viewmodels/login_viewmodel.dart';
 import 'package:digita_mobile/widgets/bottom_sheet/role_selector_bottom_sheet.dart';
 import 'package:digita_mobile/widgets/button/primary_action_button.dart';
-import 'package:digita_mobile/widgets/forms/password_field.dart';
-import 'package:digita_mobile/widgets/forms/text_field.dart';
+import 'package:digita_mobile/widgets/form/password_field.dart';
+import 'package:digita_mobile/widgets/form/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';

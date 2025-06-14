@@ -3,8 +3,8 @@ import 'package:digita_mobile/models/dosen_model.dart';
 import 'package:digita_mobile/services/request_pembimbing_ke_dosen_service.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:digita_mobile/widgets/button/primary_action_button.dart';
-import 'package:digita_mobile/widgets/forms/text_area_field.dart';
-import 'package:digita_mobile/widgets/forms/text_field.dart';
+import 'package:digita_mobile/widgets/form/text_area_field.dart';
+import 'package:digita_mobile/widgets/form/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

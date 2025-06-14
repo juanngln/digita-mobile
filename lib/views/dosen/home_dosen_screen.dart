@@ -1,7 +1,7 @@
 import 'package:digita_mobile/views/dosen/notification_dosen_screen.dart';
-import 'package:digita_mobile/widgets/information_card.dart';
+import 'package:digita_mobile/widgets/card/information_card.dart';
 import 'package:digita_mobile/widgets/profile_section.dart';
-import 'package:digita_mobile/widgets/upcoming_card.dart';
+import 'package:digita_mobile/widgets/card/upcoming_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
