@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:digita_mobile/widgets/bottom_sheet/edit_document_bottom_sheet.dart';
 
 class UploadedDocumentCard extends StatefulWidget {
   final String title;
@@ -77,15 +78,23 @@ class _UploadedDocumentCardState extends State<UploadedDocumentCard> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 IconButton(
-                  onPressed: () {}, 
+                  onPressed: () {},
                   icon: Icon(Icons.file_download_outlined, color: Colors.black),
                 ),
                 IconButton(
-                  onPressed: () {}, 
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (BuildContext ctx) {
+                        return const EditDocumentBottomSheet();
+                      },
+                    );
+                  },
                   icon: Icon(Icons.edit_outlined, color: Colors.black),
                 ),
                 IconButton(
-                  onPressed: () {}, 
+                  onPressed: () {},
                   icon: Icon(Icons.delete_outline, color: Colors.black),
                 ),
               ],

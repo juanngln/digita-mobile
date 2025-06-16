@@ -11,7 +11,7 @@ import 'package:digita_mobile/views/landing_screen.dart';
 import 'package:digita_mobile/views/mahasiswa/cari_dosen.dart';
 import 'package:digita_mobile/views/mahasiswa/daftar_dosen.dart';
 import 'package:digita_mobile/views/main_layout_mahasiswa.dart';
-import 'package:digita_mobile/views/mahasiswa/status_pengajuan_dosen.dart';
+import 'package:digita_mobile/views/mahasiswa/status_pengajuan_dospem.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';

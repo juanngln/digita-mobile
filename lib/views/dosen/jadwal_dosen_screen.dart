@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:digita_mobile/widgets/bottom_sheet/pengajuan_jadwal_bimbingan.dart';
-import 'package:digita_mobile/widgets/bottom_sheet/catatan_bimbingan.dart';
+import 'package:digita_mobile/widgets/bottom_sheet/catatan_dosen_bottom_sheet.dart';
 
 class JadwalDosenScreen extends StatefulWidget {
   const JadwalDosenScreen({super.key});
@@ -64,21 +64,21 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Permintaan Bimbingan Section
               _buildSectionTitle('Permintaan Bimbingan'),
               const SizedBox(height: 12),
               ...buildBimbinganSection('permintaan'),
-              
+
               const SizedBox(height: 24),
-              
+
               // Bimbingan Disetujui Section
               _buildSectionTitle('Bimbingan Disetujui'),
               const SizedBox(height: 12),
               ...buildBimbinganSection('disetujui'),
-              
+
               const SizedBox(height: 24),
-              
+
               // Bimbingan Selesai Section
               _buildSectionTitle('Bimbingan Selesai'),
               const SizedBox(height: 12),
@@ -92,7 +92,7 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
 
   List<Widget> buildBimbinganSection(String status) {
     List<BimbinganItem> filteredList = bimbinganList.where((item) => item.status == status).toList();
-    
+
     if (filteredList.isEmpty) {
       return [
         Container(
@@ -171,7 +171,7 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            
+
             // Info rows
             _buildInfoRow(Icons.access_time_filled, bimbingan.date),
             const SizedBox(height: 8),
@@ -180,7 +180,7 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
             _buildInfoRow(Icons.location_on, bimbingan.location),
             const SizedBox(height: 8),
             _buildInfoRow(Icons.edit_document, 'Catatan: ${bimbingan.catatan}'),
-            
+
             // Buttons based on status
             if (bimbingan.status == 'permintaan') ...[
               const SizedBox(height: 16),
@@ -195,7 +195,7 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [               
+                children: [
                   ElevatedButton(
                     onPressed: () => _showTolakBottomSheet(bimbingan),
                     style: ElevatedButton.styleFrom(
@@ -240,7 +240,7 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
                 ],
               ),
             ],
-            
+
             // Action button for approved bimbingan
             if (bimbingan.status == 'disetujui') ...[
               const SizedBox(height: 16),
@@ -344,24 +344,23 @@ void _showSetujuBottomSheet(BimbinganItem bimbingan) {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       isScrollControlled: true,
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: CatatanBimbingan(
-          onSave: (String catatan) {
-            setState(() {
-              bimbingan.catatan = catatan;
-            });
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Bimbingan ditolak"),
-                backgroundColor: Colors.red,
-              ),
-            );
-          },
-        ),
+      builder: (context) => CatatanDosenBottomSheet(
+        title: 'Alasan Penolakan',
+        hintText: 'Masukkan alasan penolakan bimbingan...',
+        buttonText: 'TOLAK BIMBINGAN',
+        onSave: (String catatan) {
+          setState(() {
+            bimbingan.catatan = catatan;
+
+          });
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Bimbingan ditolak"),
+              backgroundColor: Colors.red,
+            ),
+          );
+        },
       ),
     );
   }
@@ -374,25 +373,23 @@ void _showSetujuBottomSheet(BimbinganItem bimbingan) {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       isScrollControlled: true,
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: CatatanBimbingan(
-          onSave: (String catatan) {
-            setState(() {
-              bimbingan.status = 'selesai';
-              bimbingan.catatan = catatan;
-            });
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Bimbingan selesai dan catatan berhasil disimpan"),
-                backgroundColor: Colors.green,
-              ),
-            );
-          },
-        ),
+      builder: (context) => CatatanDosenBottomSheet(
+        title: 'Catatan hasil bimbingan',
+        hintText: 'Mad',
+        buttonText: 'TOLAK BIMBINGAN',
+        onSave: (String catatan) {
+          setState(() {
+            bimbingan.catatan = catatan;
+
+          });
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Bimbingan ditolak"),
+              backgroundColor: Colors.red,
+            ),
+          );
+        },
       ),
     );
   }

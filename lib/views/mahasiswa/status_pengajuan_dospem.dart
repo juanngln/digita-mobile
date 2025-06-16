@@ -1,9 +1,8 @@
-// lib/screens/status_pengajuan_dosen.dart
+// lib/screens/status_pengajuan_dospem.dart
 
 import 'package:digita_mobile/services/login_service.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
-import 'package:digita_mobile/widgets/bottom_sheet/status_pengajuan_ditolak.dart';
-import 'package:digita_mobile/widgets/bottom_sheet/status_pengajuan_menunggu.dart';
+import 'package:digita_mobile/widgets/bottom_sheet/status_pengajuan_dospem_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -75,19 +74,42 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
         }
 
         if (showBottomSheetOnClick) {
-          Widget bottomSheetWidget;
+          Widget bottomSheetContent;
+
           if (status == 'REJECTED' || status == 'DITOLAK') {
-            bottomSheetWidget = const StatusPengajuanDitolak();
-          } else if (status == 'PENDING') {
-            bottomSheetWidget = const StatusPengajuanMenunggu();
+            // Assumes the rejection reason is in the same API response
+            final reason = statusData['alasan_penolakan'] ?? 'Tidak ada alasan yang diberikan.';
+
+            bottomSheetContent = StatusPengajuanDospemBottomSheet(
+              imagePath: 'assets/img/pengajuan_dosen_ditolak.png',
+              title: 'Yah, Pengajuanmu Ditolak!',
+              description: 'Alasan: "$reason"',
+              actionButton: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0F47AD),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: () => Navigator.pushNamed(context, '/daftar_dosen'),
+                child: const Text('Cari Dosen Pembimbing', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            );
           } else {
-            bottomSheetWidget = const StatusPengajuanMenunggu();
+            bottomSheetContent = const StatusPengajuanDospemBottomSheet(
+              imagePath: 'assets/img/pengajuan_dosen_pending.png',
+              title: 'Sedang Menunggu Konfirmasi',
+              description: 'Pengajuan dosen pembimbing sedang diproses. Sabar sebentar ya!',
+            );
           }
+
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (BuildContext bc) => bottomSheetWidget,
+            backgroundColor: Colors.white, // Can be set here now
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            builder: (context) => bottomSheetContent,
           );
         }
       } else {

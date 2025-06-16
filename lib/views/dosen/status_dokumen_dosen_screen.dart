@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:digita_mobile/widgets/dialog.dart'; 
-import 'package:digita_mobile/widgets/bottom_sheet/catatan_revisi.dart'; 
+import 'package:digita_mobile/widgets/dialog.dart';
+import 'package:digita_mobile/widgets/bottom_sheet/catatan_dosen_bottom_sheet.dart';
 
 class Mahasiswa {
   final String nama;
@@ -395,36 +395,34 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
   }
 
 
-void showRevisiBottomSheet(DokumenItem dokumen) {
-  showModalBottomSheet(
-    context: context,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
-    isScrollControlled: true,
-    builder: (context) => Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
+  void showRevisiBottomSheet(DokumenItem dokumen) {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      child: CatatanRevisi(
-        onSave: (String catatanRevisi) {
-          setState(() {
-            dokumen.status = "Revisi";
-            // Simpan catatan revisi yang diinput user
-            dokumen.keterangan = catatanRevisi;
-          });
-          _tabController.animateTo(2); // Pindah ke tab Revisi
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Dokumen dipindahkan ke revisi"),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        },
-      ),
-    ),
-  );
-}
+      isScrollControlled: true,
+      builder: (context) {
+        return CatatanDosenBottomSheet(
+          title: 'Keterangan Revisi',
+          hintText: 'Masukkan catatan revisi untuk mahasiswa...',
+          onSave: (String catatanRevisi) {
+            setState(() {
+              dokumen.status = "Revisi";
+              dokumen.keterangan = catatanRevisi;
+            });
+            _tabController.animateTo(2);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Dokumen dipindahkan ke revisi"),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   void setujuiDokumen(DokumenItem dokumen) {
     setState(() {
