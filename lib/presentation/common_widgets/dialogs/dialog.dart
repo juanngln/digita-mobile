@@ -23,11 +23,11 @@ class CustomDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(25.0),
       ),
       elevation: 5,
       backgroundColor: Colors.white,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(

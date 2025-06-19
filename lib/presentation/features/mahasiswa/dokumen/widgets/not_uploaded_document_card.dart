@@ -1,23 +1,23 @@
+import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/edit_document_bottom_sheet.dart';
+import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/upload_document_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/upload_dokumen_bottom_sheet.dart';
 
-class UploadedYetDocumentCard extends StatefulWidget {
+class NotUploadedDocumentCard extends StatefulWidget {
   final String title;
   final String dateTime;
 
-  const UploadedYetDocumentCard({
+  const NotUploadedDocumentCard({
     super.key,
     required this.title,
     required this.dateTime,
   });
 
   @override
-  State<UploadedYetDocumentCard> createState() =>
-      _UploadedYetDocumentCardState();
+  State<NotUploadedDocumentCard> createState() => _NotUploadedDocumentCard();
 }
 
-class _UploadedYetDocumentCardState extends State<UploadedYetDocumentCard> {
+class _NotUploadedDocumentCard extends State<NotUploadedDocumentCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -66,10 +66,19 @@ class _UploadedYetDocumentCardState extends State<UploadedYetDocumentCard> {
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
-                  isScrollControlled: true,
                   backgroundColor: Colors.white,
-                  builder: (context) {
-                    return const UploadDocumentBottomSheet();
+                  useSafeArea: true,
+                  isScrollControlled: true,
+                  isDismissible: true,
+                  enableDrag: true,
+                  showDragHandle: true,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(25.0),
+                    ),
+                  ),
+                  builder: (BuildContext context) {
+                    return UploadDocumentBottomSheet();
                   },
                 );
               },

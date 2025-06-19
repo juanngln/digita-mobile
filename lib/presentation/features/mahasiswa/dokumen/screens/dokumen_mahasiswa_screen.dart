@@ -1,5 +1,6 @@
-import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/dokumen_sudah_upload_card.dart';
-import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/dokumen_belum_upload_card.dart';
+import 'package:digita_mobile/presentation/common_widgets/subtitle.dart';
+import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/not_uploaded_document_card.dart';
+import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/uploaded_document_card.dart';
 import 'package:flutter/material.dart';
 
 class DokumenMahasiswaScreen extends StatefulWidget {
@@ -52,10 +53,7 @@ class _DokumenMahasiswaScreen extends State<DokumenMahasiswaScreen> {
                 // Sudah Upload Section
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text( // MODIFIED HERE
-                    'Sudah Upload',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+                  child: Subtitle(text: 'Sudah Upload'),
                 ),
                 ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
@@ -71,17 +69,14 @@ class _DokumenMahasiswaScreen extends State<DokumenMahasiswaScreen> {
                 // Belum Upload Section
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text( // MODIFIED HERE
-                    'Belum Upload',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+                  child: Subtitle(text: 'Belum Upload'),
                 ),
                 ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemCount: uploadedYetDocument.length,
                     itemBuilder: (context, index) {
-                      return UploadedYetDocumentCard(
+                      return NotUploadedDocumentCard(
                         title: uploadedYetDocument[index]['title']!,
                         dateTime: uploadedYetDocument[index]['dateTime']!,
                       );
