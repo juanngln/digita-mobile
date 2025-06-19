@@ -1,4 +1,4 @@
-import 'package:digita_mobile/presentation/common_widgets/role_selector_bottom_sheet.dart';
+import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/role_selector_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

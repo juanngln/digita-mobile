@@ -1,6 +1,6 @@
+import 'package:digita_mobile/presentation/common_widgets/buttons/onboarding_action_button.dart';
 import 'package:digita_mobile/viewmodels/registration_viewmodel.dart';
 import 'package:digita_mobile/presentation/features/auth/register/widgets/animated_logo.dart';
-import 'package:digita_mobile/presentation/common_widgets/primary_action_button.dart';
 import 'package:digita_mobile/presentation/common_widgets/forms/auth_text_link.dart';
 import 'package:digita_mobile/presentation/common_widgets/forms/password_input_field.dart';
 import 'package:digita_mobile/presentation/common_widgets/forms/prodi_dropdown.dart';
@@ -297,7 +297,7 @@ class _RegisterMahasiswaScreenState extends State<RegisterMahasiswaScreen> {
                                   const SizedBox(height: 30),
             
                                   // --- Button & Link  ---
-                                  PrimaryActionButton(
+                                  OnboardingActionButton(
                                     // Use new button widget
                                     text: 'DAFTAR',
                                     isLoading: isRegistering,

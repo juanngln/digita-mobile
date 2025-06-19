@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class PrimaryActionButton extends StatelessWidget {
+class OnboardingActionButton extends StatelessWidget {
   final String text;
   final bool isLoading;
   final VoidCallback? onPressed;
 
-  const PrimaryActionButton({
+  const OnboardingActionButton({
     super.key,
     required this.text,
     this.isLoading = false,
@@ -19,9 +19,9 @@ class PrimaryActionButton extends StatelessWidget {
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: isLoading ? Colors.grey : const Color(0xFF0F47AD),
-        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        padding: const EdgeInsets.symmetric(vertical: 15.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(30.0),
         ),
         elevation: isLoading ? 0 : 1,
         minimumSize: const Size(double.infinity, 50),
@@ -40,7 +40,7 @@ class PrimaryActionButton extends StatelessWidget {
                 text,
                 style: GoogleFonts.poppins(
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),

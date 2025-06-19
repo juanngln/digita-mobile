@@ -1,7 +1,8 @@
-import 'package:digita_mobile/presentation/common_widgets/base_bottom_sheet.dart';
+import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/base_bottom_sheet.dart';
+import 'package:digita_mobile/presentation/common_widgets/buttons/primary_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:digita_mobile/presentation/common_widgets/forms/text_display_field.dart';
-import 'package:digita_mobile/presentation/common_widgets/primary_action_button.dart';
+
 class BimbinganItem {
   final String title;
   final String date;
@@ -73,7 +74,7 @@ class PengajuanJadwalBimbingan extends StatelessWidget {
 
           // Setuju Button
           PrimaryActionButton(
-            text: 'SETUJU',
+            label: 'SETUJU',
             onPressed: onSetuju,
             // isLoading property can be added here if you introduce state management
           ),

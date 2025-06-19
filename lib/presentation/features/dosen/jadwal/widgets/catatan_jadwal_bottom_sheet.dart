@@ -1,6 +1,6 @@
-import 'package:digita_mobile/presentation/common_widgets/base_bottom_sheet.dart';
+import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/base_bottom_sheet.dart';
+import 'package:digita_mobile/presentation/common_widgets/buttons/primary_action_button.dart';
 import 'package:digita_mobile/presentation/common_widgets/forms/text_area_input_field.dart';
-import 'package:digita_mobile/presentation/common_widgets/primary_action_button.dart';
 import 'package:flutter/material.dart';
 
 class CatatanDosenBottomSheet extends StatefulWidget {
@@ -45,7 +45,7 @@ class _CatatanDosenBottomSheetState extends State<CatatanDosenBottomSheet> {
           ),
           const SizedBox(height: 24),
           PrimaryActionButton(
-            text: widget.buttonText,
+            label: widget.buttonText,
             // isLoading: _isSaving, // Example of how to use the loading state
             onPressed: () {
               if (_controller.text.trim().isEmpty) return;

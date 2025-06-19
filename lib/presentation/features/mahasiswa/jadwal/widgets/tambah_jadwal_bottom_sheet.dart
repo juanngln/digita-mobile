@@ -1,6 +1,6 @@
-import 'package:digita_mobile/presentation/common_widgets/base_bottom_sheet.dart';
+import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/base_bottom_sheet.dart';
+import 'package:digita_mobile/presentation/common_widgets/buttons/primary_action_button.dart';
 import 'package:digita_mobile/presentation/common_widgets/forms/text_input_field.dart';
-import 'package:digita_mobile/presentation/common_widgets/primary_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -243,7 +243,7 @@ class _TambahJadwalBimbinganState extends State<TambahJadwalBimbingan> {
             icon: const Icon(Icons.keyboard_arrow_down, size: 20),
           ),
           const SizedBox(height: 24),
-          PrimaryActionButton(text: 'TAMBAH JADWAL', onPressed: _submitData),
+          PrimaryActionButton(label: 'TAMBAH JADWAL', onPressed: _submitData),
         ],
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:digita_mobile/presentation/features/mahasiswa/home/screens/notification_mahasiswa_screen.dart';
-import 'package:digita_mobile/presentation/common_widgets/home_widgets/pengumuman_card.dart';
+import 'package:digita_mobile/presentation/common_widgets/cards/pengumuman_card.dart';
 import 'package:digita_mobile/presentation/common_widgets/home_widgets/profile_section.dart';
-import 'package:digita_mobile/presentation/common_widgets/home_widgets/upcoming_card.dart';
+import 'package:digita_mobile/presentation/common_widgets/cards/upcoming_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

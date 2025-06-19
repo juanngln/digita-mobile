@@ -1,6 +1,6 @@
+import 'package:digita_mobile/presentation/common_widgets/buttons/onboarding_action_button.dart';
 import 'package:digita_mobile/viewmodels/login_viewmodel.dart';
-import 'package:digita_mobile/presentation/common_widgets/role_selector_bottom_sheet.dart';
-import 'package:digita_mobile/presentation/common_widgets/primary_action_button.dart';
+import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/role_selector_bottom_sheet.dart';
 import 'package:digita_mobile/presentation/common_widgets/forms/password_input_field.dart';
 import 'package:digita_mobile/presentation/common_widgets/forms/text_input_field.dart';
 import 'package:flutter/material.dart';
@@ -312,7 +312,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 8),
 
                         // --- Login Button ---
-                        PrimaryActionButton(
+                        OnboardingActionButton(
                           text: "MASUK",
                           isLoading: isLoading,
                           onPressed: () {

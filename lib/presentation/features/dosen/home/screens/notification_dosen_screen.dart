@@ -1,4 +1,4 @@
-import 'package:digita_mobile/presentation/common_widgets/home_widgets/notification_card.dart';
+import 'package:digita_mobile/presentation/common_widgets/cards/notification_card.dart';
 import 'package:flutter/material.dart';
 
 class NotificationDosenScreen extends StatefulWidget {
