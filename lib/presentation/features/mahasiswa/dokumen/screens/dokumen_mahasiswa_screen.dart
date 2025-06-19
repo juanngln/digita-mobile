@@ -11,13 +11,21 @@ class DokumenMahasiswaScreen extends StatefulWidget {
 }
 
 class _DokumenMahasiswaScreen extends State<DokumenMahasiswaScreen> {
-  final List<Map<String, String>> uploadedDocument = [
+  final List<Map<String, dynamic>> uploadedDocument = [
     {
+      'status': 'pending',
       'title': 'BAB III: Analisis dan Perancangan',
       'dateTime': '07 Maret 2025, 14:00',
       'note': '-',
     },
     {
+      'status': 'revisi',
+      'title': 'BAB II: Landasan Teori',
+      'dateTime': '10 Maret 2025, 10:00',
+      'note': 'Struktur penulisan kurang sistematis',
+    },
+    {
+      'status': 'disetujui',
       'title': 'BAB II: Landasan Teori',
       'dateTime': '10 Maret 2025, 10:00',
       'note': 'Struktur penulisan kurang sistematis',
@@ -34,6 +42,19 @@ class _DokumenMahasiswaScreen extends State<DokumenMahasiswaScreen> {
       'dateTime': '10 Maret 2025, 10:00',
     },
   ];
+
+  DocumentStatus parseStatus(String? value) {
+    switch (value) {
+      case 'pending':
+        return DocumentStatus.pending;
+      case 'revisi':
+        return DocumentStatus.revisi;
+      case 'disetujui':
+        return DocumentStatus.disetujui;
+      default:
+        return DocumentStatus.pending;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,31 +77,34 @@ class _DokumenMahasiswaScreen extends State<DokumenMahasiswaScreen> {
                   child: Subtitle(text: 'Sudah Upload'),
                 ),
                 ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: uploadedDocument.length,
-                    itemBuilder: (context, index) {
-                      return UploadedDocumentCard(
-                        title: uploadedDocument[index]['title']!,
-                        dateTime: uploadedDocument[index]['dateTime']!,
-                        note: uploadedDocument[index]['note']!,
-                      );
-                    }),
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: uploadedDocument.length,
+                  itemBuilder: (context, index) {
+                    return UploadedDocumentCard(
+                      status: parseStatus(uploadedDocument[index]['status']),
+                      title: uploadedDocument[index]['title']!,
+                      dateTime: uploadedDocument[index]['dateTime']!,
+                      note: uploadedDocument[index]['note']!,
+                    );
+                  },
+                ),
                 // Belum Upload Section
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 16.0),
                   child: Subtitle(text: 'Belum Upload'),
                 ),
                 ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: uploadedYetDocument.length,
-                    itemBuilder: (context, index) {
-                      return NotUploadedDocumentCard(
-                        title: uploadedYetDocument[index]['title']!,
-                        dateTime: uploadedYetDocument[index]['dateTime']!,
-                      );
-                    }),
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: uploadedYetDocument.length,
+                  itemBuilder: (context, index) {
+                    return NotUploadedDocumentCard(
+                      title: uploadedYetDocument[index]['title']!,
+                      dateTime: uploadedYetDocument[index]['dateTime']!,
+                    );
+                  },
+                ),
               ],
             ),
           ),
