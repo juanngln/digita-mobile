@@ -1,4 +1,4 @@
-import 'package:digita_mobile/presentation/common_widgets/dialogs/dialog.dart';
+import 'package:digita_mobile/presentation/common_widgets/dialogs/custom_dialog.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/edit_document_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

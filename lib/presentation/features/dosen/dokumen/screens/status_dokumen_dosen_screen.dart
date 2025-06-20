@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:digita_mobile/presentation/common_widgets/dialogs/dialog.dart';
+import 'package:digita_mobile/presentation/common_widgets/dialogs/custom_dialog.dart';
 import 'package:digita_mobile/presentation/features/dosen/jadwal/widgets/catatan_jadwal_bottom_sheet.dart';
 
 class Mahasiswa {
