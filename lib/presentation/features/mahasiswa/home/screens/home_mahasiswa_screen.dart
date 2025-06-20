@@ -60,7 +60,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: ClampingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(

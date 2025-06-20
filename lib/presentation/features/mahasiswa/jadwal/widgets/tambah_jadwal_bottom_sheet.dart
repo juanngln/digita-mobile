@@ -22,16 +22,16 @@ class BimbinganItem {
   });
 }
 
-class TambahJadwalBimbingan extends StatefulWidget {
+class TambahJadwalBottomSheet extends StatefulWidget {
   final Function(BimbinganItem) onTambah;
 
-  const TambahJadwalBimbingan({super.key, required this.onTambah});
+  const TambahJadwalBottomSheet({super.key, required this.onTambah});
 
   @override
-  State<TambahJadwalBimbingan> createState() => _TambahJadwalBimbinganState();
+  State<TambahJadwalBottomSheet> createState() => _TambahJadwalBottomSheet();
 }
 
-class _TambahJadwalBimbinganState extends State<TambahJadwalBimbingan> {
+class _TambahJadwalBottomSheet extends State<TambahJadwalBottomSheet> {
   late TextEditingController _titleController;
   late TextEditingController _studentController;
   late TextEditingController _dateController;
