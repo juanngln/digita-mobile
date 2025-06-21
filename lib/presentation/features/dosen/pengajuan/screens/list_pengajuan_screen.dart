@@ -143,7 +143,7 @@ class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
                                       const SizedBox(height: 4),
                                       Text(
                                         "${request
-                                            .mahasiswaNim} - Teknik Informatika",
+                                            .mahasiswaNim} - ${request.mahasiswaProdi}",
                                         style: const TextStyle(
                                             fontSize: 14,
                                             color: Colors.black,
