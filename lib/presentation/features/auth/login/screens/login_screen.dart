@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _launchPasswordResetURL() async {
     final Uri url =
-    Uri.parse('https://digita-admin-api.onrender.com/api/users/auth/password-reset/');
+    Uri.parse('https://digita-admin-api.onrender.com/users/auth/password-reset/');
     try {
       await launchUrl(url, mode: LaunchMode.inAppWebView);
     } catch (e) {
@@ -298,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: isLoading ? null : _launchPasswordResetURL, // <-- UPDATE THIS LINE
+                            onPressed: isLoading ? null : _launchPasswordResetURL,
                             child: Text(
                               "Lupa Password?",
                               style: TextStyle(
