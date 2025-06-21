@@ -14,13 +14,17 @@ class NetworkException implements Exception {
 }
 
 class ListRequestPembimbingDariMahasiswaService {
-  static const String _baseUrl = "https://digita-admin-api.onrender.com";
+  static const String _baseUrl =
+  kReleaseMode
+      ? "YOUR_PRODUCTION_API_URL"
+   : "https://digita-admin-api.onrender.com";
+  //    : "http://10.0.2.2:8000";
   final http.Client _client;
 
   ListRequestPembimbingDariMahasiswaService({http.Client? client}) : _client = client ?? http.Client();
 
   Future<List<ListRequestPembimbingDariMahasiswaModel>> getIncomingRequests(String token) async {
-    final url = Uri.parse('$_baseUrl/api/ta/request-mahasiswa/incoming/');
+    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/request-mahasiswa/incoming/');
     try {
       final response = await _client.get(
         url,
@@ -54,7 +58,7 @@ class ListRequestPembimbingDariMahasiswaService {
     required String responseMessage,
     required String token,
   }) async {
-    final url = Uri.parse('$_baseUrl/api/ta/request-mahasiswa/$requestId/respond/');
+    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/request-mahasiswa/$requestId/respond/');
     if (kDebugMode) {
       print("--- Responding to Request ---");
       print("URL: $url");

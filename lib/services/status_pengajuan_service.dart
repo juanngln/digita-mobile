@@ -13,12 +13,16 @@ class NetworkException implements Exception {
 }
 
 class StatusPengajuanService {
-  static const String _baseUrl = "https://digita-admin-api.onrender.com";
+  static const String _baseUrl =
+  kReleaseMode
+      ? "_PRODUCTION_URL"
+      : "https://digita-admin-api.onrender.com";
+      //: "http://10.0.2.2:8000";
   final http.Client _client;
 
   StatusPengajuanService({http.Client? client}) : _client = client ?? http.Client();
   Future<String> getRejectionReason(String token) async {
-    final url = Uri.parse('$_baseUrl/api/ta/request-dosen/pribadi/');
+    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/request-dosen/pribadi/');
     if (kDebugMode) {
       print("--- Fetching Personal TA Request Status ---");
       print("URL: $url");

@@ -28,7 +28,7 @@ class LoginService {
   static const String _baseUrl =
       kReleaseMode
           ? "_PRODUCTION_URL"
-          : "https://digita-admin-api.onrender.com";
+           : "https://digita-admin-api.onrender.com";
           //: "http://10.0.2.2:8000";
 
 
@@ -42,7 +42,7 @@ class LoginService {
     required String identifier,
     required String password,
   }) async {
-    final url = Uri.parse('$_baseUrl/api/users/login/');
+    final url = Uri.parse('$_baseUrl/api/v1/users/login/');
     final Map<String, String> loginData = {
       "role": role.toLowerCase(),
       "identifier": identifier,
@@ -118,7 +118,7 @@ class LoginService {
   // --- Method to Check Mahasiswa Request Status  ---
   Future<Map<String, dynamic>?> checkThesisRequestStatus(String token) async {
     final requestStatusUrl = Uri.parse(
-      '$_baseUrl/api/ta/request-dosen/pribadi/',
+      '$_baseUrl/api/v1/tugas-akhir/request-dosen/pribadi/',
     );
     if (kDebugMode) print("Checking thesis status from: $requestStatusUrl");
 

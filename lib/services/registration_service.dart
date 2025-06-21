@@ -38,7 +38,7 @@ class RegistrationService {
       kReleaseMode
           ? "_PRODUCTION_URL"
           : "https://digita-admin-api.onrender.com";
-          //: "http://10.0.2.2:8000";
+        //: "http://10.0.2.2:8000";
 
   final http.Client _client;
 
@@ -47,7 +47,7 @@ class RegistrationService {
 
   // --- Fetch Program Studi ---
   Future<List<ProgramStudi>> fetchProgramStudi() async {
-    final url = Uri.parse('$_baseUrl/api/users/program-studi/');
+    final url = Uri.parse('$_baseUrl/api/v1/users/program-studi/');
     if (kDebugMode) print("Fetching Program Studi from: $url");
 
     try {
@@ -84,7 +84,7 @@ class RegistrationService {
 
   // --- Fetch Jurusan ---
   Future<List<Jurusan>> fetchJurusan() async {
-    final url = Uri.parse('$_baseUrl/api/users/jurusan/');
+    final url = Uri.parse('$_baseUrl/api/v1/users/jurusan/');
     if (kDebugMode) print("Fetching Jurusan from: $url");
 
     try {
@@ -134,7 +134,7 @@ class RegistrationService {
     final Map<String, dynamic> registrationData;
 
     if (role.toLowerCase() == 'mahasiswa') {
-      endpoint = '/api/users/register/mahasiswa/';
+      endpoint = '/api/v1/users/mahasiswa/register/';
       registrationData = {
         "nim": nim!.trim(),
         "nama_lengkap": namaLengkap.trim(),
@@ -144,7 +144,7 @@ class RegistrationService {
         "password2": password2,
       };
     } else if (role.toLowerCase() == 'dosen') {
-      endpoint = '/api/users/register/dosen/';
+      endpoint = '/api/v1/users/dosen/register/';
       registrationData = {
         "nik": nik!.trim(),
         "nama_lengkap": namaLengkap.trim(),

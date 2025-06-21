@@ -19,7 +19,7 @@ class RequestPembimbingKeDosenService {
      Ganti alamat ip menggunakan alamat ip laptop/komputermu */
   static const String _baseUrl =
       kReleaseMode
-          ? "YOUR_PRODUCTION_API_URL"
+          ? "_PRODUCTION_URL"
           : "https://digita-admin-api.onrender.com";
           //: "http://10.0.2.2:8000";
 
@@ -36,7 +36,7 @@ class RequestPembimbingKeDosenService {
     required String rencanaJudul,
     required String rencanaDeskripsi,
   }) async {
-    final url = Uri.parse('$_baseUrl/api/ta/request-dosen/');
+    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/request-dosen/');
     final Map<String, dynamic> requestBody = {
       "dosen_id": dosenId,
       "alasan_memilih_dosen": alasanMemilihDosen,

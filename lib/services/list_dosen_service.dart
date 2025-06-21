@@ -22,15 +22,15 @@ class DosenService {
   static const String _baseUrl =
       kReleaseMode
           ? "YOUR_PRODUCTION_API_URL"
-          : "https://digita-admin-api.onrender.com";
-          //: "http://10.0.2.2:8000";
+           : "https://digita-admin-api.onrender.com";
+          // : "http://10.0.2.2:8000";
 
   final http.Client _client;
 
   DosenService({http.Client? client}) : _client = client ?? http.Client();
 
   Future<List<Dosen>> getDosenList(String token) async {
-    final url = Uri.parse('$_baseUrl/api/users/dosen/');
+    final url = Uri.parse('$_baseUrl/api/v1/users/dosen/');
     if (kDebugMode) {
       print("--- Fetching Dosen List ---");
       print("URL: $url");
