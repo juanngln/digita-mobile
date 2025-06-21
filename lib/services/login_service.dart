@@ -73,20 +73,26 @@ class LoginService {
 
       final responseBody = jsonDecode(response.body);
 
+
       if (response.statusCode >= 200 && response.statusCode < 300) {
+        // Check for the new structure
         if (responseBody is Map<String, dynamic> &&
-            responseBody.containsKey('tokens')) {
-          return responseBody;
-        } else {
-          throw AuthenticationException(
-            "Login successful, but token data is missing or invalid in response.",
-          );
+            responseBody['status'] == 'success' &&
+            responseBody.containsKey('data')) {
+          final data = responseBody['data'] as Map<String, dynamic>;
+          // Ensure tokens and user data exist within the 'data' object
+          if (data.containsKey('tokens') && data.containsKey('user')) {
+            return data;
+          }
         }
+        // If the structure is not as expected, throw an exception.
+        throw AuthenticationException(
+          "Login successful, but response data is missing or invalid.",
+        );
       } else {
         String errorMessage = "Login gagal.";
         if (responseBody is Map<String, dynamic>) {
-          errorMessage =
-              responseBody['detail'] ??
+          errorMessage = responseBody['detail'] ??
               responseBody['error'] ??
               "Login gagal (Status: ${response.statusCode})";
         } else {
@@ -118,7 +124,7 @@ class LoginService {
   // --- Method to Check Mahasiswa Request Status  ---
   Future<Map<String, dynamic>?> checkThesisRequestStatus(String token) async {
     final requestStatusUrl = Uri.parse(
-      '$_baseUrl/api/v1/tugas-akhir/request-dosen/pribadi/',
+      '$_baseUrl/api/v1/tugas-akhir/supervision-requests/',
     );
     if (kDebugMode) print("Checking thesis status from: $requestStatusUrl");
 

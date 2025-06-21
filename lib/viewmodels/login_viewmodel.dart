@@ -64,28 +64,37 @@ class LoginViewModel extends ChangeNotifier {
     _setState(ViewState.busy);
 
     try {
-      final loginResponse = await _loginService.login(
+      final loginData = await _loginService.login(
         role: _selectedRole!,
         identifier: identifier,
         password: password,
       );
-      final String? accessToken = loginResponse['tokens']?['access'] as String?;
-      final String? refreshToken =
-          loginResponse['tokens']?['refresh'] as String?;
+      final String? accessToken = loginData['tokens']?['access'] as String?;
+      final String? refreshToken = loginData['tokens']?['refresh'] as String?;
+      final Map<String, dynamic>? userData =
+      loginData['user'] as Map<String, dynamic>?;
 
       // --- Process Successful Login ---
 
       if (accessToken == null) {
         throw AuthenticationException(
-          "Token tidak ditemukan dalam respons login.",
+          "Token akses tidak ditemukan dalam respons login.",
+        );
+      }
+      if (userData == null) {
+        throw AuthenticationException(
+          "Data pengguna tidak ditemukan dalam respons login.",
         );
       }
 
       _authToken = accessToken;
+      // Save all data to secure storage
       await _secureStorageService.saveAccessToken(accessToken);
+      await _secureStorageService.saveUserData(userData);
       if (refreshToken != null) {
         await _secureStorageService.saveRefreshToken(refreshToken);
       }
+
 
       // --- Role-Based Navigation Logic ---
       if (_selectedRole!.toLowerCase() == 'mahasiswa') {

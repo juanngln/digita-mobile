@@ -77,7 +77,7 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
 
           if (status == 'REJECTED' || status == 'DITOLAK') {
             // Assumes the rejection reason is in the same API response
-            final reason = statusData['alasan_penolakan'] ?? 'Tidak ada alasan yang diberikan.';
+            final reason = statusData['dosen_response'] ?? 'Tidak ada alasan yang diberikan.';
 
             bottomSheetContent = StatusPengajuanDospemBottomSheet(
               imagePath: 'assets/img/pengajuan_dosen_ditolak.png',

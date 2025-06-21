@@ -24,7 +24,7 @@ class ListRequestPembimbingDariMahasiswaService {
   ListRequestPembimbingDariMahasiswaService({http.Client? client}) : _client = client ?? http.Client();
 
   Future<List<ListRequestPembimbingDariMahasiswaModel>> getIncomingRequests(String token) async {
-    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/request-mahasiswa/incoming/');
+    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/supervision-requests/');
     try {
       final response = await _client.get(
         url,
@@ -58,7 +58,7 @@ class ListRequestPembimbingDariMahasiswaService {
     required String responseMessage,
     required String token,
   }) async {
-    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/request-mahasiswa/$requestId/respond/');
+    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/supervision-requests/$requestId/');
     if (kDebugMode) {
       print("--- Responding to Request ---");
       print("URL: $url");

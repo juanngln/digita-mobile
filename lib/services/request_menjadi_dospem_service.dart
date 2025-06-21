@@ -36,7 +36,7 @@ class RequestPembimbingKeDosenService {
     required String rencanaJudul,
     required String rencanaDeskripsi,
   }) async {
-    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/request-dosen/');
+    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/supervision-requests/');
     final Map<String, dynamic> requestBody = {
       "dosen_id": dosenId,
       "alasan_memilih_dosen": alasanMemilihDosen,
