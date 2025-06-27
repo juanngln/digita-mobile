@@ -3,14 +3,14 @@ import 'package:digita_mobile/presentation/common_widgets/dialogs/logout_dialog.
 import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/account_secure_sheet.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/profile/screens/dosen_pembimbing_info_screen.dart';
 
-class ProfileMahasiswa extends StatefulWidget {
-  const ProfileMahasiswa({super.key});
+class ProfileMahasiswaScreen extends StatefulWidget {
+  const ProfileMahasiswaScreen({super.key});
 
   @override
-  State<ProfileMahasiswa> createState() => _ProfileMahasiswaState();
+  State<ProfileMahasiswaScreen> createState() => _ProfileMahasiswaScreen();
 }
 
-class _ProfileMahasiswaState extends State<ProfileMahasiswa> {
+class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
   bool _isNotificationOn = true;
 
   @override

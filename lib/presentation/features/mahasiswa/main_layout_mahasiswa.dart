@@ -3,6 +3,7 @@ import 'package:digita_mobile/presentation/features/mahasiswa/home/screens/home_
 import 'package:digita_mobile/presentation/features/mahasiswa/jadwal/screens/jadwal_mahasiswa_screen.dart';
 import 'package:digita_mobile/presentation/common_widgets/navbar/bottom_navbar_mahasiswa.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/kanban/screens/kanban_board_screen.dart';
+import 'package:digita_mobile/presentation/features/mahasiswa/profile/screens/profile_mahasiswa_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainLayoutMahasiswa extends StatefulWidget {
@@ -20,6 +21,7 @@ class _MainLayoutMahasiswa extends State<MainLayoutMahasiswa> {
     const JadwalMahasiswaScreen(),
     const DokumenMahasiswaScreen(),
     const KanbanBoardScreen(),
+    const ProfileMahasiswaScreen()
   ];
 
   void _onItemTapped(int index) {

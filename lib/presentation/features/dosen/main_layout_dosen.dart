@@ -3,6 +3,7 @@ import 'package:digita_mobile/presentation/features/dosen/home/screens/home_dose
 import 'package:digita_mobile/presentation/features/dosen/jadwal/screens/jadwal_dosen_screen.dart';
 import 'package:digita_mobile/presentation/features/dosen/pengajuan/screens/list_pengajuan_screen.dart';
 import 'package:digita_mobile/presentation/common_widgets/navbar/bottom_navbar_dosen.dart';
+import 'package:digita_mobile/presentation/features/dosen/profile/screens/profile_dosen_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainLayoutDosen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _MainLayoutDosen extends State<MainLayoutDosen> {
     const JadwalDosenScreen(),
     const DokumenDosenScreen(),
     const PengajuanMahasiswaScreen(),
+    const ProfileDosenScreen()
   ];
 
   void _onItemTapped(int index) {
