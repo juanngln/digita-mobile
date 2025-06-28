@@ -4,6 +4,11 @@ import 'package:digita_mobile/presentation/common_widgets/home_widgets/profile_s
 import 'package:digita_mobile/presentation/common_widgets/cards/upcoming_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
+import 'package:digita_mobile/models/quote.dart';
+import 'package:digita_mobile/services/quote_service.dart';
+
 
 class HomeMahasiswaScreen extends StatefulWidget {
   const HomeMahasiswaScreen({super.key});
@@ -13,6 +18,14 @@ class HomeMahasiswaScreen extends StatefulWidget {
 }
 
 class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
+  late Future<Quote> _quoteFuture;
+  final ApiService _apiService = ApiService();
+
+  @override
+  void initState() {
+    super.initState();
+    _quoteFuture = _apiService.fetchRandomQuote();
+  }
   final List<Map<String, String>> pengumumanCards = [
     {
       'title': 'Buku Panduan',
@@ -63,158 +76,182 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
           physics: const BouncingScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: Column(
-              children: [
-                // Profile Section
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20.0),
-                  child: ProfileSection(
-                    name: 'Udin Prakoso Bakti',
-                    status: 'Mahasiswa Teknik Informatika',
+            child: Consumer<ProfileViewModel>(
+              builder: (context, viewModel, child) {
+                Widget profileWidget;
+                if (viewModel.state == ProfileState.loading) {
+                  profileWidget = const Center(child: CircularProgressIndicator());
+                } else if (viewModel.state == ProfileState.success) {
+                  profileWidget = ProfileSection(
+                    name: viewModel.mahasiswaProfile?.namaLengkap ?? 'Nama tidak ditemukan',
+                    status: viewModel.mahasiswaProfile?.programStudi ?? 'Status tidak ditemukan',
                     page: NotificationMahasiswaScreen(),
-                  ),
-                ),
-                // Quote Section
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width - 48,
-                        height: 96,
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              spreadRadius: 0,
-                              blurRadius: 4,
-                              offset: Offset(0, 4),
-                              color: Colors.black.withAlpha(50),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Masa depan adalah milik mereka yang percaya akan impiannya.',
-                              textAlign: TextAlign.left,
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                  );
+                } else {
+                  profileWidget = Text('Error: ${viewModel.errorMessage}');
+                }
+
+                // The main layout of the screen
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: profileWidget,
+                    ),
+
+                    // Quote Section
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: FutureBuilder<Quote>(
+                        future: _quoteFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else if (snapshot.hasData) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width - 48,
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    spreadRadius: 0,
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 4),
+                                    color: Colors.black.withAlpha(50),
+                                  ),
+                                ],
                               ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                '- Tan Malaka',
-                                textAlign: TextAlign.right,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '"${snapshot.data!.q}"',
+                                    textAlign: TextAlign.left,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Text(
+                                      '- ${snapshot.data!.a}',
+                                      textAlign: TextAlign.right,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            return const Text('No quote found.');
+                          }
+                        },
+                      ),
+                    ),
+
+                    // Progress Section
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Progress TA', //
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              Text(
+                                '20%', //
                                 style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          LinearProgressIndicator(
+                            value: 0.2,
+                            minHeight: 10,
+                            backgroundColor: const Color(0xFF9DCFF7),
+                            color: const Color(0xFF0F47AD),
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                // Progress Section
-                Padding(
-                  padding: EdgeInsets.only(bottom: 20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                    ),
+
+                    // Information Section
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Progress TA',
+                            'Lihat Alur Pendaftaran Tugas Akhir', //
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
-                          Text(
-                            '20%',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
+                          SizedBox(
+                            height: 128,
+                            child: ListView.separated(
+                              separatorBuilder:
+                                  (context, index) => const SizedBox(width: 16),
+                              scrollDirection: Axis.horizontal,
+                              physics: const ClampingScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: pengumumanCards.length,
+                              itemBuilder: (context, index) {
+                                return PengumumanCard(
+                                  title: pengumumanCards[index]['title']!,
+                                  description:
+                                  pengumumanCards[index]['description']!,
+                                );
+                              },
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 4),
-                      LinearProgressIndicator(
-                        value: 20,
-                        minHeight: 10,
-                        backgroundColor: Color(0xFF9DCFF7),
-                        color: Color(0x000F47AD),
-                        borderRadius: BorderRadius.circular(50),
+                    ),
+
+                    // Upcoming Section
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Upcoming', //
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: upcomingCards.length,
+                            itemBuilder: (context, index) {
+                              return UpcomingCard(
+                                title: upcomingCards[index]['title']!,
+                                description: upcomingCards[index]['description']!,
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                // Information Section
-                Padding(
-                  padding: EdgeInsets.only(bottom: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Lihat Alur Pendaftaran Tugas Akhir',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      SizedBox(
-                        height: 128,
-                        child: ListView.separated(
-                          separatorBuilder:
-                              (context, index) => const SizedBox(width: 16),
-                          scrollDirection: Axis.horizontal,
-                          physics: const ClampingScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: pengumumanCards.length,
-                          itemBuilder: (context, index) {
-                            return PengumumanCard(
-                              title: pengumumanCards[index]['title']!,
-                              description:
-                              pengumumanCards[index]['description']!,
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Upcoming Section
-                Padding(
-                  padding: EdgeInsets.only(bottom: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Upcoming',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: upcomingCards.length,
-                        itemBuilder: (context, index) {
-                          return UpcomingCard(
-                            title: upcomingCards[index]['title']!,
-                            description: upcomingCards[index]['description']!,
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),

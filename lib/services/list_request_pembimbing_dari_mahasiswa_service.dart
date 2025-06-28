@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:digita_mobile/models/list_request_pembimbing_dari_mahasiswa_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:digita_mobile/services/base_url.dart';
 
 class NetworkException implements Exception {
   final String message;
@@ -14,17 +15,12 @@ class NetworkException implements Exception {
 }
 
 class ListRequestPembimbingDariMahasiswaService {
-  static const String _baseUrl =
-  kReleaseMode
-      ? "YOUR_PRODUCTION_API_URL"
-      : "https://digita-admin-api.onrender.com";
-      //: "http://10.0.2.2:8000";
   final http.Client _client;
 
   ListRequestPembimbingDariMahasiswaService({http.Client? client}) : _client = client ?? http.Client();
 
   Future<List<ListRequestPembimbingDariMahasiswaModel>> getIncomingRequests(String token) async {
-    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/supervision-requests/');
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/tugas-akhir/supervision-requests/');
     try {
       final response = await _client.get(
         url,
@@ -58,7 +54,7 @@ class ListRequestPembimbingDariMahasiswaService {
     required String responseMessage,
     required String token,
   }) async {
-    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/supervision-requests/$requestId/');
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/tugas-akhir/supervision-requests/$requestId/');
     if (kDebugMode) {
       print("--- Responding to Request ---");
       print("URL: $url");

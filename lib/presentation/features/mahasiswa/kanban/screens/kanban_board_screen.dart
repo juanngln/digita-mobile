@@ -28,6 +28,7 @@ class _KanbanBoardScreenState extends State<KanbanBoardScreen> {
       length: 3,
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
+          heroTag: null,
           onPressed: () {
             _showTambahKanbanForm(context);
           },

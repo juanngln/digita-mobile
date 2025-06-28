@@ -14,6 +14,9 @@ import 'package:digita_mobile/viewmodels/registration_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:digita_mobile/services/profile_service.dart';
+import 'package:digita_mobile/services/secure_storage_service.dart';
+import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -86,8 +89,20 @@ class MyApp extends StatelessWidget {
               create: (context) => RegistrationViewModel(RegistrationService()),
               child: const RegisterDosenScreen(),
             ),
-        '/home_mahasiswa': (context) => const MainLayoutMahasiswa(),
-        '/home_dosen': (context) => const MainLayoutDosen(),
+        '/home_mahasiswa': (context) => ChangeNotifierProvider(
+          create: (context) => ProfileViewModel(
+            profileService: ProfileService(),
+            secureStorageService: SecureStorageService(),
+          )..loadUserProfile(),
+          child: const MainLayoutMahasiswa(),
+        ),
+        '/home_dosen': (context) => ChangeNotifierProvider(
+          create: (context) => ProfileViewModel(
+            profileService: ProfileService(),
+            secureStorageService: SecureStorageService(),
+          )..loadUserProfile(),
+          child: const MainLayoutDosen(),
+        ),
         '/cari_dosen': (context) => const CariDosen(),
         '/daftar_dosen': (context) => const DaftarDosen(),
         '/status_pengajuan_dosen': (context) => const StatusPengajuan(),

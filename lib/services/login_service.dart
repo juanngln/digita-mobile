@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:digita_mobile/models/mahasiswa.dart';
+import 'package:digita_mobile/services/base_url.dart';
 
 // --- Custom Exceptions ---
 class NetworkException implements Exception {
@@ -21,16 +23,6 @@ class AuthenticationException implements Exception {
 }
 
 class LoginService {
-  // --- Base URL Configuration ---
-  // Gunakan 10.0.2.2 untuk Android emulator untuk access ke localhost/127.0.0.1
-  /* jika menggunakan android device asli
-     Ganti alamat ip menggunakan alamat ip laptop/komputermu */
-  static const String _baseUrl =
-      kReleaseMode
-          ? "_PRODUCTION_URL"
-          : "https://digita-admin-api.onrender.com";
-          //: "http://10.0.2.2:8000";
-
 
   final http.Client _client;
 
@@ -42,7 +34,7 @@ class LoginService {
     required String identifier,
     required String password,
   }) async {
-    final url = Uri.parse('$_baseUrl/api/v1/users/login/');
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/users/login/');
     final Map<String, String> loginData = {
       "role": role.toLowerCase(),
       "identifier": identifier,
@@ -124,7 +116,7 @@ class LoginService {
   // --- Method to Check Mahasiswa Request Status  ---
   Future<Map<String, dynamic>?> checkThesisRequestStatus(String token) async {
     final requestStatusUrl = Uri.parse(
-      '$_baseUrl/api/v1/tugas-akhir/supervision-requests/',
+      '${AppConfig.baseUrl}/api/v1/tugas-akhir/supervision-requests/',
     );
     if (kDebugMode) print("Checking thesis status from: $requestStatusUrl");
 
@@ -166,6 +158,16 @@ class LoginService {
       throw Exception(
         "Terjadi kesalahan tidak diketahui saat memeriksa status: $e",
       );
+    }
+  }
+
+  Future<Mahasiswa> getMahasiswaData(int userId) async {
+    final response = await http.get(Uri.parse('${AppConfig.baseUrl}/users/mahasiswa/$userId/'));
+
+    if (response.statusCode == 200) {
+      return Mahasiswa.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load mahasiswa data');
     }
   }
 

@@ -6,6 +6,7 @@ import 'package:digita_mobile/models/jurusan_model.dart';
 import 'package:digita_mobile/models/program_studi_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:digita_mobile/services/base_url.dart';
 
 class NetworkException implements Exception {
   final String message;
@@ -30,15 +31,6 @@ class RegistrationFailedException implements Exception {
 }
 
 class RegistrationService {
-  // --- Base URL Configuration ---
-  // Gunakan 10.0.2.2 untuk Android emulator untuk access ke localhost/127.0.0.1
-  /* jika menggunakan android device asli
-     Ganti alamat ip menggunakan alamat ip laptop/komputermu */
-  static const String _baseUrl =
-      kReleaseMode
-          ? "_PRODUCTION_URL"
-          : "https://digita-admin-api.onrender.com";
-          //: "http://10.0.2.2:8000";
 
   final http.Client _client;
 
@@ -47,7 +39,7 @@ class RegistrationService {
 
   // --- Fetch Program Studi ---
   Future<List<ProgramStudi>> fetchProgramStudi() async {
-    final url = Uri.parse('$_baseUrl/api/v1/users/program-studi/');
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/users/program-studi/');
     if (kDebugMode) print("Fetching Program Studi from: $url");
 
     try {
@@ -84,7 +76,7 @@ class RegistrationService {
 
   // --- Fetch Jurusan ---
   Future<List<Jurusan>> fetchJurusan() async {
-    final url = Uri.parse('$_baseUrl/api/v1/users/jurusan/');
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/users/jurusan/');
     if (kDebugMode) print("Fetching Jurusan from: $url");
 
     try {
@@ -157,7 +149,7 @@ class RegistrationService {
       throw ArgumentError("Invalid role provided for registration.");
     }
 
-    final url = Uri.parse('$_baseUrl$endpoint');
+    final url = Uri.parse('${AppConfig.baseUrl}$endpoint');
     final String jsonBody = jsonEncode(registrationData);
 
     if (kDebugMode) {

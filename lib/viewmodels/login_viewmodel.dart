@@ -1,6 +1,7 @@
 import 'package:digita_mobile/services/login_service.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
+import 'package:digita_mobile/models/mahasiswa.dart';
 
 enum ViewState { idle, busy, error, success }
 
@@ -15,6 +16,9 @@ enum LoginResult {
 
 class LoginViewModel extends ChangeNotifier {
   final LoginService _loginService;
+  Mahasiswa? _mahasiswa;
+
+  Mahasiswa? get mahasiswa => _mahasiswa;
   final SecureStorageService _secureStorageService = SecureStorageService();
   LoginViewModel(this._loginService);
 
@@ -112,6 +116,14 @@ class LoginViewModel extends ChangeNotifier {
     } catch (e) {
       _setError("Terjadi kesalahan tidak dikenal: $e");
     }
+  }
+
+  Future<void> loginAndFetchData(String email, String password) async {
+    int userId = 16;
+
+    _mahasiswa = await _loginService.getMahasiswaData(userId);
+
+    notifyListeners();
   }
 
   // --- Check Status Mahasiswa Logic  ---

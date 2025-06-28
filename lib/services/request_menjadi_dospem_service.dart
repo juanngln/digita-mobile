@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:digita_mobile/services/base_url.dart';
 
 class NetworkException implements Exception {
   final String message;
@@ -13,16 +14,6 @@ class NetworkException implements Exception {
 }
 
 class RequestPembimbingKeDosenService {
-  // --- Base URL Configuration ---
-  // Gunakan 10.0.2.2 untuk Android emulator untuk access ke localhost/127.0.0.1
-  /* jika menggunakan android device asli
-     Ganti alamat ip menggunakan alamat ip laptop/komputermu */
-  static const String _baseUrl =
-      kReleaseMode
-          ? "_PRODUCTION_URL"
-          : "https://digita-admin-api.onrender.com";
-          //: "http://10.0.2.2:8000";
-
 
   final http.Client _client;
 
@@ -36,7 +27,7 @@ class RequestPembimbingKeDosenService {
     required String rencanaJudul,
     required String rencanaDeskripsi,
   }) async {
-    final url = Uri.parse('$_baseUrl/api/v1/tugas-akhir/supervision-requests/');
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/tugas-akhir/supervision-requests/');
     final Map<String, dynamic> requestBody = {
       "dosen_id": dosenId,
       "alasan_memilih_dosen": alasanMemilihDosen,

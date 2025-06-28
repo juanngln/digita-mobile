@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:digita_mobile/models/dosen_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:digita_mobile/services/base_url.dart';
 
 // Custom Exceptions
 class NetworkException implements Exception {
@@ -15,22 +16,13 @@ class NetworkException implements Exception {
 }
 
 class DosenService {
-  // --- Base URL Configuration ---
-  // Gunakan 10.0.2.2 untuk Android emulator untuk access ke localhost/127.0.0.1
-  /* jika menggunakan android device asli
-     Ganti alamat ip menggunakan alamat ip laptop/komputermu */
-  static const String _baseUrl =
-      kReleaseMode
-          ? "YOUR_PRODUCTION_API_URL"
-           : "https://digita-admin-api.onrender.com";
-           //: "http://10.0.2.2:8000";
 
   final http.Client _client;
 
   DosenService({http.Client? client}) : _client = client ?? http.Client();
 
   Future<List<Dosen>> getDosenList(String token) async {
-    final url = Uri.parse('$_baseUrl/api/v1/users/dosen/');
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/users/dosen/');
     if (kDebugMode) {
       print("--- Fetching Dosen List ---");
       print("URL: $url");
