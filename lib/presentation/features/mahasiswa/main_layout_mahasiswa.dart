@@ -10,7 +10,7 @@ import 'package:dio/dio.dart';
 import '../../../services/dio_client.dart';
 import '../../../services/secure_storage_service.dart';
 import '../../../viewmodels/dokumen_mahasiswa_viewmodel.dart';
-import '../../../viewmodels/jadwal_viewmodel.dart';
+import '../../../viewmodels/jadwal_mahasiswa_viewmodel.dart';
 
 class MainLayoutMahasiswa extends StatefulWidget {
   const MainLayoutMahasiswa({super.key});

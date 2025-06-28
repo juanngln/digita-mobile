@@ -4,8 +4,9 @@ List<JadwalBimbingan> jadwalBimbinganFromJson(String str) => List<JadwalBimbinga
 
 class JadwalBimbingan {
   final int id;
-  final DosenPembimbing mahasiswa;
-  final DosenPembimbing dosenPembimbing;
+  // Both fields now use the flexible BimbinganUser class
+  final BimbinganUser mahasiswa;
+  final BimbinganUser dosenPembimbing;
   final String judulBimbingan;
   final DateTime tanggal;
   final String waktu;
@@ -31,8 +32,9 @@ class JadwalBimbingan {
 
   factory JadwalBimbingan.fromJson(Map<String, dynamic> json) => JadwalBimbingan(
     id: json["id"],
-    mahasiswa: DosenPembimbing.fromJson(json["mahasiswa"]),
-    dosenPembimbing: DosenPembimbing.fromJson(json["dosen_pembimbing"]),
+    // The fromJson factory now uses BimbinganUser for both
+    mahasiswa: BimbinganUser.fromJson(json["mahasiswa"]),
+    dosenPembimbing: BimbinganUser.fromJson(json["dosen_pembimbing"]),
     judulBimbingan: json["judul_bimbingan"],
     tanggal: DateTime.parse(json["tanggal"]),
     waktu: json["waktu"],
@@ -44,15 +46,24 @@ class JadwalBimbingan {
   );
 }
 
-class DosenPembimbing {
+// Renamed from DosenPembimbing to a more generic name
+// This single class can represent either a student or a lecturer
+class BimbinganUser {
   final String namaLengkap;
+  final String? nim; // Nullable to handle lecturer objects
+  final String? nik; // Nullable to handle student objects
 
-  DosenPembimbing({
+  BimbinganUser({
     required this.namaLengkap,
+    this.nim,
+    this.nik,
   });
 
-  factory DosenPembimbing.fromJson(Map<String, dynamic> json) => DosenPembimbing(
+  // The factory now handles all possible keys from both user types
+  factory BimbinganUser.fromJson(Map<String, dynamic> json) => BimbinganUser(
     namaLengkap: json["nama_lengkap"],
+    nim: json["nim"], // Will be null if the key doesn't exist (e.g., for a lecturer)
+    nik: json["nik"], // Will be null if the key doesn't exist (e.g., for a student)
   );
 }
 

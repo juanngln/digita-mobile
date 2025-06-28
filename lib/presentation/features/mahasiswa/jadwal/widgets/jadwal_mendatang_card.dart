@@ -1,5 +1,5 @@
 import 'package:digita_mobile/presentation/features/mahasiswa/jadwal/widgets/tambah_jadwal_bottom_sheet.dart';
-import 'package:digita_mobile/viewmodels/jadwal_viewmodel.dart';
+import 'package:digita_mobile/viewmodels/jadwal_mahasiswa_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';

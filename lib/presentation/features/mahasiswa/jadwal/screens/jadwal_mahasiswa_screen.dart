@@ -2,7 +2,7 @@ import 'package:digita_mobile/presentation/common_widgets/subtitle.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/jadwal/widgets/jadwal_mendatang_card.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/jadwal/widgets/jadwal_selesai_card.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/jadwal/widgets/tambah_jadwal_bottom_sheet.dart';
-import 'package:digita_mobile/viewmodels/jadwal_viewmodel.dart';
+import 'package:digita_mobile/viewmodels/jadwal_mahasiswa_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
