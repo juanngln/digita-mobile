@@ -16,7 +16,6 @@ class JadwalDosenViewModel extends ChangeNotifier {
 
   List<JadwalBimbingan> _allSchedules = [];
 
-  // Filtered lists for each UI section based on API status
   List<JadwalBimbingan> get pendingSchedules => _allSchedules.where((s) => s.status == 'PENDING').toList();
   List<JadwalBimbingan> get acceptedSchedules => _allSchedules.where((s) => s.status == 'ACCEPTED').toList();
   List<JadwalBimbingan> get doneSchedules => _allSchedules.where((s) => s.status == 'DONE').toList();
@@ -35,7 +34,7 @@ class JadwalDosenViewModel extends ChangeNotifier {
       _setState(DosenViewState.success);
     } on DioException catch (e) {
       _state = DosenViewState.error;
-      _errorMessage = 'Failed to load schedule: ${e.response?.data ?? e.message}';
+      _errorMessage = 'Failed to load schedule: ${e.response?.data['message'] ?? e.message}';
       notifyListeners();
     } catch (e) {
       _state = DosenViewState.error;
@@ -44,48 +43,64 @@ class JadwalDosenViewModel extends ChangeNotifier {
     }
   }
 
-  // --- Action Methods for Dosen ---
+  void _updateLocalSchedule(Response response) {
+    final index = _allSchedules.indexWhere((s) => s.id == response.data['id']);
+    if (index != -1) {
+      _allSchedules[index] = JadwalBimbingan.fromJson(response.data);
+      notifyListeners();
+    }
+  }
 
   Future<bool> approveJadwal(int jadwalId) async {
     try {
-      // IMPORTANT: Use your actual API endpoint for approving
-      await _dio.post('/api/v1/tugas-akhir/jadwal-bimbingan/$jadwalId/approve/');
-      await fetchJadwalBimbinganDosen(); // Refresh list on success
+      final response = await _dio.patch(
+        '/api/v1/tugas-akhir/jadwal-bimbingan/$jadwalId/respond/',
+        data: {"status": "ACCEPTED"},
+      );
+      _updateLocalSchedule(response);
       return true;
     } on DioException catch (e) {
-      _errorMessage = "Failed to approve: ${e.message}";
+      _errorMessage = "Gagal menyetujui jadwal: ${e.response?.data['message'] ?? e.message}";
       notifyListeners();
       return false;
     }
   }
 
   Future<bool> rejectJadwal(int jadwalId, String alasan) async {
+    if (alasan.trim().isEmpty) {
+      _errorMessage = "Alasan penolakan tidak boleh kosong.";
+      notifyListeners();
+      return false;
+    }
     try {
-      // IMPORTANT: Use your actual API endpoint for rejecting
-      await _dio.post(
-        '/api/v1/tugas-akhir/jadwal-bimbingan/$jadwalId/reject/',
-        data: {'alasan_penolakan': alasan},
+      final response = await _dio.patch(
+        '/api/v1/tugas-akhir/jadwal-bimbingan/$jadwalId/respond/',
+        data: {"status": "REJECTED", "alasan_penolakan": alasan},
       );
-      await fetchJadwalBimbinganDosen(); // Refresh list on success
+      _updateLocalSchedule(response);
       return true;
     } on DioException catch (e) {
-      _errorMessage = "Failed to reject: ${e.message}";
+      _errorMessage = "Gagal menolak jadwal: ${e.response?.data['message'] ?? e.message}";
       notifyListeners();
       return false;
     }
   }
 
   Future<bool> completeJadwal(int jadwalId, String catatan) async {
+    if (catatan.trim().isEmpty) {
+      _errorMessage = "Catatan bimbingan tidak boleh kosong.";
+      notifyListeners();
+      return false;
+    }
     try {
-      // IMPORTANT: Use your actual API endpoint for completing
-      await _dio.post(
+      final response = await _dio.patch(
         '/api/v1/tugas-akhir/jadwal-bimbingan/$jadwalId/complete/',
         data: {'catatan_bimbingan': catatan},
       );
-      await fetchJadwalBimbinganDosen(); // Refresh list on success
+      _updateLocalSchedule(response);
       return true;
     } on DioException catch (e) {
-      _errorMessage = "Failed to complete: ${e.message}";
+      _errorMessage = "Gagal menyelesaikan jadwal: ${e.response?.data['message'] ?? e.message}";
       notifyListeners();
       return false;
     }

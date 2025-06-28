@@ -68,26 +68,36 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Permintaan Bimbingan Section
+                    // --- Permintaan Bimbingan Section ---
                     _buildSectionTitle('Permintaan Bimbingan'),
                     const SizedBox(height: 12),
-                    _buildBimbinganList(
-                        viewModel.pendingSchedules, 'permintaan'),
+                    if (viewModel.pendingSchedules.isEmpty)
+                      _buildEmptyListPlaceholder('permintaan')
+                    else
+                      ...viewModel.pendingSchedules
+                          .map((item) => _buildBimbinganCard(item)),
 
                     const SizedBox(height: 24),
 
-                    // Bimbingan Disetujui Section
+                    // --- Bimbingan Disetujui Section ---
                     _buildSectionTitle('Bimbingan Disetujui'),
                     const SizedBox(height: 12),
-                    _buildBimbinganList(
-                        viewModel.acceptedSchedules, 'disetujui'),
+                    if (viewModel.acceptedSchedules.isEmpty)
+                      _buildEmptyListPlaceholder('disetujui')
+                    else
+                      ...viewModel.acceptedSchedules
+                          .map((item) => _buildBimbinganCard(item)),
 
                     const SizedBox(height: 24),
 
-                    // Bimbingan Selesai Section
+                    // --- Bimbingan Selesai Section ---
                     _buildSectionTitle('Bimbingan Selesai'),
                     const SizedBox(height: 12),
-                    _buildBimbinganList(viewModel.doneSchedules, 'selesai'),
+                    if (viewModel.doneSchedules.isEmpty)
+                      _buildEmptyListPlaceholder('selesai')
+                    else
+                      ...viewModel.doneSchedules
+                          .map((item) => _buildBimbinganCard(item)),
                   ],
                 ),
               );
@@ -98,25 +108,19 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
     );
   }
 
-  Widget _buildBimbinganList(
-      List<JadwalBimbingan> bimbinganList, String status) {
-    if (bimbinganList.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        child: Text(
-          'Belum ada bimbingan ${status == "permintaan" ? "yang diminta" : status}',
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.grey,
-            fontFamily: 'Poppins',
-          ),
-          textAlign: TextAlign.center,
+  Widget _buildEmptyListPlaceholder(String status) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Text(
+        'Belum ada bimbingan ${status == "permintaan" ? "yang diminta" : status}',
+        style: const TextStyle(
+          fontSize: 14,
+          color: Colors.grey,
+          fontFamily: 'Poppins',
         ),
-      );
-    }
-    return Column(
-        children:
-        bimbinganList.map((item) => _buildBimbinganCard(item)).toList());
+        textAlign: TextAlign.center,
+      ),
+    );
   }
 
   Widget _buildSectionTitle(String title) {
@@ -183,8 +187,6 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
               ),
             ),
             const SizedBox(height: 12),
-
-            // Info rows
             _buildInfoRow(Icons.access_time_filled, dateTimeString),
             const SizedBox(height: 8),
             _buildInfoRow(Icons.person, studentInfo),
@@ -192,10 +194,8 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
             _buildInfoRow(
                 Icons.location_on, bimbingan.lokasiRuangan.namaRuangan),
             const SizedBox(height: 8),
-            _buildInfoRow(
-                Icons.edit_document, 'Catatan: ${bimbingan.catatanBimbingan ?? '-'}'),
-
-            // Conditional buttons based on the schedule status
+            _buildInfoRow(Icons.edit_document,
+                'Catatan: ${bimbingan.catatanBimbingan ?? '-'}'),
             if (bimbingan.status == 'PENDING')
               _buildActionButtonsForPending(bimbingan),
             if (bimbingan.status == 'ACCEPTED')
@@ -251,14 +251,7 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
                 ),
                 minimumSize: const Size(80, 36),
               ),
-              child: const Text(
-                'Tolak',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              child: const Text('Tolak'),
             ),
             const SizedBox(width: 10),
             ElevatedButton(
@@ -273,14 +266,7 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
                 ),
                 minimumSize: const Size(80, 36),
               ),
-              child: const Text(
-                'Setuju',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              child: const Text('Setuju'),
             ),
           ],
         ),
@@ -305,33 +291,35 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
                 borderRadius: BorderRadius.circular(30),
               ),
             ),
-            child: const Text(
-              'Selesaikan dan perbarui Catatan',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
+            child: const Text('Selesaikan dan perbarui Catatan'),
           ),
         ),
       ],
     );
   }
 
-  // --- Bottom Sheet Handlers ---
+  // --- Bottom Sheet Handlers (robust async/await pattern) ---
 
-  void _showSetujuBottomSheet(JadwalBimbingan bimbingan) {
-    context.read<JadwalDosenViewModel>().approveJadwal(bimbingan.id).then((success) {
-      if (success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Bimbingan disetujui"),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    });
+  void _showSetujuBottomSheet(JadwalBimbingan bimbingan) async {
+    final success = await context
+        .read<JadwalDosenViewModel>()
+        .approveJadwal(bimbingan.id);
+
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("Bimbingan disetujui"), backgroundColor: Colors.green),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(context.read<JadwalDosenViewModel>().errorMessage ??
+                "Gagal menyetujui jadwal"),
+            backgroundColor: Colors.red),
+      );
+    }
   }
 
   void _showTolakBottomSheet(JadwalBimbingan bimbingan) {
@@ -345,21 +333,26 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
         title: 'Alasan Penolakan',
         hintText: 'Masukkan alasan penolakan bimbingan...',
         buttonText: 'TOLAK BIMBINGAN',
-        onSave: (String catatan) {
-          Navigator.pop(ctx);
-          context
+        onSave: (String catatan) async {
+          final success = await context
               .read<JadwalDosenViewModel>()
-              .rejectJadwal(bimbingan.id, catatan)
-              .then((success) {
-            if (success && mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+              .rejectJadwal(bimbingan.id, catatan);
+          if (!mounted) return;
+          if (success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
                   content: Text("Bimbingan ditolak"),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          });
+                  backgroundColor: Colors.orange),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      context.read<JadwalDosenViewModel>().errorMessage ??
+                          "Gagal menolak jadwal"),
+                  backgroundColor: Colors.red),
+            );
+          }
         },
       ),
     );
@@ -376,21 +369,27 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
         title: 'Catatan hasil bimbingan',
         hintText: 'Masukkan catatan hasil bimbingan...',
         buttonText: 'SIMPAN',
-        onSave: (String catatan) {
-          Navigator.pop(ctx);
-          context
+        onSave: (String catatan) async {
+          final success = await context
               .read<JadwalDosenViewModel>()
-              .completeJadwal(bimbingan.id, catatan)
-              .then((success) {
-            if (success && mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Bimbingan telah diselesaikan"),
-                  backgroundColor: Colors.green,
-                ),
-              );
-            }
-          });
+              .completeJadwal(bimbingan.id, catatan);
+          if (!mounted) return;
+          if (success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Bimbingan telah diselesaikan"),
+                backgroundColor: Colors.green,
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      context.read<JadwalDosenViewModel>().errorMessage ??
+                          "Gagal menyimpan catatan"),
+                  backgroundColor: Colors.red),
+            );
+          }
         },
       ),
     );
