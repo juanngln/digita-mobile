@@ -10,10 +10,10 @@ class MainLayoutDosen extends StatefulWidget {
   const MainLayoutDosen({super.key});
 
   @override
-  State<MainLayoutDosen> createState() => _MainLayoutDosen();
+  State<MainLayoutDosen> createState() => _MainLayoutDosenState();
 }
 
-class _MainLayoutDosen extends State<MainLayoutDosen> {
+class _MainLayoutDosenState extends State<MainLayoutDosen> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = <Widget>[

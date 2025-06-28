@@ -39,7 +39,7 @@ class DosenPembimbingInfoScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(12), // Corner radius 12
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.3), // Warna bayangan
+                  color: Colors.grey, // Warna bayangan
                   spreadRadius: 2, // Seberapa menyebar bayangannya
                   blurRadius: 7, // Seberapa kabur bayangannya
                   offset: const Offset(0, 3), // Posisi bayangan (X, Y)

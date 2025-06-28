@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Mahasiswa {
   final int userId;
   final String nim;

@@ -134,7 +134,6 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
               if (shouldLogout == true && mounted) {
                 // Logika logout dan navigasi ke LoginScreen
                 // Navigator.of(context).pushAndRemoveUntil(...);
-                print("LOGOUT CONFIRMED FOR DOSEN!");
               }
             },
           ),

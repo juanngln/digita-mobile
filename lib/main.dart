@@ -9,6 +9,7 @@ import 'package:digita_mobile/presentation/features/mahasiswa/tidak_ada_dospem/s
 import 'package:digita_mobile/presentation/features/mahasiswa/tidak_ada_dospem/screens/status_pengajuan_dospem_screen.dart';
 import 'package:digita_mobile/services/login_service.dart';
 import 'package:digita_mobile/services/registration_service.dart';
+import 'package:digita_mobile/viewmodels/dokumen_dosen_viewmodel.dart';
 import 'package:digita_mobile/viewmodels/login_viewmodel.dart';
 import 'package:digita_mobile/viewmodels/registration_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +19,15 @@ import 'package:digita_mobile/services/profile_service.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
+  await FlutterDownloader.initialize(
+      debug: true,
+      ignoreSsl: true
+  );
   runApp(const MyApp());
 }
 
@@ -99,11 +105,18 @@ class MyApp extends StatelessWidget {
           )..loadUserProfile(),
           child: const MainLayoutMahasiswa(),
         ),
-        '/home_dosen': (context) => ChangeNotifierProvider(
-          create: (context) => ProfileViewModel(
-            profileService: ProfileService(),
-            secureStorageService: SecureStorageService(),
-          )..loadUserProfile(),
+        '/home_dosen': (context) => MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+              create: (context) => ProfileViewModel(
+                profileService: ProfileService(),
+                secureStorageService: SecureStorageService(),
+              )..loadUserProfile(),
+            ),
+            ChangeNotifierProvider(
+              create: (context) => DokumenDosenViewModel(),
+            ),
+          ],
           child: const MainLayoutDosen(),
         ),
         '/cari_dosen': (context) => const CariDosen(),

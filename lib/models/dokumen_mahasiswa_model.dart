@@ -31,9 +31,9 @@ class DocumentDetails {
   final String babDisplay;
   final String namaDokumen;
   final String fileUrl;
-  final String status;
+  late final String status;
   final String statusDisplay;
-  final String? catatanRevisi;
+  late final String? catatanRevisi;
   final PemilikInfo pemilikInfo;
   final DateTime uploadedAt;
 

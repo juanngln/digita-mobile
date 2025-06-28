@@ -1,12 +1,9 @@
-// lib/viewmodels/dokumen_viewmodel.dart
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:digita_mobile/models/dokumen_mahasiswa_model.dart';
 import 'package:digita_mobile/services/dokumen_service.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class DokumenViewModel extends ChangeNotifier {
   final DokumenService _dokumenService = DokumenService();

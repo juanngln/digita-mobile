@@ -6,9 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:digita_mobile/models/dosen_model.dart';
-import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
-import 'package:digita_mobile/services/profile_service.dart';
 
 class HomeDosenScreen extends StatefulWidget {
   const HomeDosenScreen({super.key});

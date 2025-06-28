@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Quote {
   final String q;
   final String a;

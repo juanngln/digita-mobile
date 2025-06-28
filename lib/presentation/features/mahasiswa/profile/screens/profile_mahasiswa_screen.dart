@@ -135,7 +135,6 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
             onTap: () async {
               final bool? shouldLogout = await showLogoutDialog(context);
               if (shouldLogout == true) {
-                print("LOGOUT CONFIRMED!");
               }
             },
           ),

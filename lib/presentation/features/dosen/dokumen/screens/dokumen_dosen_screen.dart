@@ -1,47 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:digita_mobile/viewmodels/dokumen_dosen_viewmodel.dart';
 import 'package:digita_mobile/presentation/features/dosen/dokumen/screens/status_dokumen_dosen_screen.dart';
+import 'package:digita_mobile/models/list_mahasiswa_bimbingan.dart';
 
 class DokumenDosenScreen extends StatefulWidget {
   const DokumenDosenScreen({super.key});
 
   @override
-  State<DokumenDosenScreen> createState() => _DokumenDosenState();
+  State<DokumenDosenScreen> createState() => _DokumenDosenScreenState();
 }
 
-class _DokumenDosenState extends State<DokumenDosenScreen> {
-
-  final List<Mahasiswa> mahasiswaList = [
-    Mahasiswa(
-      nama: 'Udin Prakoso Bakti',
-      informasiMahasiswa: '3342301827 - Teknik Informatika',
-      avatarPath: 'assets/img/mhs_pria.png',
-    ),
-    Mahasiswa(
-      nama: 'Abyan Putra Tama',
-      informasiMahasiswa: '4467152497 - Animasi',
-      avatarPath: 'assets/img/mhs_pria.png',
-    ),
-    Mahasiswa(
-      nama: 'Siska Putri Nymas',
-      informasiMahasiswa: '3309871645 - Teknologi Geomatika',
-      avatarPath: 'assets/img/mhs_wanita.png',
-    ),
-    Mahasiswa(
-      nama: 'Anggara Putra Nugroho',
-      informasiMahasiswa: '4316332414 - RKS',
-      avatarPath: 'assets/img/mhs_pria.png',
-    ),
-    Mahasiswa(
-      nama: 'Wildha Siti Nur',
-      informasiMahasiswa: '3312401824 - Teknik Informatika',
-      avatarPath: 'assets/img/mhs_wanita.png',
-    ),
-    Mahasiswa(
-      nama: 'Boy Arnez Araby',
-      informasiMahasiswa: '4342301827 - TRM',
-      avatarPath: 'assets/img/mhs_pria.png',
-    ),
-  ];
+class _DokumenDosenScreenState extends State<DokumenDosenScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<DokumenDosenViewModel>(context, listen: false)
+          .fetchMahasiswaBimbingan();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +28,8 @@ class _DokumenDosenState extends State<DokumenDosenScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'Dokumen Tugas Akhir',
@@ -86,83 +65,113 @@ class _DokumenDosenState extends State<DokumenDosenScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              ...mahasiswaList.map((mahasiswa) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => StatusDokumenDosenScreen(
-                          mahasiswa: mahasiswa,
-                        ),
-                      ),
-                    );
+              Expanded(
+                child: Consumer<DokumenDosenViewModel>(
+                  builder: (context, viewModel, child) {
+                    switch (viewModel.mahasiswaState) {
+                      case ViewState.Loading:
+                        return const Center(child: CircularProgressIndicator());
+                      case ViewState.Error:
+                        return Center(child: Text('Error: ${viewModel.mahasiswaErrorMessage}'));
+                      case ViewState.Success:
+                        if (viewModel.mahasiswaList.isEmpty) {
+                          return const Center(
+                            child: Text('Anda belum memiliki mahasiswa bimbingan.'),
+                          );
+                        }
+                        return _buildMahasiswaList(viewModel.mahasiswaList);
+                      default:
+                        return const SizedBox.shrink();
+                    }
                   },
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 5,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            mahasiswa.avatarPath,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                mahasiswa.nama,
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF0F47AD),
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                mahasiswa.informasiMahasiswa,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Icon(
-                          Icons.chevron_right_rounded,
-                          color: Colors.black87,
-                          size: 24,
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
+                ),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMahasiswaList(List<ListMahasiswaBimbingan> mahasiswaList) {
+    return ListView.builder(
+      itemCount: mahasiswaList.length,
+      itemBuilder: (context, index) {
+        final mahasiswa = mahasiswaList[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ChangeNotifierProvider.value(
+                  value: Provider.of<DokumenDosenViewModel>(context, listen: false),
+                  child: StatusDokumenDosenScreen(
+                    mahasiswa: mahasiswa,
+                  ),
+                ),
+              ),
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha(50),
+                  blurRadius: 5,
+                  offset: Offset(0, 4),
+                )
+              ],
+            ),
+            child: Row(
+              children: [
+                ClipOval(
+                  child: Image.asset(
+                    mahasiswa.avatarPath,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        mahasiswa.namaLengkap,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF0F47AD),
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${mahasiswa.nim} - ${mahasiswa.programStudi.namaProdi}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: Colors.black87,
+                  size: 24,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
