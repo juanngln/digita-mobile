@@ -11,6 +11,7 @@ class CustomTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final Color? fillColor;
   final int maxLines;
+  final bool readOnly;
 
   const CustomTextField({
     super.key,
@@ -23,6 +24,7 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.fillColor,
     this.maxLines = 1,
+    this.readOnly = false,
   });
 
   @override
@@ -72,6 +74,7 @@ class CustomTextField extends StatelessWidget {
       enabled: enabled,
       obscureText: obscureText,
       maxLines: maxLines,
+      readOnly: readOnly,
       style: GoogleFonts.poppins(
         fontSize: 16,
         fontWeight: FontWeight.bold,

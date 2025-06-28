@@ -90,7 +90,7 @@ class _TambahKanbanBottomSheetState extends State<TambahKanbanBottomSheet> {
                             }
                             return null;
                           },
-                          fillColor: Theme.of(context).colorScheme.secondary,
+                          fillColor: Theme.of(context).colorScheme.secondary, readOnly: false,
                         ),
                       ],
                     ),
@@ -114,7 +114,7 @@ class _TambahKanbanBottomSheetState extends State<TambahKanbanBottomSheet> {
                             }
                             return null;
                           },
-                          fillColor: Theme.of(context).colorScheme.secondary,
+                          fillColor: Theme.of(context).colorScheme.secondary, readOnly: false,
                         ),
                       ],
                     ),
@@ -138,7 +138,7 @@ class _TambahKanbanBottomSheetState extends State<TambahKanbanBottomSheet> {
                             }
                             return null;
                           },
-                          fillColor: Theme.of(context).colorScheme.secondary,
+                          fillColor: Theme.of(context).colorScheme.secondary, readOnly: false,
                         ),
                       ],
                     ),

@@ -5,6 +5,9 @@ import 'package:digita_mobile/presentation/common_widgets/navbar/bottom_navbar_m
 import 'package:digita_mobile/presentation/features/mahasiswa/kanban/screens/kanban_board_screen.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/profile/screens/profile_mahasiswa_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../viewmodels/dokumen_viewmodel.dart';
 
 class MainLayoutMahasiswa extends StatefulWidget {
   const MainLayoutMahasiswa({super.key});
@@ -19,7 +22,10 @@ class _MainLayoutMahasiswa extends State<MainLayoutMahasiswa> {
   final List<Widget> _pages = <Widget>[
     const HomeMahasiswaScreen(),
     const JadwalMahasiswaScreen(),
-    const DokumenMahasiswaScreen(),
+    ChangeNotifierProvider(
+      create: (context) => DokumenViewModel(),
+      child: const DokumenMahasiswaScreen(),
+    ),
     const KanbanBoardScreen(),
     const ProfileMahasiswaScreen()
   ];

@@ -155,7 +155,7 @@ class _TambahJadwalBottomSheet extends State<TambahJadwalBottomSheet> {
           CustomTextField(
             controller: _titleController,
             hintText: 'Masukkan judul bimbingan',
-            fillColor: consistentFillColor,
+            fillColor: consistentFillColor, readOnly: false,
           ),
           const SizedBox(height: 16),
           Text(
@@ -171,7 +171,7 @@ class _TambahJadwalBottomSheet extends State<TambahJadwalBottomSheet> {
             controller: _studentController,
             hintText: 'Dr John Doe',
             fillColor: consistentFillColor,
-            enabled: false,
+            enabled: false, readOnly: false,
           ),
           const SizedBox(height: 16),
           Text(

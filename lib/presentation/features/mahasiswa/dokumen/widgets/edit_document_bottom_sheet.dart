@@ -153,7 +153,7 @@ class _EditDocumentBottomSheet extends State<EditDocumentBottomSheet> {
                             }
                             return null;
                           },
-                          fillColor: Theme.of(context).colorScheme.secondary,
+                          fillColor: Theme.of(context).colorScheme.secondary, readOnly: false,
                         ),
                       ],
                     ),
@@ -177,7 +177,7 @@ class _EditDocumentBottomSheet extends State<EditDocumentBottomSheet> {
                             }
                             return null;
                           },
-                          fillColor: Theme.of(context).colorScheme.secondary,
+                          fillColor: Theme.of(context).colorScheme.secondary, readOnly: false,
                         ),
                       ],
                     ),

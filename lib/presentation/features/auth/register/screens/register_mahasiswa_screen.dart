@@ -227,7 +227,7 @@ class _RegisterMahasiswaScreenState extends State<RegisterMahasiswaScreen> {
                                         (v) =>
                                             (v == null || v.trim().isEmpty)
                                                 ? 'Nama Lengkap tidak boleh kosong'
-                                                : null,
+                                                : null, readOnly: false,
                                   ),
                                   const SizedBox(height: 20),
                                   CustomTextField(
@@ -245,7 +245,7 @@ class _RegisterMahasiswaScreenState extends State<RegisterMahasiswaScreen> {
                                         return 'Format email tidak valid';
                                       }
                                       return null;
-                                    },
+                                    }, readOnly: false,
                                   ),
                                   const SizedBox(height: 20),
                                   ProgramStudiDropdown(
@@ -262,7 +262,7 @@ class _RegisterMahasiswaScreenState extends State<RegisterMahasiswaScreen> {
                                         (v) =>
                                             (v == null || v.trim().isEmpty)
                                                 ? 'NIM tidak boleh kosong'
-                                                : null,
+                                                : null, readOnly: false,
                                   ),
                                   const SizedBox(height: 20),
                                   PasswordInputField(

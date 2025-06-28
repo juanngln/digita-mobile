@@ -1,6 +1,8 @@
 import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/upload_document_bottom_sheet.dart';
+import 'package:digita_mobile/viewmodels/dokumen_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class NotUploadedDocumentCard extends StatefulWidget {
   final String title;
@@ -13,12 +15,15 @@ class NotUploadedDocumentCard extends StatefulWidget {
   });
 
   @override
-  State<NotUploadedDocumentCard> createState() => _NotUploadedDocumentCard();
+  State<NotUploadedDocumentCard> createState() => _NotUploadedDocumentCardState();
 }
 
-class _NotUploadedDocumentCard extends State<NotUploadedDocumentCard> {
+class _NotUploadedDocumentCardState extends State<NotUploadedDocumentCard> {
   @override
   Widget build(BuildContext context) {
+    // Get the ViewModel instance from the context.
+    final dokumenViewModel = Provider.of<DokumenViewModel>(context, listen: false);
+
     return Container(
       width: MediaQuery.of(context).size.width - 40,
       height: 150,
@@ -30,11 +35,12 @@ class _NotUploadedDocumentCard extends State<NotUploadedDocumentCard> {
           BoxShadow(
             spreadRadius: 0,
             blurRadius: 4,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
             color: Colors.black.withAlpha(50),
           ),
         ],
       ),
+      // Restoring original padding
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -42,18 +48,16 @@ class _NotUploadedDocumentCard extends State<NotUploadedDocumentCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Restoring original text style
                 Text(
                   widget.title,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(fontSize: 16),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 Text(
-                  "Due: ${widget.dateTime}",
+                  widget.dateTime,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -71,19 +75,24 @@ class _NotUploadedDocumentCard extends State<NotUploadedDocumentCard> {
                   isDismissible: true,
                   enableDrag: true,
                   showDragHandle: true,
-                  shape: RoundedRectangleBorder(
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(25.0),
                     ),
                   ),
-                  builder: (BuildContext context) {
-                    return UploadDocumentBottomSheet();
+                  builder: (BuildContext innerContext) {
+                    // Provide the existing ViewModel to the bottom sheet
+                    return ChangeNotifierProvider.value(
+                      value: dokumenViewModel,
+                      child: UploadDocumentBottomSheet(bab: widget.title),
+                    );
                   },
                 );
               },
+              // Restoring original button style
               style: TextButton.styleFrom(
-                minimumSize: Size(0, 0),
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
+                minimumSize: const Size(0, 0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0),
@@ -91,6 +100,7 @@ class _NotUploadedDocumentCard extends State<NotUploadedDocumentCard> {
               ),
               child: Text(
                 'Upload',
+                // Restoring original button text style
                 style: GoogleFonts.poppins(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,

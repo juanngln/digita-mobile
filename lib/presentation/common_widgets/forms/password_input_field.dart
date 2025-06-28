@@ -45,7 +45,7 @@ class _PasswordInputFieldState extends State<PasswordInputField> {
           color: Colors.grey[500],
         ),
         onPressed: widget.enabled ? _toggleVisibility : null,
-      ),
+      ), readOnly: false,
     );
   }
 }

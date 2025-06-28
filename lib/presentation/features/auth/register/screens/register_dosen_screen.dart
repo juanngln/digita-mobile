@@ -204,7 +204,7 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
                                         (v) =>
                                             (v == null || v.trim().isEmpty)
                                                 ? 'Nama Lengkap tidak boleh kosong'
-                                                : null,
+                                                : null, readOnly: false,
                                   ),
                                   const SizedBox(height: 20),
                                   CustomTextField(
@@ -222,7 +222,7 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
                                         return 'Format email tidak valid';
                                       }
                                       return null;
-                                    },
+                                    }, readOnly: false,
                                   ),
                                   const SizedBox(height: 20),
             
@@ -243,7 +243,7 @@ class _RegisterDosenScreenState extends State<RegisterDosenScreen> {
                                         (v) =>
                                             (v == null || v.trim().isEmpty)
                                                 ? 'NIK tidak boleh kosong'
-                                                : null, // Changed message
+                                                : null, readOnly: false, // Changed message
                                   ),
                                   const SizedBox(height: 20),
             

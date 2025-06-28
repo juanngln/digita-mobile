@@ -17,8 +17,11 @@ import 'package:provider/provider.dart';
 import 'package:digita_mobile/services/profile_service.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
   runApp(const MyApp());
 }
 

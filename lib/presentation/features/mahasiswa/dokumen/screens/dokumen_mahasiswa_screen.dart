@@ -1,50 +1,32 @@
+
+import 'package:digita_mobile/models/dokumen_mahasiswa_model.dart';
 import 'package:digita_mobile/presentation/common_widgets/subtitle.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/not_uploaded_document_card.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/uploaded_document_card.dart';
+import 'package:digita_mobile/viewmodels/dokumen_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DokumenMahasiswaScreen extends StatefulWidget {
   const DokumenMahasiswaScreen({super.key});
 
   @override
-  State<DokumenMahasiswaScreen> createState() => _DokumenMahasiswaScreen();
+  State<DokumenMahasiswaScreen> createState() => _DokumenMahasiswaScreenState();
 }
 
-class _DokumenMahasiswaScreen extends State<DokumenMahasiswaScreen> {
-  final List<Map<String, dynamic>> uploadedDocument = [
-    {
-      'status': 'pending',
-      'title': 'BAB III: Analisis dan Perancangan',
-      'dateTime': '07 Maret 2025, 14:00',
-      'note': '-',
-    },
-    {
-      'status': 'revisi',
-      'title': 'BAB II: Landasan Teori',
-      'dateTime': '10 Maret 2025, 10:00',
-      'note': 'Struktur penulisan kurang sistematis',
-    },
-    {
-      'status': 'disetujui',
-      'title': 'BAB II: Landasan Teori',
-      'dateTime': '10 Maret 2025, 10:00',
-      'note': 'Struktur penulisan kurang sistematis',
-    },
-  ];
+class _DokumenMahasiswaScreenState extends State<DokumenMahasiswaScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch data when the widget is first created
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<DokumenViewModel>(context, listen: false).fetchDokumenStatus();
+    });
+  }
 
-  final List<Map<String, String>> uploadedYetDocument = [
-    {
-      'title': 'BAB IV: Implementasi dan Pembahasan',
-      'dateTime': '07 Maret 2025, 14:00',
-    },
-    {
-      'title': 'BAB V: Kesimpulan dan Saran',
-      'dateTime': '10 Maret 2025, 10:00',
-    },
-  ];
-
-  DocumentStatus parseStatus(String? value) {
-    switch (value) {
+  // Updated parseStatus function to handle string from API
+  DocumentStatus parseStatus(String? apiStatus) {
+    switch (apiStatus?.toLowerCase()) {
       case 'pending':
         return DocumentStatus.pending;
       case 'revisi':
@@ -52,7 +34,7 @@ class _DokumenMahasiswaScreen extends State<DokumenMahasiswaScreen> {
       case 'disetujui':
         return DocumentStatus.disetujui;
       default:
-        return DocumentStatus.pending;
+        return DocumentStatus.pending; // Default status
     }
   }
 
@@ -60,54 +42,71 @@ class _DokumenMahasiswaScreen extends State<DokumenMahasiswaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Dokumen Tugas Akhir',
-                  style: Theme.of(context).textTheme.titleLarge,
+        child: Consumer<DokumenViewModel>(
+          builder: (context, viewModel, child) {
+            if (viewModel.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (viewModel.errorMessage != null) {
+              return Center(child: Text('Error: ${viewModel.errorMessage}'));
+            }
+
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Dokumen Tugas Akhir',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    // Sudah Upload Section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Subtitle(text: 'Sudah Upload'),
+                    ),
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: viewModel.uploadedDocuments.length,
+                      itemBuilder: (context, index) {
+                        final doc = viewModel.uploadedDocuments[index];
+                        final details = doc.documentDetails!;
+                        return UploadedDocumentCard(
+                          // Use babDisplay for the title
+                          title: details.babDisplay,
+                          dateTime: viewModel.formatDateTime(details.uploadedAt),
+                          // Use catatanRevisi, provide a default if null
+                          note: details.catatanRevisi ?? '-',
+                          status: parseStatus(details.status),
+                        );
+                      },
+                    ),
+                    // Belum Upload Section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Subtitle(text: 'Belum Upload'),
+                    ),
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: viewModel.notUploadedDocuments.length,
+                      itemBuilder: (context, index) {
+                        final doc = viewModel.notUploadedDocuments[index];
+                        return NotUploadedDocumentCard(
+                          title: doc.bab, // Use 'bab' for the title
+                          dateTime: 'Belum diunggah',
+                        );
+                      },
+                    ),
+                  ],
                 ),
-                // Sudah Upload Section
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Subtitle(text: 'Sudah Upload'),
-                ),
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: uploadedDocument.length,
-                  itemBuilder: (context, index) {
-                    return UploadedDocumentCard(
-                      status: parseStatus(uploadedDocument[index]['status']),
-                      title: uploadedDocument[index]['title']!,
-                      dateTime: uploadedDocument[index]['dateTime']!,
-                      note: uploadedDocument[index]['note']!,
-                    );
-                  },
-                ),
-                // Belum Upload Section
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Subtitle(text: 'Belum Upload'),
-                ),
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: uploadedYetDocument.length,
-                  itemBuilder: (context, index) {
-                    return NotUploadedDocumentCard(
-                      title: uploadedYetDocument[index]['title']!,
-                      dateTime: uploadedYetDocument[index]['dateTime']!,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

@@ -287,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: _identifierController,
                           hintText: "NIM/NIK",
                           enabled: !isLoading,
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.number, readOnly: false,
                         ),
                         const SizedBox(height: 16),
                         PasswordInputField(

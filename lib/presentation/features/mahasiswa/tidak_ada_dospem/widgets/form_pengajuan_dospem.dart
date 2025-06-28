@@ -160,7 +160,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
                 controller: _dosenPembimbingController,
                 hintText: 'Nama Dosen Pembimbing',
                 enabled: false,
-                fillColor: disabledFieldFillColor,
+                fillColor: disabledFieldFillColor, readOnly: false,
               ),
               const SizedBox(height: 16),
 
@@ -205,7 +205,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
                   }
                   return null;
                 },
-                fillColor: activeFieldFillColor,
+                fillColor: activeFieldFillColor, readOnly: false,
               ),
               const SizedBox(height: 16),
 
