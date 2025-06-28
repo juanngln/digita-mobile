@@ -1,5 +1,3 @@
-// lib/services/dokumen_service.dart
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -42,13 +40,11 @@ class DokumenService {
       ).timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
-        // Use utf8.decode to prevent character encoding issues
         final List<dynamic> responseData = jsonDecode(utf8.decode(response.bodyBytes));
         return responseData
             .map((data) => DokumenStatusChecklist.fromJson(data as Map<String, dynamic>))
             .toList();
       } else {
-        // Provide a detailed error message for non-200 responses
         throw NetworkException(
             "Gagal memuat dokumen. Status: ${response.statusCode}, Pesan: ${response.body}");
       }
@@ -58,17 +54,11 @@ class DokumenService {
       throw NetworkException("Koneksi timeout. Server tidak merespons tepat waktu.");
     } catch (e) {
       if (kDebugMode) print("Error in getDokumenStatus: $e");
-      // Rethrow the original exception if it's already a NetworkException
       if (e is NetworkException) rethrow;
-      // Otherwise, wrap it
       throw NetworkException("Terjadi kesalahan tidak dikenal: $e");
     }
   }
 
-  /// Uploads a new document to the server.
-  ///
-  /// On success, it returns a [DocumentDetails] object which represents the newly
-  /// created document record from the API.
   Future<DocumentDetails> uploadDokumen({
     required String namaDokumen,
     required String bab,
@@ -97,7 +87,6 @@ class DokumenService {
 
       if (response.statusCode == 201) {
         final Map<String, dynamic> responseData = jsonDecode(utf8.decode(response.bodyBytes));
-        // FIX: Changed Dokumen.fromJson to DocumentDetails.fromJson
         return DocumentDetails.fromJson(responseData);
       } else {
         throw NetworkException(
@@ -111,6 +100,121 @@ class DokumenService {
       if (kDebugMode) print("Error in uploadDokumen: $e");
       if (e is NetworkException) rethrow;
       throw NetworkException("Terjadi kesalahan saat mengunggah: $e");
+    }
+  }
+
+  Future<DocumentDetails> editDokumen({
+    required int id,
+    required String namaDokumen,
+    File? file,
+  }) async {
+    final String? token = await _secureStorageService.getAccessToken();
+    if (token == null) {
+      throw NetworkException('Authentication token not found. Please log in again.');
+    }
+
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/tugas-akhir/dokumen/$id/');
+
+    try {
+      var request = http.MultipartRequest('PATCH', url)
+        ..headers['Authorization'] = 'Bearer $token'
+        ..fields['nama_dokumen'] = namaDokumen;
+
+      if (file != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'file',
+          file.path,
+          filename: basename(file.path),
+        ));
+      }
+
+      final streamedResponse = await request.send().timeout(AppConfig.apiTimeout);
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(utf8.decode(response.bodyBytes));
+        return DocumentDetails.fromJson(responseData);
+      } else {
+        throw NetworkException(
+            "Gagal mengedit dokumen. Status: ${response.statusCode}, Pesan: ${response.body}");
+      }
+    } on SocketException {
+      throw NetworkException("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+    } on TimeoutException {
+      throw NetworkException("Koneksi timeout. Server tidak merespons.");
+    } catch (e) {
+      if (kDebugMode) print("Error in editDokumen: $e");
+      if (e is NetworkException) rethrow;
+      throw NetworkException("Terjadi kesalahan saat mengedit: $e");
+    }
+  }
+
+  /// Fetches a temporary, pre-signed URL to access a document file.
+  Future<String> getAccessFileUrl(int id) async {
+    final String? token = await _secureStorageService.getAccessToken();
+    if (token == null) {
+      throw NetworkException('Authentication token not found. Please log in again.');
+    }
+
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/tugas-akhir/dokumen/$id/access-file/');
+
+    try {
+      final response = await _client.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(AppConfig.apiTimeout);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(utf8.decode(response.bodyBytes));
+        if (responseData.containsKey('url')) {
+          return responseData['url'];
+        } else {
+          throw NetworkException('Kunci "url" tidak ditemukan dalam respons API.');
+        }
+      } else {
+        throw NetworkException(
+            "Gagal mendapatkan akses file. Status: ${response.statusCode}, Pesan: ${response.body}");
+      }
+    } on SocketException {
+      throw NetworkException("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+    } on TimeoutException {
+      throw NetworkException("Koneksi timeout. Server tidak merespons.");
+    } catch (e) {
+      if (kDebugMode) print("Error in getAccessFileUrl: $e");
+      if (e is NetworkException) rethrow;
+      throw NetworkException("Terjadi kesalahan saat mendapatkan URL: $e");
+    }
+  }
+
+  /// Deletes a document by its ID.
+  Future<void> deleteDokumen({required int id}) async {
+    final String? token = await _secureStorageService.getAccessToken();
+    if (token == null) {
+      throw NetworkException('Authentication token not found. Please log in again.');
+    }
+
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/tugas-akhir/dokumen/$id/');
+
+    try {
+      final response = await _client.delete(
+        url,
+        headers: {'Authorization': 'Bearer $token'},
+      ).timeout(AppConfig.apiTimeout);
+
+      if (response.statusCode != 204 && response.statusCode != 200) {
+        throw NetworkException(
+            "Gagal menghapus dokumen. Status: ${response.statusCode}, Pesan: ${response.body}");
+      }
+    } on SocketException {
+      throw NetworkException("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+    } on TimeoutException {
+      throw NetworkException("Koneksi timeout. Server tidak merespons.");
+    } catch (e) {
+      if (kDebugMode) print("Error in deleteDokumen: $e");
+      if (e is NetworkException) rethrow;
+      throw NetworkException("Terjadi kesalahan saat menghapus: $e");
     }
   }
 

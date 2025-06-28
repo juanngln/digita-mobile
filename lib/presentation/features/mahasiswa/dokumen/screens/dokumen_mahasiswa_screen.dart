@@ -1,4 +1,3 @@
-
 import 'package:digita_mobile/models/dokumen_mahasiswa_model.dart';
 import 'package:digita_mobile/presentation/common_widgets/subtitle.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/not_uploaded_document_card.dart';
@@ -18,24 +17,9 @@ class _DokumenMahasiswaScreenState extends State<DokumenMahasiswaScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch data when the widget is first created
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<DokumenViewModel>(context, listen: false).fetchDokumenStatus();
     });
-  }
-
-  // Updated parseStatus function to handle string from API
-  DocumentStatus parseStatus(String? apiStatus) {
-    switch (apiStatus?.toLowerCase()) {
-      case 'pending':
-        return DocumentStatus.pending;
-      case 'revisi':
-        return DocumentStatus.revisi;
-      case 'disetujui':
-        return DocumentStatus.disetujui;
-      default:
-        return DocumentStatus.pending; // Default status
-    }
   }
 
   @override
@@ -63,7 +47,6 @@ class _DokumenMahasiswaScreenState extends State<DokumenMahasiswaScreen> {
                       'Dokumen Tugas Akhir',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    // Sudah Upload Section
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: Subtitle(text: 'Sudah Upload'),
@@ -74,18 +57,15 @@ class _DokumenMahasiswaScreenState extends State<DokumenMahasiswaScreen> {
                       itemCount: viewModel.uploadedDocuments.length,
                       itemBuilder: (context, index) {
                         final doc = viewModel.uploadedDocuments[index];
-                        final details = doc.documentDetails!;
+                        // Pass the entire details object to the card
+                        if (doc.documentDetails == null) {
+                          return const SizedBox.shrink(); // or an error widget
+                        }
                         return UploadedDocumentCard(
-                          // Use babDisplay for the title
-                          title: details.babDisplay,
-                          dateTime: viewModel.formatDateTime(details.uploadedAt),
-                          // Use catatanRevisi, provide a default if null
-                          note: details.catatanRevisi ?? '-',
-                          status: parseStatus(details.status),
+                          details: doc.documentDetails!,
                         );
                       },
                     ),
-                    // Belum Upload Section
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: Subtitle(text: 'Belum Upload'),
@@ -97,7 +77,7 @@ class _DokumenMahasiswaScreenState extends State<DokumenMahasiswaScreen> {
                       itemBuilder: (context, index) {
                         final doc = viewModel.notUploadedDocuments[index];
                         return NotUploadedDocumentCard(
-                          title: doc.bab, // Use 'bab' for the title
+                          title: doc.bab,
                           dateTime: 'Belum diunggah',
                         );
                       },
