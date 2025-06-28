@@ -2,7 +2,10 @@ import 'package:digita_mobile/presentation/common_widgets/subtitle.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/jadwal/widgets/jadwal_mendatang_card.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/jadwal/widgets/jadwal_selesai_card.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/jadwal/widgets/tambah_jadwal_bottom_sheet.dart';
+import 'package:digita_mobile/viewmodels/jadwal_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class JadwalMahasiswaScreen extends StatefulWidget {
   const JadwalMahasiswaScreen({super.key});
@@ -12,52 +15,41 @@ class JadwalMahasiswaScreen extends StatefulWidget {
 }
 
 class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
-  final List<Map<String, dynamic>> upcomingSchedule = [
-    {
-      'status': 'disetujui',
-      'title': 'Diskusi Pendahuluan',
-      'dateTime': '07 Maret 2025, 14:00',
-      'supervisor': 'Dr. Santoso Budi',
-      'location': 'Zoom Online',
-      'note': '-',
-    },
-    {
-      'status': 'ditolak',
-      'title': 'Diskusi Landasan Teori',
-      'dateTime': '10 Maret 2025, 10:00',
-      'supervisor': 'Dr. Santoso Budi',
-      'location': 'Zoom Online',
-      'note': 'Saya bisa jam 16:00 - 20:00',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // Fetch data right after the first frame is built.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<JadwalViewModel>(context, listen: false).fetchJadwalBimbingan();
+    });
+  }
 
-  final List<Map<String, String>> finishedSchedule = [
-    {
-      'title': 'Diskusi Judul Penelitian',
-      'dateTime': '04 Maret 2025, 14:00',
-      'supervisor': 'Dr. Santoso Budi',
-      'location': 'GU 702',
-      'note':
-          'Selesai membahas judul penelitian dan menetapkan judul penelitian.',
-    },
-  ];
-
-  ScheduleStatus parseStatus(String? value) {
-    switch (value) {
-      case 'disetujui':
+  /// Maps the status string from the API to the ScheduleStatus enum for the card widget.
+  ScheduleStatus parseStatus(String? apiStatus) {
+    switch (apiStatus) {
+      case 'ACCEPTED':
         return ScheduleStatus.disetujui;
-      case 'ditolak':
+      case 'REJECTED':
         return ScheduleStatus.ditolak;
+      case 'PENDING':
+        return ScheduleStatus.menunggu;
       default:
         return ScheduleStatus.kosong;
     }
+  }
+
+  /// Formats the date and time from the API into a user-friendly string.
+  String formatDateTime(DateTime date, String time) {
+    final formattedDate = DateFormat('dd MMMM yyyy', 'id_ID').format(date);
+    final formattedTime = time.substring(0, 5);
+    return '$formattedDate, $formattedTime';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        heroTag: null,
+        heroTag: 'addSchedule',
         onPressed: () {
           _showTambahJadwalForm(context);
         },
@@ -77,65 +69,102 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Jadwal Bimbingan',
-                  style: Theme.of(context).textTheme.titleLarge,
+        child: Consumer<JadwalViewModel>(
+          builder: (context, viewModel, child) {
+            // Handle Loading State
+            if (viewModel.state == ViewState.loading && viewModel.upcomingSchedules.isEmpty && viewModel.finishedSchedules.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            // Handle Error State
+            if (viewModel.state == ViewState.error && viewModel.upcomingSchedules.isEmpty && viewModel.finishedSchedules.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text('Gagal memuat data: ${viewModel.errorMessage}'),
                 ),
-                // Jadwal Mendatang Section
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Subtitle(text: 'Jadwal Mendatang'),
+              );
+            }
+
+            final upcomingSchedule = viewModel.upcomingSchedules;
+            final finishedSchedule = viewModel.finishedSchedules;
+
+            // Handle Success State (display the data)
+            return RefreshIndicator(
+              onRefresh: () => viewModel.fetchJadwalBimbingan(),
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Jadwal Bimbingan', style: Theme.of(context).textTheme.titleLarge),
+                      // Jadwal Mendatang Section
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Subtitle(text: 'Jadwal Mendatang'),
+                      ),
+                      if (upcomingSchedule.isEmpty)
+                        const Center(child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text('Tidak ada jadwal mendatang.'),
+                        ))
+                      else
+                        ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: upcomingSchedule.length,
+                          itemBuilder: (context, index) {
+                            final schedule = upcomingSchedule[index];
+                            return UpcomingScheduleCard(
+                              status: parseStatus(schedule.status),
+                              title: schedule.judulBimbingan,
+                              dateTime: formatDateTime(schedule.tanggal, schedule.waktu),
+                              supervisor: schedule.dosenPembimbing.namaLengkap,
+                              location: schedule.lokasiRuangan.namaRuangan,
+                              note: schedule.catatanBimbingan ?? '-',
+                              rejectionReason: schedule.alasanPenolakan,
+                            );
+                          },
+                        ),
+                      // Jadwal Selesai Section
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Subtitle(text: 'Selesai'),
+                      ),
+                      if (finishedSchedule.isEmpty)
+                        const Center(child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Text('Tidak ada jadwal yang selesai.'),
+                        ))
+                      else
+                        ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: finishedSchedule.length,
+                          itemBuilder: (context, index) {
+                            final schedule = finishedSchedule[index];
+                            return FinishedScheduleCard(
+                              title: schedule.judulBimbingan,
+                              dateTime: formatDateTime(schedule.tanggal, schedule.waktu),
+                              supervisor: schedule.dosenPembimbing.namaLengkap,
+                              location: schedule.lokasiRuangan.namaRuangan,
+                              note: schedule.catatanBimbingan ?? 'Tidak ada catatan.',
+                            );
+                          },
+                        ),
+                    ],
+                  ),
                 ),
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: upcomingSchedule.length,
-                  itemBuilder: (context, index) {
-                    return UpcomingScheduleCard(
-                      status: parseStatus(upcomingSchedule[index]['status']),
-                      title: upcomingSchedule[index]['title']!,
-                      dateTime: upcomingSchedule[index]['dateTime']!,
-                      supervisor: upcomingSchedule[index]['supervisor']!,
-                      location: upcomingSchedule[index]['location']!,
-                      note: upcomingSchedule[index]['note']!,
-                    );
-                  },
-                ),
-                // Jadwal Selesai Section
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Subtitle(text: 'Selesai')
-                ),
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: finishedSchedule.length,
-                  itemBuilder: (context, index) {
-                    return FinishedScheduleCard(
-                      title: finishedSchedule[index]['title']!,
-                      dateTime: finishedSchedule[index]['dateTime']!,
-                      supervisor: finishedSchedule[index]['supervisor']!,
-                      location: finishedSchedule[index]['location']!,
-                      note: finishedSchedule[index]['note']!,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
-  /// Function to show the bottom sheet for adding a new schedule
   void _showTambahJadwalForm(BuildContext context) {
     showModalBottomSheet(
       backgroundColor: Colors.white,
@@ -149,22 +178,9 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
       ),
       builder: (BuildContext builderContext) {
-        return TambahJadwalBottomSheet(
-          onTambah: (BimbinganItem newItem) {
-            final newSchedule = {
-              'title': newItem.title,
-              'dateTime': newItem.date,
-              'supervisor': newItem.student,
-              'location': newItem.location,
-              'note': newItem.catatan,
-            };
-
-            setState(() {
-              upcomingSchedule.add(newSchedule);
-            });
-
-            Navigator.pop(builderContext);
-          },
+        return ChangeNotifierProvider.value(
+          value: Provider.of<JadwalViewModel>(context, listen: false),
+          child: const TambahJadwalBottomSheet(),
         );
       },
     );

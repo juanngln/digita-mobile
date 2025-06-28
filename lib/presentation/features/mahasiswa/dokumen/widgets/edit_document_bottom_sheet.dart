@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:digita_mobile/models/dokumen_mahasiswa_model.dart';
 import 'package:digita_mobile/presentation/common_widgets/buttons/primary_action_button.dart';
 import 'package:digita_mobile/presentation/common_widgets/forms/text_input_field.dart';
-import 'package:digita_mobile/viewmodels/dokumen_viewmodel.dart';
+import 'package:digita_mobile/viewmodels/dokumen_mahasiswa_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:file_picker/file_picker.dart';

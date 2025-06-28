@@ -26,7 +26,6 @@ class _FinishedScheduleCard extends State<FinishedScheduleCard> {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width - 40,
-      height: 225,
       margin: const EdgeInsets.symmetric(vertical: 10.0),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -44,8 +43,7 @@ class _FinishedScheduleCard extends State<FinishedScheduleCard> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Padding(
+            Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -57,6 +55,7 @@ class _FinishedScheduleCard extends State<FinishedScheduleCard> {
                       context,
                     ).textTheme.bodyLarge?.copyWith(fontSize: 18),
                   ),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Icon(Icons.access_time_filled, color: Colors.black),
@@ -70,6 +69,7 @@ class _FinishedScheduleCard extends State<FinishedScheduleCard> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Icon(Icons.person, color: Colors.black),
@@ -83,6 +83,7 @@ class _FinishedScheduleCard extends State<FinishedScheduleCard> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
                       Icon(Icons.location_on, color: Colors.black),
@@ -99,7 +100,6 @@ class _FinishedScheduleCard extends State<FinishedScheduleCard> {
                 ],
               ),
             ),
-          ),
           Divider(thickness: 5, color: Theme.of(context).colorScheme.primary),
           Padding(
             padding: const EdgeInsets.all(12.0),

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:digita_mobile/models/dokumen_mahasiswa_model.dart';
-import 'package:digita_mobile/services/dokumen_service.dart';
+import 'package:digita_mobile/services/dokumen_mahasiswa_service.dart';
 import 'package:intl/intl.dart';
 
 class DokumenViewModel extends ChangeNotifier {

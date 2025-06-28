@@ -1,7 +1,7 @@
 import 'package:digita_mobile/presentation/common_widgets/subtitle.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/not_uploaded_document_card.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/uploaded_document_card.dart';
-import 'package:digita_mobile/viewmodels/dokumen_viewmodel.dart';
+import 'package:digita_mobile/viewmodels/dokumen_mahasiswa_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

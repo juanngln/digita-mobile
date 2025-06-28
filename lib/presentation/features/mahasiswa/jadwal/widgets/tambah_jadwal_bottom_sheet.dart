@@ -1,60 +1,40 @@
+import 'package:digita_mobile/models/ruangan_model.dart';
 import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/base_bottom_sheet.dart';
 import 'package:digita_mobile/presentation/common_widgets/buttons/primary_action_button.dart';
-import 'package:digita_mobile/presentation/common_widgets/forms/text_input_field.dart';
+import 'package:digita_mobile/viewmodels/jadwal_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-class BimbinganItem {
-  final String title;
-  final String date;
-  final String student;
-  final String location;
-  String catatan;
-  String status;
-
-  BimbinganItem({
-    required this.title,
-    required this.date,
-    required this.student,
-    required this.location,
-    this.catatan = '',
-    this.status = 'Scheduled', // Default status for new items
-  });
-}
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class TambahJadwalBottomSheet extends StatefulWidget {
-  final Function(BimbinganItem) onTambah;
-
-  const TambahJadwalBottomSheet({super.key, required this.onTambah});
+  const TambahJadwalBottomSheet({super.key});
 
   @override
-  State<TambahJadwalBottomSheet> createState() => _TambahJadwalBottomSheet();
+  State<TambahJadwalBottomSheet> createState() => _TambahJadwalBottomSheetState();
 }
 
-class _TambahJadwalBottomSheet extends State<TambahJadwalBottomSheet> {
-  late TextEditingController _titleController;
-  late TextEditingController _studentController;
-  late TextEditingController _dateController;
-  late TextEditingController _timeController;
-  String? _selectedLocation;
+class _TambahJadwalBottomSheetState extends State<TambahJadwalBottomSheet> {
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _dateController = TextEditingController();
+  final _timeController = TextEditingController();
 
-  final List<String> _locationOptions = ['Gedung A', 'Gedung B', 'Online'];
+  DateTime? _selectedDate;
+  TimeOfDay? _selectedTime;
+  int? _selectedLocationId;
 
   @override
   void initState() {
     super.initState();
-    // Initialize with empty controllers for a blank form
-    _titleController = TextEditingController();
-    _studentController = TextEditingController();
-    _dateController = TextEditingController();
-    _timeController = TextEditingController();
-    _selectedLocation = null;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<JadwalViewModel>(context, listen: false).fetchRuangan();
+    });
   }
 
   @override
   void dispose() {
     _titleController.dispose();
-    _studentController.dispose();
     _dateController.dispose();
     _timeController.dispose();
     super.dispose();
@@ -64,12 +44,14 @@ class _TambahJadwalBottomSheet extends State<TambahJadwalBottomSheet> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime.now(), // Users can't select past dates
+      firstDate: DateTime.now(),
       lastDate: DateTime(2101),
     );
     if (picked != null) {
-      // Using a simpler format for display, you can adjust as needed
-      _dateController.text = "${picked.day}/${picked.month}/${picked.year}";
+      setState(() {
+        _selectedDate = picked;
+        _dateController.text = DateFormat('d MMMM yyyy', 'id_ID').format(picked);
+      });
     }
   }
 
@@ -79,172 +61,139 @@ class _TambahJadwalBottomSheet extends State<TambahJadwalBottomSheet> {
       initialTime: TimeOfDay.now(),
     );
     if (picked != null) {
-      _timeController.text = picked.format(context);
+      setState(() {
+        _selectedTime = picked;
+        _timeController.text = picked.format(context);
+      });
     }
   }
 
-  void _submitData() {
-    // Combine date and time for the BimbinganItem
-    final String combinedDateTime =
-        '${_dateController.text}, ${_timeController.text}';
+  void _submitData() async {
+    if (_formKey.currentState!.validate()) {
+      final viewModel = Provider.of<JadwalViewModel>(context, listen: false);
 
-    final newItem = BimbinganItem(
-      title: _titleController.text,
-      student: _studentController.text,
-      date: combinedDateTime,
-      location: _selectedLocation ?? 'Not specified',
-    );
+      final success = await viewModel.createJadwalBimbingan(
+        judul: _titleController.text,
+        tanggal: _selectedDate!,
+        waktu: _selectedTime!,
+        lokasiRuanganId: _selectedLocationId!,
+      );
 
-    // Pass the newly created item back to the parent widget
-    widget.onTambah(newItem);
+      if (mounted) {
+        if (success) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Jadwal berhasil diajukan, menunggu persetujuan dosen.')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(viewModel.errorMessage ?? 'Terjadi kesalahan'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Styling definitions remain the same
-    final textStyle = GoogleFonts.poppins(
-      fontSize: 16,
-      fontWeight: FontWeight.bold,
-      color: Colors.black,
-    );
-    final hintStyle = GoogleFonts.poppins(
-      fontSize: 16,
-      color: Colors.grey[500],
-    );
+    final textStyle = GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black);
+    final hintStyle = GoogleFonts.poppins(fontSize: 16, color: Colors.grey[500]);
     const consistentFillColor = Color(0xFFD9EEFF);
     final baseDecoration = InputDecoration(
-      hintStyle: hintStyle,
-      filled: true,
-      fillColor: consistentFillColor,
-      contentPadding: const EdgeInsets.symmetric(
-        vertical: 15.0,
-        horizontal: 20.0,
-      ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide.none,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(
-          color: Theme.of(context).colorScheme.primary,
-          width: 1.5,
-        ),
-      ),
-    );
+        hintStyle: hintStyle,
+        filled: true,
+        fillColor: consistentFillColor,
+        contentPadding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide.none),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0), borderSide: BorderSide.none),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5)));
 
     return BaseBottomSheet(
       title: 'Tambah Jadwal Bimbingan',
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Judul Bimbingan",
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle("Judul Bimbingan"),
+            TextFormField(
+              controller: _titleController,
+              decoration: baseDecoration.copyWith(hintText: 'Masukkan judul bimbingan'),
+              style: textStyle,
+              validator: (value) => (value == null || value.isEmpty) ? 'Judul tidak boleh kosong' : null,
             ),
-          ),
-          const SizedBox(height: 8),
-          CustomTextField(
-            controller: _titleController,
-            hintText: 'Masukkan judul bimbingan',
-            fillColor: consistentFillColor, readOnly: false,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            "Dosen Pembimbing",
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
+            const SizedBox(height: 16),
+            _buildSectionTitle("Tanggal"),
+            TextFormField(
+              controller: _dateController,
+              readOnly: true,
+              onTap: () => _selectDate(context),
+              style: textStyle,
+              decoration: baseDecoration.copyWith(hintText: 'Pilih Tanggal', suffixIcon: const Icon(Icons.calendar_today, size: 20)),
+              validator: (value) => (value == null || value.isEmpty) ? 'Tanggal tidak boleh kosong' : null,
             ),
-          ),
-          const SizedBox(height: 8),
-          CustomTextField(
-            controller: _studentController,
-            hintText: 'Dr John Doe',
-            fillColor: consistentFillColor,
-            enabled: false, readOnly: false,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            "Tanggal",
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
+            const SizedBox(height: 16),
+            _buildSectionTitle("Waktu"),
+            TextFormField(
+              controller: _timeController,
+              readOnly: true,
+              onTap: () => _selectTime(context),
+              style: textStyle,
+              decoration: baseDecoration.copyWith(hintText: 'Pilih Waktu', suffixIcon: const Icon(Icons.access_time, size: 20)),
+              validator: (value) => (value == null || value.isEmpty) ? 'Waktu tidak boleh kosong' : null,
             ),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: _dateController,
-            readOnly: true,
-            onTap: () => _selectDate(context),
-            style: textStyle,
-            decoration: baseDecoration.copyWith(
-              hintText: 'Pilih Tanggal',
-              suffixIcon: const Icon(Icons.calendar_today, size: 20),
+            const SizedBox(height: 16),
+            _buildSectionTitle("Lokasi"),
+            Consumer<JadwalViewModel>(
+              builder: (context, viewModel, child) {
+                return DropdownButtonFormField<int>(
+                  value: _selectedLocationId,
+                  hint: Text('Pilih Lokasi', style: hintStyle),
+                  style: textStyle,
+                  items: viewModel.ruanganList.map<DropdownMenuItem<int>>((Ruangan value) {
+                    return DropdownMenuItem<int>(
+                      value: value.id,
+                      // FIX: Pastikan Anda mengakses properti 'namaRuangan'
+                      child: Text(value.namaRuangan),
+                    );
+                  }).toList(),
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      _selectedLocationId = newValue;
+                    });
+                  },
+                  decoration: baseDecoration,
+                  icon: const Icon(Icons.keyboard_arrow_down, size: 20),
+                  validator: (value) => (value == null) ? 'Lokasi harus dipilih' : null,
+                );
+              },
             ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            "Waktu",
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
+            const SizedBox(height: 24),
+            Consumer<JadwalViewModel>(
+              builder: (context, viewModel, child) {
+                return viewModel.isCreating
+                    ? const Center(child: CircularProgressIndicator())
+                    : PrimaryActionButton(label: 'AJUKAN JADWAL', onPressed: _submitData);
+              },
             ),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: _timeController,
-            readOnly: true,
-            onTap: () => _selectTime(context),
-            style: textStyle,
-            decoration: baseDecoration.copyWith(
-              hintText: 'Pilih Waktu',
-              suffixIcon: const Icon(Icons.access_time, size: 20),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            "Lokasi",
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            value: _selectedLocation,
-            hint: Text('Pilih Lokasi', style: hintStyle),
-            style: textStyle,
-            items:
-                _locationOptions.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedLocation = newValue;
-              });
-            },
-            decoration: baseDecoration,
-            icon: const Icon(Icons.keyboard_arrow_down, size: 20),
-          ),
-          const SizedBox(height: 24),
-          PrimaryActionButton(label: 'TAMBAH JADWAL', onPressed: _submitData),
-        ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(
+        title,
+        style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
       ),
     );
   }
