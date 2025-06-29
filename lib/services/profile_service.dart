@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:digita_mobile/models/dosen_model.dart';
+import 'package:digita_mobile/models/jurusan_model.dart';
 import 'package:digita_mobile/models/mahasiswa.dart';
 import 'package:digita_mobile/models/mahasiswa_profile.dart';
 import 'package:digita_mobile/models/program_studi_model.dart';
@@ -117,6 +118,7 @@ class ProfileService {
     }
   }
 
+  // --- Dosen Methods ---
 
   Future<Dosen> getDosenProfile({
     required int userId,
@@ -162,6 +164,58 @@ class ProfileService {
       }
     } catch (e) {
       if (kDebugMode) print("Error in getCurrentDosenProfile: $e");
+      rethrow;
+    }
+  }
+
+  Future<DosenProfile> updateDosenProfile({
+    required String token,
+    required Map<String, dynamic> body,
+  }) async {
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/users/profil/dosen/');
+    try {
+      final response = await _client.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(body),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        return DosenProfile.fromJson(jsonDecode(response.body));
+      } else {
+        throw NetworkException(
+            "Gagal memperbarui profil (Status: ${response.statusCode})");
+      }
+    } catch (e) {
+      if (kDebugMode) print("Error in updateDosenProfile: $e");
+      rethrow;
+    }
+  }
+
+  Future<List<Jurusan>> getJurusanList({required String token}) async {
+    // Assuming the endpoint for jurusan is '/api/v1/users/jurusan/'
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/users/jurusan/');
+    try {
+      final response = await _client.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> body = jsonDecode(response.body);
+        return body.map((dynamic item) => Jurusan.fromJson(item)).toList();
+      } else {
+        throw NetworkException(
+            "Gagal memuat daftar jurusan (Status: ${response.statusCode})");
+      }
+    } catch (e) {
+      if (kDebugMode) print("Error in getJurusanList: $e");
       rethrow;
     }
   }

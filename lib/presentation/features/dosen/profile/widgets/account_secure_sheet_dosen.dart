@@ -1,62 +1,61 @@
+import 'package:digita_mobile/models/jurusan_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:digita_mobile/models/program_studi_model.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 
-void showAccountInfoSheet(BuildContext context, ProfileViewModel viewModel) {
+void showAccountInfoSheetDosen(BuildContext context, ProfileViewModel viewModel) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (context) => ChangeNotifierProvider.value(
       value: viewModel,
-      child: const AccountInfoSheet(),
+      child: const AccountInfoSheetDosen(),
     ),
   );
 }
 
-class AccountInfoSheet extends StatefulWidget {
-  const AccountInfoSheet({super.key});
+class AccountInfoSheetDosen extends StatefulWidget {
+  const AccountInfoSheetDosen({super.key});
 
   @override
-  State<AccountInfoSheet> createState() => _AccountInfoSheetState();
+  State<AccountInfoSheetDosen> createState() => _AccountInfoSheetDosenState();
 }
 
-class _AccountInfoSheetState extends State<AccountInfoSheet> {
+class _AccountInfoSheetDosenState extends State<AccountInfoSheetDosen> {
   late final TextEditingController _nameController;
   late final TextEditingController _emailController;
-  late final TextEditingController _nimController;
-  ProgramStudi? _selectedProdi;
+  late final TextEditingController _nikController;
+  Jurusan? _selectedJurusan;
 
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers
     _nameController = TextEditingController();
     _emailController = TextEditingController();
-    _nimController = TextEditingController();
+    _nikController = TextEditingController();
 
     final viewModel = Provider.of<ProfileViewModel>(context, listen: false);
 
-    if (viewModel.mahasiswaProfile != null) {
-      final profile = viewModel.mahasiswaProfile!;
+    if (viewModel.loggedInDosenProfile != null) {
+      final profile = viewModel.loggedInDosenProfile!;
       _nameController.text = profile.namaLengkap;
       _emailController.text = profile.email;
-      _nimController.text = profile.nim;
-      _selectedProdi = profile.programStudi;
+      _nikController.text = profile.nik;
+      _selectedJurusan = profile.jurusan;
     }
 
     WidgetsBinding.instance
-        .addPostFrameCallback((_) => viewModel.fetchProgramStudi());
+        .addPostFrameCallback((_) => viewModel.fetchJurusan());
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
-    _nimController.dispose();
+    _nikController.dispose();
     super.dispose();
   }
 
@@ -67,18 +66,17 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
 
     final viewModel = Provider.of<ProfileViewModel>(context, listen: false);
 
-    if (_selectedProdi == null) {
+    if (_selectedJurusan == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Silakan pilih program studi Anda.")),
+        const SnackBar(content: Text("Silakan pilih jurusan Anda.")),
       );
       return;
     }
 
-    // Corrected the method name from updateUserProfile to updateMahasiswaUserProfile
-    final success = await viewModel.updateMahasiswaUserProfile(
+    final success = await viewModel.updateDosenProfile(
       namaLengkap: _nameController.text,
       email: _emailController.text,
-      programStudiId: _selectedProdi!.id.toString(),
+      jurusanId: _selectedJurusan!.id.toString(),
     );
 
     if (mounted) {
@@ -158,7 +156,8 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value!.isEmpty) return 'Email tidak boleh kosong';
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                        .hasMatch(value)) {
                       return 'Format email tidak valid';
                     }
                     return null;
@@ -167,13 +166,13 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
                 const SizedBox(height: 16),
                 _buildEditableTextField(
                   textTheme: textTheme,
-                  controller: _nimController,
-                  label: "NIM",
-                  hint: "NIM tidak dapat diubah",
+                  controller: _nikController,
+                  label: "NIK",
+                  hint: "NIK tidak dapat diubah",
                   readOnly: true,
                 ),
                 const SizedBox(height: 16),
-                _buildProdiDropdown(textTheme: textTheme, viewModel: viewModel),
+                _buildJurusanDropdown(textTheme: textTheme, viewModel: viewModel),
                 const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
@@ -236,7 +235,8 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none),
             hintText: hint,
-            hintStyle: textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
+            hintStyle:
+            textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
             contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
@@ -246,33 +246,35 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
     );
   }
 
-  Widget _buildProdiDropdown(
+  Widget _buildJurusanDropdown(
       {required TextTheme textTheme, required ProfileViewModel viewModel}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Program Studi",
+        Text("Jurusan",
             style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
-        if (viewModel.prodiState == ProfileState.loading)
+        if (viewModel.jurusanState == ProfileState.loading)
           const Center(child: CircularProgressIndicator())
-        else if (viewModel.prodiState == ProfileState.error)
+        else if (viewModel.jurusanState == ProfileState.error)
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(viewModel.prodiErrorMessage ?? "Gagal memuat data", style: TextStyle(color: Colors.red)),
+            child: Text(viewModel.jurusanErrorMessage ?? "Gagal memuat data",
+                style: const TextStyle(color: Colors.red)),
           )
         else
-          DropdownButtonFormField<ProgramStudi>(
-            value: _selectedProdi,
-            items: viewModel.programStudiList.map((ProgramStudi prodi) {
-              return DropdownMenuItem<ProgramStudi>(
-                value: prodi,
-                child: Text(prodi.namaProdi),
+          DropdownButtonFormField<Jurusan>(
+            value: _selectedJurusan,
+            items: viewModel.jurusanList
+                .map<DropdownMenuItem<Jurusan>>((Jurusan jurusan) {
+              return DropdownMenuItem<Jurusan>(
+                value: jurusan,
+                child: Text(jurusan.namaJurusan),
               );
             }).toList(),
-            onChanged: (ProgramStudi? newValue) {
+            onChanged: (Jurusan? newValue) {
               setState(() {
-                _selectedProdi = newValue;
+                _selectedJurusan = newValue;
               });
             },
             style: textTheme.bodyMedium,
@@ -287,7 +289,7 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
             ),
             icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade700),
             validator: (value) =>
-            value == null ? 'Program Studi tidak boleh kosong' : null,
+            value == null ? 'Jurusan tidak boleh kosong' : null,
           ),
       ],
     );

@@ -156,12 +156,12 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
       case ProfileState.error:
         return Center(child: Text('Gagal: ${viewModel.errorMessage}'));
       case ProfileState.success:
-      // --- PERUBAHAN DI SINI ---
-      // Use `viewModel.dosenProfile` which is of type `Dosen`
-        final Dosen? profile = viewModel.dosenProfile;
+        final updatedProfile = viewModel.loggedInDosenProfile;
+        final originalProfile = viewModel.dosenProfile;
+
         return ProfileSection(
-          name: profile?.nama ?? 'Nama Tidak Ditemukan',
-          status: 'Dosen Teknik Informatika', // You can make this dynamic if needed
+          name: updatedProfile?.namaLengkap ?? 'Nama Tidak Ditemukan',
+          status: "Dosen ${updatedProfile?.jurusan.namaJurusan ?? ''}",
           page: NotificationDosenScreen(),
         );
       default:
@@ -169,15 +169,11 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
     }
   }
 
-  /// Builds the counter section.
   Widget _buildCounterSection(BuildContext context, ProfileViewModel viewModel) {
     final bool isLoading = viewModel.state == ProfileState.loading;
 
-    // --- PERUBAHAN DI SINI ---
-    // Use `viewModel.dosenProfile` to get the student count.
     final String mahasiswaCount = viewModel.dosenProfile?.jumlahMahasiswaAktif.toString() ?? '0';
 
-    // The 'Pending Review' count is still static as it's not in the Dosen model.
     const String pendingReviewCount = '0';
 
     return Container(

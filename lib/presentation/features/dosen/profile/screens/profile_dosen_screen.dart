@@ -5,6 +5,8 @@ import 'package:digita_mobile/models/dosen_profile.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:digita_mobile/presentation/common_widgets/dialogs/logout_dialog.dart';
 
+import '../widgets/account_secure_sheet_dosen.dart';
+
 class ProfileDosenScreen extends StatefulWidget {
   const ProfileDosenScreen({super.key});
 
@@ -96,7 +98,7 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              viewModel.dosenProfile?.nama ?? dosen.namaLengkap,
+              dosen.namaLengkap,
               textAlign: TextAlign.center,
               style: textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -154,7 +156,9 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
             textTheme: textTheme,
             icon: Icons.shield_outlined,
             title: "Kelola Akun",
-            onTap: () {},
+            onTap: () {
+              showAccountInfoSheetDosen(context, Provider.of<ProfileViewModel>(context, listen: false));
+            },
           ),
           const Divider(color: Colors.black, thickness: 1, height: 1),
           _buildMenuListItem(
