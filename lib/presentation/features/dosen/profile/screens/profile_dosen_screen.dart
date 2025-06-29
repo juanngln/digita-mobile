@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-
-// Pastikan semua path ini benar sesuai struktur proyek Anda
-// Asumsi dialog dan sheet berada di lokasi umum
 import 'package:digita_mobile/presentation/common_widgets/dialogs/logout_dialog.dart';
-import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/account_secure_sheet.dart';
 
 
 class ProfileDosenScreen extends StatefulWidget {
@@ -40,16 +36,12 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
-              // Anda bisa mengganti gambar ini dengan aset gambar dosen
               const CircleAvatar(
                 radius: 95.5,
                 backgroundImage: AssetImage('assets/img/dosen_pria.png'), // CONTOH ASET
               ),
               const SizedBox(height: 20),
-              
-              //==================================================================
-              //== DATA INFO DOSEN
-              //==================================================================
+
               Text(
                 "Dr. Budi Santoso",
                 textAlign: TextAlign.center,
@@ -92,9 +84,6 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
         color: const Color(0xFFE3F2FD),
         borderRadius: BorderRadius.circular(16),
       ),
-      //==================================================================
-      //== PENYESUAIAN MENU UNTUK DOSEN
-      //==================================================================
       child: Column(
         children: [
           _buildMenuListItem(
@@ -118,8 +107,7 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
             icon: Icons.shield_outlined,
             title: "Keamanan Akun",
             onTap: () {
-              // Fungsi ini akan memanggil bottom sheet yang sudah kita buat
-              showAccountSecureSheet(context);
+
             },
           ),
           const Divider(color: Colors.black, thickness: 1, height: 1),
@@ -129,11 +117,9 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
             title: "Keluar Akun",
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
             onTap: () async {
-              // Fungsi ini akan memanggil dialog logout yang sudah kita buat
               final bool? shouldLogout = await showLogoutDialog(context);
               if (shouldLogout == true && mounted) {
-                // Logika logout dan navigasi ke LoginScreen
-                // Navigator.of(context).pushAndRemoveUntil(...);
+
               }
             },
           ),

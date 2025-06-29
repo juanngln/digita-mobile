@@ -1,10 +1,12 @@
 import 'package:digita_mobile/models/dosen_model.dart';
-import 'package:digita_mobile/models/mahasiswa.dart';
+import 'package:digita_mobile/models/mahasiswa_profile.dart';
+import 'package:digita_mobile/models/program_studi_model.dart';
 import 'package:digita_mobile/services/profile_service.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 
 enum ProfileState { idle, loading, success, error }
+enum UpdateProfileState { idle, loading, success, error }
 
 class ProfileViewModel extends ChangeNotifier {
   final ProfileService _profileService;
@@ -18,10 +20,12 @@ class ProfileViewModel extends ChangeNotifier {
 
   ProfileState _state = ProfileState.idle;
   ProfileState get state => _state;
-  Mahasiswa? mahasiswaProfile;
-  Dosen? dosenProfile;
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
+
+  MahasiswaProfile? mahasiswaProfile;
+
+  Dosen? dosenProfile;
 
   ProfileState _supervisorState = ProfileState.idle;
   ProfileState get supervisorState => _supervisorState;
@@ -29,6 +33,18 @@ class ProfileViewModel extends ChangeNotifier {
   Dosen? get supervisorDosenProfile => _supervisorDosenProfile;
   String? _supervisorErrorMessage;
   String? get supervisorErrorMessage => _supervisorErrorMessage;
+
+  ProfileState _prodiState = ProfileState.idle;
+  ProfileState get prodiState => _prodiState;
+  List<ProgramStudi> _programStudiList = [];
+  List<ProgramStudi> get programStudiList => _programStudiList;
+  String? _prodiErrorMessage;
+  String? get prodiErrorMessage => _prodiErrorMessage;
+
+  UpdateProfileState _updateState = UpdateProfileState.idle;
+  UpdateProfileState get updateState => _updateState;
+  String? _updateErrorMessage;
+  String? get updateErrorMessage => _updateErrorMessage;
 
   Future<void> loadUserProfile() async {
     _state = ProfileState.loading;
@@ -42,22 +58,18 @@ class ProfileViewModel extends ChangeNotifier {
         throw Exception("Sesi tidak valid atau data pengguna tidak ditemukan.");
       }
 
-      final userId = userData['id'] as int?;
       final role = userData['role'] as String?;
-
-      if (userId == null || role == null) {
-        throw Exception("Data pengguna (ID atau Peran) tidak lengkap.");
-      }
+      if (role == null) throw Exception("Peran pengguna tidak ditemukan.");
 
       mahasiswaProfile = null;
       dosenProfile = null;
 
       if (role == 'mahasiswa') {
-        mahasiswaProfile = await _profileService.getMahasiswaProfile(
-          userId: userId,
-          token: token,
-        );
+        mahasiswaProfile =
+        await _profileService.getCurrentMahasiswaProfile(token: token);
       } else if (role == 'dosen') {
+        final userId = userData['id'] as int?;
+        if (userId == null) throw Exception("User ID Dosen tidak ditemukan.");
         dosenProfile = await _profileService.getDosenProfile(
           userId: userId,
           token: token,
@@ -72,6 +84,62 @@ class ProfileViewModel extends ChangeNotifier {
       _state = ProfileState.error;
     } finally {
       notifyListeners();
+    }
+  }
+
+  Future<void> fetchProgramStudi() async {
+    if (_programStudiList.isNotEmpty) return;
+
+    _prodiState = ProfileState.loading;
+    notifyListeners();
+
+    try {
+      final token = await _secureStorageService.getAccessToken();
+      if (token == null) throw Exception("Sesi tidak valid.");
+
+      _programStudiList = await _profileService.getProgramStudiList(token: token);
+      _prodiState = ProfileState.success;
+    } catch (e) {
+      _prodiErrorMessage = e.toString();
+      _prodiState = ProfileState.error;
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<bool> updateUserProfile({
+    required String namaLengkap,
+    required String email,
+    required String programStudiId,
+  }) async {
+    _updateState = UpdateProfileState.loading;
+    _updateErrorMessage = null;
+    notifyListeners();
+
+    try {
+      final token = await _secureStorageService.getAccessToken();
+      if (token == null) throw Exception("Sesi tidak valid.");
+
+      final body = {
+        "nama_lengkap": namaLengkap,
+        "email": email,
+        "program_studi_id": programStudiId,
+      };
+
+      final updatedProfile = await _profileService.updateMahasiswaProfile(
+        token: token,
+        body: body,
+      );
+
+      mahasiswaProfile = updatedProfile;
+      _updateState = UpdateProfileState.success;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _updateErrorMessage = e.toString();
+      _updateState = UpdateProfileState.error;
+      notifyListeners();
+      return false;
     }
   }
 

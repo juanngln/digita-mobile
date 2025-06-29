@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:digita_mobile/presentation/common_widgets/dialogs/logout_dialog.dart';
-import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/account_secure_sheet.dart';
+import 'package:digita_mobile/presentation/features/mahasiswa/profile/widgets/account_secure_sheet.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/profile/screens/dosen_pembimbing_info_screen.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
-import 'package:digita_mobile/models/mahasiswa.dart';
+import 'package:digita_mobile/models/mahasiswa_profile.dart';
 
 class ProfileMahasiswaScreen extends StatefulWidget {
   const ProfileMahasiswaScreen({super.key});
@@ -19,7 +19,6 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch data when the widget is first created, without causing rebuilds.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<ProfileViewModel>(context, listen: false).loadUserProfile();
     });
@@ -28,8 +27,6 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-
-    // Listen to the ViewModel
     final profileViewModel = Provider.of<ProfileViewModel>(context);
 
     return Scaffold(
@@ -45,7 +42,6 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.white,
-      // Build the UI based on the ViewModel's state
       body: _buildBody(context, profileViewModel),
     );
   }
@@ -59,7 +55,10 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(viewModel.errorMessage ?? "Terjadi kesalahan"),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(viewModel.errorMessage ?? "Terjadi kesalahan"),
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => viewModel.loadUserProfile(),
@@ -73,12 +72,12 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
           return const Center(child: Text("Profil mahasiswa tidak ditemukan."));
         }
         return _buildProfileContent(context, viewModel.mahasiswaProfile!);
-      default: // Idle state
+      default:
         return const Center(child: CircularProgressIndicator());
     }
   }
 
-  Widget _buildProfileContent(BuildContext context, Mahasiswa mahasiswa) {
+  Widget _buildProfileContent(BuildContext context, MahasiswaProfile mahasiswa) {
     final textTheme = Theme.of(context).textTheme;
     return SingleChildScrollView(
       child: Padding(
@@ -92,9 +91,8 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
               backgroundImage: AssetImage('assets/img/mhs_pria.png'),
             ),
             const SizedBox(height: 20),
-            // Use actual data from the 'mahasiswa' object
             Text(
-              mahasiswa.namaLengkap, // DYNAMIC DATA
+              mahasiswa.namaLengkap,
               textAlign: TextAlign.center,
               style: textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -103,7 +101,7 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              mahasiswa.nim, // DYNAMIC DATA
+              mahasiswa.nim,
               textAlign: TextAlign.center,
               style: textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -112,7 +110,7 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              mahasiswa.programStudi, // DYNAMIC DATA
+              mahasiswa.programStudi.namaProdi,
               textAlign: TextAlign.center,
               style: textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -120,15 +118,18 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            _buildMenuCard(context, textTheme, mahasiswa), // Pass mahasiswa data
+            _buildMenuCard(context, textTheme),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildMenuCard(
-      BuildContext context, TextTheme textTheme, Mahasiswa mahasiswa) {
+  Widget _buildMenuCard(BuildContext context, TextTheme textTheme) {
+    final profileViewModel = Provider.of<ProfileViewModel>(context, listen: false);
+    if (profileViewModel.mahasiswaProfile == null) return const SizedBox.shrink();
+    final mahasiswa = profileViewModel.mahasiswaProfile!;
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -143,49 +144,48 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
             title: "Notifikasi",
             trailing: Switch(
               value: _isNotificationOn,
-              onChanged: (value) {
-                setState(() {
-                  _isNotificationOn = value;
-                });
-              },
+              onChanged: (value) => setState(() => _isNotificationOn = value),
               activeColor: Colors.blue.shade700,
               inactiveTrackColor: Colors.grey.shade300,
             ),
           ),
           const Divider(color: Colors.black, thickness: 1, height: 1),
-          // This section contains the corrected navigation logic
           _buildMenuListItem(
             textTheme: textTheme,
             icon: Icons.person_search_outlined,
             title: "Informasi Dosen Pembimbing",
             onTap: () {
-              // Get the existing ProfileViewModel from the current context.
-              final profileViewModel = Provider.of<ProfileViewModel>(context, listen: false);
+              final int? dosenId = profileViewModel.mahasiswaProfile?.dosenPembimbingId;
 
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (newContext) {
-                    // Use ChangeNotifierProvider.value to provide the EXISTING
-                    // viewModel to the new route.
-                    return ChangeNotifierProvider.value(
+              if (dosenId != null && dosenId > 0) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChangeNotifierProvider.value(
                       value: profileViewModel,
                       child: DosenPembimbingInfoScreen(
-                        dosenId: mahasiswa.dosenPembimbingId,
+                        dosenId: dosenId,
                       ),
-                    );
-                  },
-                ),
-              );
+                    ),
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Dosen Pembimbing belum ditentukan."),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+              }
             },
           ),
           const Divider(color: Colors.black, thickness: 1, height: 1),
           _buildMenuListItem(
             textTheme: textTheme,
             icon: Icons.shield_outlined,
-            title: "Keamanan Akun",
+            title: "Kelola Akun",
             onTap: () {
-              showAccountSecureSheet(context);
+              showAccountInfoSheet(context, profileViewModel);
             },
           ),
           const Divider(color: Colors.black, thickness: 1, height: 1),
@@ -193,8 +193,8 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
             textTheme: textTheme,
             icon: Icons.exit_to_app_outlined,
             title: "Keluar Akun",
-            trailing:
-            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
+            trailing: const Icon(Icons.arrow_forward_ios,
+                size: 16, color: Colors.black54),
             onTap: () async {
               final bool? shouldLogout = await showLogoutDialog(context);
               if (shouldLogout == true) {

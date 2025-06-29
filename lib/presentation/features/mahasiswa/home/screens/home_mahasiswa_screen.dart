@@ -84,14 +84,13 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                 } else if (viewModel.state == ProfileState.success) {
                   profileWidget = ProfileSection(
                     name: viewModel.mahasiswaProfile?.namaLengkap ?? 'Nama tidak ditemukan',
-                    status: viewModel.mahasiswaProfile?.programStudi ?? 'Status tidak ditemukan',
-                    page: NotificationMahasiswaScreen(),
+                    status: viewModel.mahasiswaProfile?.programStudi.namaProdi ?? 'Status tidak ditemukan',
+                    page: const NotificationMahasiswaScreen(),
                   );
                 } else {
                   profileWidget = Text('Error: ${viewModel.errorMessage}');
                 }
 
-                // The main layout of the screen
                 return Column(
                   children: [
                     Padding(
