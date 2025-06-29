@@ -1,8 +1,8 @@
-// lib/presentation/common_widgets/cards/pengumuman_card.dart
-
 import 'package:digita_mobile/presentation/common_widgets/dialogs/pengumuman_detail_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:digita_mobile/viewmodels/pengumuman_viewmodel.dart';
 
 class PengumumanCard extends StatefulWidget {
   final String title;
@@ -10,6 +10,7 @@ class PengumumanCard extends StatefulWidget {
   final String tglMulai;
   final String tglSelesai;
   final String? attachment;
+  final String? lampiranUrl;
 
   const PengumumanCard({
     super.key,
@@ -18,6 +19,7 @@ class PengumumanCard extends StatefulWidget {
     required this.tglMulai,
     required this.tglSelesai,
     this.attachment,
+    this.lampiranUrl,
   });
 
   @override
@@ -87,15 +89,21 @@ class _PengumumanCardState extends State<PengumumanCard> {
               height: 32,
               child: TextButton(
                 onPressed: () {
+                  final pengumumanViewModel = Provider.of<PengumumanViewModel>(context, listen: false);
+
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return PengumumanDetailDialog(
-                        title: widget.title,
-                        description: widget.description,
-                        tglMulai: widget.tglMulai,
-                        tglSelesai: widget.tglSelesai,
-                        attachment: widget.attachment,
+                      return ChangeNotifierProvider.value(
+                          value: pengumumanViewModel,
+                          child: PengumumanDetailDialog(
+                          title: widget.title,
+                          description: widget.description,
+                          tglMulai: widget.tglMulai,
+                          tglSelesai: widget.tglSelesai,
+                          attachment: widget.attachment,
+                          lampiranUrl: widget.lampiranUrl,
+                      )
                       );
                     },
                   );

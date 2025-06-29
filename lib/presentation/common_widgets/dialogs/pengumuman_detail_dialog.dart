@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:digita_mobile/viewmodels/pengumuman_viewmodel.dart';
 
-class PengumumanDetailDialog extends StatelessWidget {
+class PengumumanDetailDialog extends StatefulWidget {
   final String title;
   final String description;
   final String tglMulai;
   final String tglSelesai;
   final String? attachment;
+  final String? lampiranUrl;
 
   const PengumumanDetailDialog({
     super.key,
@@ -15,7 +18,15 @@ class PengumumanDetailDialog extends StatelessWidget {
     required this.tglMulai,
     required this.tglSelesai,
     this.attachment,
+    this.lampiranUrl,
   });
+
+  @override
+  State<PengumumanDetailDialog> createState() => _PengumumanDetailDialogState();
+}
+
+class _PengumumanDetailDialogState extends State<PengumumanDetailDialog> {
+  bool _isDownloading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +39,8 @@ class PengumumanDetailDialog extends StatelessWidget {
   }
 
   Widget contentBox(BuildContext context) {
+    final viewModel = Provider.of<PengumumanViewModel>(context, listen: false);
+
     return Stack(
       children: <Widget>[
         Container(
@@ -47,7 +60,7 @@ class PengumumanDetailDialog extends StatelessWidget {
             children: <Widget>[
               // Judul Pengumuman
               Text(
-                title,
+                widget.title,
                 style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
@@ -59,7 +72,7 @@ class PengumumanDetailDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  '$tglMulai - $tglSelesai',
+                  '${widget.tglMulai} - ${widget.tglSelesai}',
                   style: GoogleFonts.poppins(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -70,21 +83,58 @@ class PengumumanDetailDialog extends StatelessWidget {
               const SizedBox(height: 15),
               // Deskripsi Pengumuman
               Text(
-                description,
+                widget.description,
                 style: GoogleFonts.poppins(fontSize: 14),
                 textAlign: TextAlign.justify,
               ),
               const SizedBox(height: 22),
-              if (attachment != null)
+              if (widget.attachment != null && widget.attachment!.isNotEmpty && widget.lampiranUrl != null)
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    icon: const Icon(Icons.attachment_rounded),
-                    label: Text('Lihat Lampiran', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Membuka lampiran: $attachment')),
-                      );
+                    icon: _isDownloading
+                        ? Container(
+                      width: 24,
+                      height: 24,
+                      padding: const EdgeInsets.all(2.0),
+                      child: const CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 3,
+                      ),
+                    )
+                        : const Icon(Icons.download_rounded),
+                    label: Text(
+                      _isDownloading ? 'Mengunduh...' : 'Unduh Lampiran',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                    ),
+                    onPressed: _isDownloading
+                        ? null // Disable button while processing
+                        : () async {
+                      setState(() => _isDownloading = true);
+                      try {
+                        // This now calls the flutter_downloader method in the ViewModel
+                        await viewModel.downloadFile(widget.lampiranUrl!, widget.attachment!);
+
+                        if (mounted) {
+                          // Show the same message as in status_dokumen_dosen_screen
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Pengunduhan dimulai. Periksa status bar Anda.')),
+                          );
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(e.toString()),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      } finally {
+                        if (mounted) {
+                          setState(() => _isDownloading = false);
+                        }
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -101,9 +151,7 @@ class PengumumanDetailDialog extends StatelessWidget {
               Align(
                 alignment: Alignment.bottomRight,
                 child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
+                  onPressed: () => Navigator.of(context).pop(),
                   child: Text(
                     'Tutup',
                     style: GoogleFonts.poppins(fontSize: 16, color: Colors.redAccent, fontWeight: FontWeight.bold),

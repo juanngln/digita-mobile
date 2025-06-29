@@ -12,6 +12,7 @@ import '../../../services/profile_service.dart';
 import '../../../services/secure_storage_service.dart';
 import '../../../viewmodels/dokumen_mahasiswa_viewmodel.dart';
 import '../../../viewmodels/jadwal_mahasiswa_viewmodel.dart';
+import '../../../viewmodels/pengumuman_viewmodel.dart';
 import '../../../viewmodels/profile_viewmodel.dart';
 
 class MainLayoutMahasiswa extends StatefulWidget {
@@ -64,6 +65,9 @@ class _MainLayoutMahasiswa extends State<MainLayoutMahasiswa> {
         ),
         ChangeNotifierProvider<DokumenViewModel>(
           create: (context) => DokumenViewModel(),
+        ),
+        ChangeNotifierProvider<PengumumanViewModel>(
+          create: (context) => PengumumanViewModel(),
         ),
       ],
       child: Scaffold(

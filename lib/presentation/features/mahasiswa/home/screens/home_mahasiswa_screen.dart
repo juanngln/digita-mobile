@@ -1,13 +1,19 @@
+import 'dart:math' as math;
+
 import 'package:digita_mobile/presentation/features/mahasiswa/home/screens/notification_mahasiswa_screen.dart';
 import 'package:digita_mobile/presentation/common_widgets/cards/pengumuman_card.dart';
 import 'package:digita_mobile/presentation/common_widgets/home_widgets/profile_section.dart';
 import 'package:digita_mobile/presentation/common_widgets/cards/upcoming_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:digita_mobile/models/quote.dart';
 import 'package:digita_mobile/services/quote_service.dart';
+
+
+import '../../../../../viewmodels/pengumuman_viewmodel.dart';
 
 class HomeMahasiswaScreen extends StatefulWidget {
   const HomeMahasiswaScreen({super.key});
@@ -23,40 +29,13 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
   @override
   void initState() {
     super.initState();
+    // Fetch quotes
     _quoteFuture = _apiService.fetchRandomQuote();
-  }
 
-  // Data pengumuman diperbarui dengan field tanggal dan lampiran
-  final List<Map<String, String?>> pengumumanCards = [
-    {
-      'title': 'Buku Panduan Tugas Akhir',
-      'description': 'Buku panduan lengkap mengenai standar dan format penulisan Tugas Akhir untuk mahasiswa Jurusan Teknik Informatika angkatan 2021. Buku panduan lengkap mengenai standar dan format penulisan Tugas Akhir untuk mahasiswa Jurusan Teknik Informatika angkatan 2021. Buku panduan lengkap mengenai standar dan format penulisan Tugas Akhir untuk mahasiswa Jurusan Teknik Informatika angkatan 2021.',
-      'tgl_mulai': '01 Agu 2024',
-      'tgl_selesai': '31 Des 2024',
-      'attachment': 'panduan_ta_2024.pdf',
-    },
-    {
-      'title': 'Jadwal Seminar Proposal',
-      'description': 'Jadwal lengkap pelaksanaan seminar proposal Tugas Akhir untuk semester ganjil tahun ajaran 2024/2025.',
-      'tgl_mulai': '15 Sep 2024',
-      'tgl_selesai': '20 Sep 2024',
-      'attachment': null, // Contoh tanpa lampiran
-    },
-    {
-      'title': 'Template Laporan TA',
-      'description': 'Template resmi dalam format .docx untuk penyusunan laporan Tugas Akhir. Wajib diikuti oleh semua mahasiswa.',
-      'tgl_mulai': '01 Agu 2024',
-      'tgl_selesai': '31 Des 2024',
-      'attachment': 'template_laporan_ta.docx',
-    },
-    {
-      'title': 'Daftar Dosen Pembimbing',
-      'description': 'Daftar nama dosen beserta kuota bimbingan yang tersedia untuk Tugas Akhir semester ini.',
-      'tgl_mulai': '25 Jul 2024',
-      'tgl_selesai': '05 Agu 2024',
-      'attachment': 'daftar_dosen_pembimbing.xlsx',
-    },
-  ];
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<PengumumanViewModel>(context, listen: false).fetchAnnouncements();
+    });
+  }
 
   final List<Map<String, String>> upcomingCards = [
     {'title': 'Bimbingan dengan dosen', 'description': 'Besok, 14:00 WIB'},
@@ -97,7 +76,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                       child: profileWidget,
                     ),
 
-                    // Quote Section... (tidak diubah)
+                    // Quote Section
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20.0),
                       child: FutureBuilder<Quote>(
@@ -156,7 +135,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                       ),
                     ),
 
-                    // Progress Section... (tidak diubah)
+                    // Progress Section
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20.0),
                       child: Column(
@@ -191,7 +170,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                       ),
                     ),
 
-                    // Information Section (Diperbarui)
+                    // Information Section
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20),
                       child: Column(
@@ -204,23 +183,38 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                           const SizedBox(height: 8),
                           SizedBox(
                             height: 150,
-                            child: ListView.separated(
-                              separatorBuilder:
-                                  (context, index) => const SizedBox(width: 16),
-                              scrollDirection: Axis.horizontal,
-                              physics: const BouncingScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: pengumumanCards.length,
-                              itemBuilder: (context, index) {
-                                final item = pengumumanCards[index];
-                                // Memberikan data lengkap ke PengumumanCard
-                                return PengumumanCard(
-                                  title: item['title']!,
-                                  description: item['description']!,
-                                  tglMulai: item['tgl_mulai']!,
-                                  tglSelesai: item['tgl_selesai']!,
-                                  attachment: item['attachment'],
-                                );
+                            child: Consumer<PengumumanViewModel>(
+                              builder: (context, viewModel, child) {
+                                switch (viewModel.state) {
+                                  case PengumumanState.loading:
+                                    return const Center(child: CircularProgressIndicator());
+                                  case PengumumanState.error:
+                                    return const Center(child: Text('Gagal memuat pengumuman.'));
+                                  case PengumumanState.loaded:
+                                    if (viewModel.announcements.isEmpty) {
+                                      return const Center(child: Text('Tidak ada pengumuman.'));
+                                    }
+                                    return ListView.separated(
+                                      separatorBuilder: (context, index) => const SizedBox(width: 16),
+                                      scrollDirection: Axis.horizontal,
+                                      physics: const BouncingScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: math.min(viewModel.announcements.length, 10),
+                                      itemBuilder: (context, index) {
+                                        final item = viewModel.announcements[index];
+                                        return PengumumanCard(
+                                          title: item.title,
+                                          description: item.description,
+                                          tglMulai: DateFormat('dd MMM yyyy').format(item.tglMulai),
+                                          tglSelesai: DateFormat('dd MMM yyyy').format(item.tglSelesai),
+                                          attachment: item.attachment,
+                                          lampiranUrl: item.lampiranUrl,
+                                        );
+                                      },
+                                    );
+                                  default:
+                                    return const SizedBox.shrink();
+                                }
                               },
                             ),
                           ),
