@@ -8,9 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
 import '../../../services/dio_client.dart';
+import '../../../services/profile_service.dart'; // Import ProfileService
 import '../../../services/secure_storage_service.dart';
 import '../../../viewmodels/dokumen_mahasiswa_viewmodel.dart';
 import '../../../viewmodels/jadwal_mahasiswa_viewmodel.dart';
+import '../../../viewmodels/profile_viewmodel.dart'; // Import ProfileViewModel
 
 class MainLayoutMahasiswa extends StatefulWidget {
   const MainLayoutMahasiswa({super.key});
@@ -22,13 +24,23 @@ class MainLayoutMahasiswa extends StatefulWidget {
 class _MainLayoutMahasiswa extends State<MainLayoutMahasiswa> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = <Widget>[
+  // Initialize services once
+  final SecureStorageService _secureStorageService = SecureStorageService();
+  late final DioClient _dioClient;
+  late final ProfileService _profileService;
+
+  @override
+  void initState() {
+    super.initState();
+    _dioClient = DioClient(Dio(), _secureStorageService);
+    _profileService = ProfileService();
+  }
+
+  late final List<Widget> _pages = <Widget>[
     const HomeMahasiswaScreen(),
     ChangeNotifierProvider(
       create: (context) {
-        final secureStorage = SecureStorageService();
-        final dioClient = DioClient(Dio(), secureStorage);
-        return JadwalViewModel(dio: dioClient.dio);
+        return JadwalViewModel(dio: _dioClient.dio);
       },
       child: const JadwalMahasiswaScreen(),
     ),
@@ -37,7 +49,13 @@ class _MainLayoutMahasiswa extends State<MainLayoutMahasiswa> {
       child: const DokumenMahasiswaScreen(),
     ),
     const KanbanBoardScreen(),
-    const ProfileMahasiswaScreen()
+    ChangeNotifierProvider(
+      create: (context) => ProfileViewModel(
+        profileService: _profileService,
+        secureStorageService: _secureStorageService,
+      ),
+      child: const ProfileMahasiswaScreen(),
+    ),
   ];
 
   void _onItemTapped(int index) {
@@ -58,5 +76,11 @@ class _MainLayoutMahasiswa extends State<MainLayoutMahasiswa> {
         onTap: _onItemTapped,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _profileService.dispose(); // Dispose the client in ProfileService
+    super.dispose();
   }
 }

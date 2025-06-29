@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:digita_mobile/presentation/common_widgets/dialogs/logout_dialog.dart';
 import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/account_secure_sheet.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/profile/screens/dosen_pembimbing_info_screen.dart';
+import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
+import 'package:digita_mobile/models/mahasiswa.dart';
 
 class ProfileMahasiswaScreen extends StatefulWidget {
   const ProfileMahasiswaScreen({super.key});
@@ -14,8 +17,20 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
   bool _isNotificationOn = true;
 
   @override
+  void initState() {
+    super.initState();
+    // Fetch data when the widget is first created, without causing rebuilds.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ProfileViewModel>(context, listen: false).loadUserProfile();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+
+    // Listen to the ViewModel
+    final profileViewModel = Provider.of<ProfileViewModel>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -30,54 +45,90 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+      // Build the UI based on the ViewModel's state
+      body: _buildBody(context, profileViewModel),
+    );
+  }
+
+  Widget _buildBody(BuildContext context, ProfileViewModel viewModel) {
+    switch (viewModel.state) {
+      case ProfileState.loading:
+        return const Center(child: CircularProgressIndicator());
+      case ProfileState.error:
+        return Center(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 20),
-              const CircleAvatar(
-                radius: 95.5,
-                backgroundImage: AssetImage('assets/img/mhs_pria.png'),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                "Udin Prakoso Bakti",
-                textAlign: TextAlign.center,
-                style: textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "3342301827",
-                textAlign: TextAlign.center,
-                style: textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                "Teknik Informatika",
-                textAlign: TextAlign.center,
-                style: textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 30),
-              _buildMenuCard(textTheme),
+              Text(viewModel.errorMessage ?? "Terjadi kesalahan"),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => viewModel.loadUserProfile(),
+                child: const Text("Coba Lagi"),
+              )
             ],
           ),
+        );
+      case ProfileState.success:
+        if (viewModel.mahasiswaProfile == null) {
+          return const Center(child: Text("Profil mahasiswa tidak ditemukan."));
+        }
+        return _buildProfileContent(context, viewModel.mahasiswaProfile!);
+      default: // Idle state
+        return const Center(child: CircularProgressIndicator());
+    }
+  }
+
+  Widget _buildProfileContent(BuildContext context, Mahasiswa mahasiswa) {
+    final textTheme = Theme.of(context).textTheme;
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 20),
+            const CircleAvatar(
+              radius: 95.5,
+              backgroundImage: AssetImage('assets/img/mhs_pria.png'),
+            ),
+            const SizedBox(height: 20),
+            // Use actual data from the 'mahasiswa' object
+            Text(
+              mahasiswa.namaLengkap, // DYNAMIC DATA
+              textAlign: TextAlign.center,
+              style: textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              mahasiswa.nim, // DYNAMIC DATA
+              textAlign: TextAlign.center,
+              style: textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              mahasiswa.programStudi, // DYNAMIC DATA
+              textAlign: TextAlign.center,
+              style: textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 30),
+            _buildMenuCard(context, textTheme, mahasiswa), // Pass mahasiswa data
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildMenuCard(TextTheme textTheme) {
+  Widget _buildMenuCard(
+      BuildContext context, TextTheme textTheme, Mahasiswa mahasiswa) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -102,18 +153,29 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
             ),
           ),
           const Divider(color: Colors.black, thickness: 1, height: 1),
-          //==================================================================
-          //== PERUBAHAN UTAMA DI SINI
-          //==================================================================
+          // This section contains the corrected navigation logic
           _buildMenuListItem(
             textTheme: textTheme,
             icon: Icons.person_search_outlined,
             title: "Informasi Dosen Pembimbing",
             onTap: () {
-              // Navigasi ke halaman baru
+              // Get the existing ProfileViewModel from the current context.
+              final profileViewModel = Provider.of<ProfileViewModel>(context, listen: false);
+
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const DosenPembimbingInfoScreen()),
+                MaterialPageRoute(
+                  builder: (newContext) {
+                    // Use ChangeNotifierProvider.value to provide the EXISTING
+                    // viewModel to the new route.
+                    return ChangeNotifierProvider.value(
+                      value: profileViewModel,
+                      child: DosenPembimbingInfoScreen(
+                        dosenId: mahasiswa.dosenPembimbingId,
+                      ),
+                    );
+                  },
+                ),
               );
             },
           ),
@@ -131,10 +193,12 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
             textTheme: textTheme,
             icon: Icons.exit_to_app_outlined,
             title: "Keluar Akun",
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
+            trailing:
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
             onTap: () async {
               final bool? shouldLogout = await showLogoutDialog(context);
               if (shouldLogout == true) {
+                // Handle logout logic
               }
             },
           ),

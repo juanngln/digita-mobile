@@ -1,29 +1,21 @@
-import 'package:digita_mobile/presentation/features/mahasiswa/jadwal/widgets/tambah_jadwal_bottom_sheet.dart';
+import 'package:digita_mobile/models/jadwal_bimbingan_model.dart';
+import 'package:digita_mobile/presentation/features/mahasiswa/jadwal/widgets/reschedule_jadwal_bottom_sheet.dart';
 import 'package:digita_mobile/viewmodels/jadwal_mahasiswa_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 enum ScheduleStatus { kosong, disetujui, ditolak, menunggu }
 
 class UpcomingScheduleCard extends StatefulWidget {
-  final String title;
-  final String dateTime;
-  final String supervisor;
-  final String location;
-  final String note;
+  final JadwalBimbingan schedule;
   final ScheduleStatus status;
-  final String? rejectionReason;
 
   const UpcomingScheduleCard({
     super.key,
-    required this.title,
-    required this.dateTime,
-    required this.supervisor,
-    required this.location,
-    required this.note,
+    required this.schedule,
     required this.status,
-    this.rejectionReason,
   });
 
   @override
@@ -31,8 +23,16 @@ class UpcomingScheduleCard extends StatefulWidget {
 }
 
 class _UpcomingScheduleCard extends State<UpcomingScheduleCard> {
+  String formatDateTime(DateTime date, String time) {
+    final formattedDate = DateFormat('dd MMMM yyyy', 'id_ID').format(date);
+    final formattedTime = time.substring(0, 5);
+    return '$formattedDate, $formattedTime';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final scheduleData = widget.schedule;
+
     return Container(
       width: MediaQuery.of(context).size.width - 40,
       margin: const EdgeInsets.symmetric(vertical: 10.0),
@@ -61,7 +61,7 @@ class _UpcomingScheduleCard extends State<UpcomingScheduleCard> {
                   children: [
                     Expanded(
                       child: Text(
-                        widget.title,
+                        scheduleData.judulBimbingan,
                         style: Theme.of(
                           context,
                         ).textTheme.bodyLarge?.copyWith(fontSize: 18),
@@ -76,7 +76,7 @@ class _UpcomingScheduleCard extends State<UpcomingScheduleCard> {
                     const Icon(Icons.access_time_filled, color: Colors.black),
                     const SizedBox(width: 12),
                     Text(
-                      widget.dateTime,
+                      formatDateTime(scheduleData.tanggal, scheduleData.waktu),
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -90,7 +90,7 @@ class _UpcomingScheduleCard extends State<UpcomingScheduleCard> {
                     const Icon(Icons.person, color: Colors.black),
                     const SizedBox(width: 12),
                     Text(
-                      widget.supervisor,
+                      scheduleData.dosenPembimbing.namaLengkap,
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -104,7 +104,7 @@ class _UpcomingScheduleCard extends State<UpcomingScheduleCard> {
                     const Icon(Icons.location_on, color: Colors.black),
                     const SizedBox(width: 12),
                     Text(
-                      widget.location,
+                      scheduleData.lokasiRuangan.namaRuangan,
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -120,7 +120,7 @@ class _UpcomingScheduleCard extends State<UpcomingScheduleCard> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Catatan: ${widget.status == ScheduleStatus.ditolak ? widget.rejectionReason ?? '-' : widget.note}',
+                        'Catatan: ${widget.status == ScheduleStatus.ditolak ? scheduleData.alasanPenolakan ?? '-' : scheduleData.catatanBimbingan ?? '-'}',
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -132,7 +132,7 @@ class _UpcomingScheduleCard extends State<UpcomingScheduleCard> {
               ],
             ),
           ),
-          _buildActionButton(context, widget.status),
+          _buildActionButton(context, widget.status, scheduleData),
         ],
       ),
     );
@@ -180,12 +180,7 @@ Widget _buildStatusBadge(ScheduleStatus status) {
   );
 }
 
-Widget _buildActionButton(BuildContext context, ScheduleStatus status) {
-  final divider = Divider(
-    thickness: 5,
-    color: Theme.of(context).colorScheme.primary,
-  );
-
+Widget _buildActionButton(BuildContext context, ScheduleStatus status, JadwalBimbingan schedule) {
   final rescheduleButton = Padding(
     padding: const EdgeInsets.symmetric(horizontal: 12.0),
     child: TextButton(
@@ -204,7 +199,7 @@ Widget _buildActionButton(BuildContext context, ScheduleStatus status) {
           builder: (BuildContext builderContext) {
             return ChangeNotifierProvider.value(
               value: Provider.of<JadwalViewModel>(context, listen: false),
-              child: const TambahJadwalBottomSheet(),
+              child: RescheduleJadwalBottomSheet(schedule: schedule),
             );
           },
         );
@@ -229,10 +224,6 @@ Widget _buildActionButton(BuildContext context, ScheduleStatus status) {
   );
 
   switch (status) {
-    case ScheduleStatus.kosong:
-    case ScheduleStatus.disetujui:
-    case ScheduleStatus.menunggu:
-      return const SizedBox.shrink();
     case ScheduleStatus.ditolak:
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,5 +235,9 @@ Widget _buildActionButton(BuildContext context, ScheduleStatus status) {
           )
         ],
       );
+    case ScheduleStatus.kosong:
+    case ScheduleStatus.menunggu:
+    case ScheduleStatus.disetujui:
+    return const SizedBox.shrink();
   }
 }

@@ -18,12 +18,17 @@ class ProfileViewModel extends ChangeNotifier {
 
   ProfileState _state = ProfileState.idle;
   ProfileState get state => _state;
-
   Mahasiswa? mahasiswaProfile;
   Dosen? dosenProfile;
-
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
+
+  ProfileState _supervisorState = ProfileState.idle;
+  ProfileState get supervisorState => _supervisorState;
+  Dosen? _supervisorDosenProfile;
+  Dosen? get supervisorDosenProfile => _supervisorDosenProfile;
+  String? _supervisorErrorMessage;
+  String? get supervisorErrorMessage => _supervisorErrorMessage;
 
   Future<void> loadUserProfile() async {
     _state = ProfileState.loading;
@@ -65,6 +70,31 @@ class ProfileViewModel extends ChangeNotifier {
     } catch (e) {
       _errorMessage = e.toString();
       _state = ProfileState.error;
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadSupervisorProfile(int supervisorUserId) async {
+    _supervisorState = ProfileState.loading;
+    _supervisorDosenProfile = null;
+    notifyListeners();
+
+    try {
+      final token = await _secureStorageService.getAccessToken();
+      if (token == null) {
+        throw Exception("Sesi tidak valid, token tidak ditemukan.");
+      }
+
+      _supervisorDosenProfile = await _profileService.getDosenProfile(
+        userId: supervisorUserId,
+        token: token,
+      );
+
+      _supervisorState = ProfileState.success;
+    } catch (e) {
+      _supervisorErrorMessage = e.toString();
+      _supervisorState = ProfileState.error;
     } finally {
       notifyListeners();
     }

@@ -5,6 +5,7 @@ class Mahasiswa {
   final String email;
   final String programStudi;
   final String dosenPembimbing;
+  final int dosenPembimbingId;
 
   Mahasiswa({
     required this.userId,
@@ -13,6 +14,7 @@ class Mahasiswa {
     required this.email,
     required this.programStudi,
     required this.dosenPembimbing,
+    required this.dosenPembimbingId,
   });
 
   factory Mahasiswa.fromJson(Map<String, dynamic> json) => Mahasiswa(
@@ -22,6 +24,7 @@ class Mahasiswa {
     email: json["email"],
     programStudi: json["program_studi"],
     dosenPembimbing: json["dosen_pembimbing"],
+    dosenPembimbingId: json["dosen_pembimbing_id"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -31,5 +34,6 @@ class Mahasiswa {
     "email": email,
     "program_studi": programStudi,
     "dosen_pembimbing": dosenPembimbing,
+    "dosen_pembimbing_id": dosenPembimbingId,
   };
 }

@@ -18,13 +18,11 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch data right after the first frame is built.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<JadwalViewModel>(context, listen: false).fetchJadwalBimbingan();
     });
   }
 
-  /// Maps the status string from the API to the ScheduleStatus enum for the card widget.
   ScheduleStatus parseStatus(String? apiStatus) {
     switch (apiStatus) {
       case 'ACCEPTED':
@@ -38,7 +36,6 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
     }
   }
 
-  /// Formats the date and time from the API into a user-friendly string.
   String formatDateTime(DateTime date, String time) {
     final formattedDate = DateFormat('dd MMMM yyyy', 'id_ID').format(date);
     final formattedTime = time.substring(0, 5);
@@ -71,12 +68,10 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
       body: SafeArea(
         child: Consumer<JadwalViewModel>(
           builder: (context, viewModel, child) {
-            // Handle Loading State
             if (viewModel.state == ViewState.loading && viewModel.upcomingSchedules.isEmpty && viewModel.finishedSchedules.isEmpty) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            // Handle Error State
             if (viewModel.state == ViewState.error && viewModel.upcomingSchedules.isEmpty && viewModel.finishedSchedules.isEmpty) {
               return Center(
                 child: Padding(
@@ -89,7 +84,6 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
             final upcomingSchedule = viewModel.upcomingSchedules;
             final finishedSchedule = viewModel.finishedSchedules;
 
-            // Handle Success State (display the data)
             return RefreshIndicator(
               onRefresh: () => viewModel.fetchJadwalBimbingan(),
               child: SingleChildScrollView(
@@ -100,7 +94,7 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Jadwal Bimbingan', style: Theme.of(context).textTheme.titleLarge),
-                      // Jadwal Mendatang Section
+                      // Bagian Jadwal Mendatang
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Subtitle(text: 'Jadwal Mendatang'),
@@ -118,17 +112,12 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
                           itemBuilder: (context, index) {
                             final schedule = upcomingSchedule[index];
                             return UpcomingScheduleCard(
-                              status: parseStatus(schedule.status),
-                              title: schedule.judulBimbingan,
-                              dateTime: formatDateTime(schedule.tanggal, schedule.waktu),
-                              supervisor: schedule.dosenPembimbing.namaLengkap,
-                              location: schedule.lokasiRuangan.namaRuangan,
-                              note: schedule.catatanBimbingan ?? '-',
-                              rejectionReason: schedule.alasanPenolakan,
+                              schedule: schedule, //
+                              status: parseStatus(schedule.status), //
                             );
                           },
                         ),
-                      // Jadwal Selesai Section
+                      // Bagian Jadwal Selesai
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Subtitle(text: 'Selesai'),
@@ -146,11 +135,11 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
                           itemBuilder: (context, index) {
                             final schedule = finishedSchedule[index];
                             return FinishedScheduleCard(
-                              title: schedule.judulBimbingan,
-                              dateTime: formatDateTime(schedule.tanggal, schedule.waktu),
-                              supervisor: schedule.dosenPembimbing.namaLengkap,
-                              location: schedule.lokasiRuangan.namaRuangan,
-                              note: schedule.catatanBimbingan ?? 'Tidak ada catatan.',
+                              title: schedule.judulBimbingan, //
+                              dateTime: formatDateTime(schedule.tanggal, schedule.waktu), //
+                              supervisor: schedule.dosenPembimbing.namaLengkap, //
+                              location: schedule.lokasiRuangan.namaRuangan, //
+                              note: schedule.catatanBimbingan ?? 'Tidak ada catatan.', //
                             );
                           },
                         ),
