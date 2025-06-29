@@ -10,6 +10,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:digita_mobile/services/base_url.dart';
 
+import '../models/dosen_profile.dart';
+
 class ProfileService {
   final http.Client _client;
 
@@ -137,6 +139,29 @@ class ProfileService {
       }
     } catch (e) {
       if (kDebugMode) print("Error in getDosenProfile: $e");
+      rethrow;
+    }
+  }
+
+  Future<DosenProfile> getCurrentDosenProfile({required String token}) async {
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/users/profil/dosen/');
+    try {
+      final response = await _client.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        return DosenProfile.fromJson(jsonDecode(response.body));
+      } else {
+        throw NetworkException(
+            "Gagal memuat profil Anda (Status: ${response.statusCode})");
+      }
+    } catch (e) {
+      if (kDebugMode) print("Error in getCurrentDosenProfile: $e");
       rethrow;
     }
   }

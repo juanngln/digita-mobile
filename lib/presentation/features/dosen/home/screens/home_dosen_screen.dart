@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:digita_mobile/models/dosen_model.dart';
 
 class HomeDosenScreen extends StatefulWidget {
   const HomeDosenScreen({super.key});
@@ -65,22 +66,17 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
           physics: const ClampingScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
-            // Consume the shared ProfileViewModel to get the state and data
             child: Consumer<ProfileViewModel>(
               builder: (context, viewModel, child) {
-                // Main column that holds all screen elements
                 return Column(
                   children: [
                     // --- Profile Section ---
-                    // This section will be built by a helper method
-                    // that handles the loading, error, and success states.
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20.0),
                       child: _buildProfileSection(context, viewModel),
                     ),
 
                     // --- Counter Section ---
-                    // This section is also built by a helper that uses the viewModel data.
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20.0),
                       child: _buildCounterSection(context, viewModel),
@@ -153,47 +149,36 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
     );
   }
 
-  /// Helper widget to build the profile section based on the ViewModel state.
   Widget _buildProfileSection(BuildContext context, ProfileViewModel viewModel) {
     switch (viewModel.state) {
       case ProfileState.loading:
-      // Show a placeholder with loading text while fetching data
-        return ProfileSection(
-          name: 'Memuat...',
-          status: '...',
-          page: NotificationDosenScreen(),
-        );
+        return ProfileSection(name: 'Memuat...', status: '...', page: NotificationDosenScreen());
       case ProfileState.error:
-      // Display an error message if something went wrong
-        return Center(
-          child: Text(
-            'Gagal memuat profil: ${viewModel.errorMessage}',
-            style: const TextStyle(color: Colors.red),
-          ),
-        );
+        return Center(child: Text('Gagal: ${viewModel.errorMessage}'));
       case ProfileState.success:
-      // Display the profile with data from the view model
+      // --- PERUBAHAN DI SINI ---
+      // Use `viewModel.dosenProfile` which is of type `Dosen`
+        final Dosen? profile = viewModel.dosenProfile;
         return ProfileSection(
-          name: viewModel.dosenProfile?.nama ?? 'Nama Tidak Ditemukan',
-          status: 'Dosen Teknik Informatika', // This is static as per the original UI
+          name: profile?.nama ?? 'Nama Tidak Ditemukan',
+          status: 'Dosen Teknik Informatika', // You can make this dynamic if needed
           page: NotificationDosenScreen(),
         );
       default:
-      // Idle state or other cases
         return const SizedBox.shrink();
     }
   }
 
-  /// Helper widget to build the counter section.
+  /// Builds the counter section.
   Widget _buildCounterSection(BuildContext context, ProfileViewModel viewModel) {
-    // Determine the counts based on the ViewModel state
     final bool isLoading = viewModel.state == ProfileState.loading;
-    final String mahasiswaCount =
-        viewModel.dosenProfile?.jumlahMahasiswaAktif.toString() ?? '0';
 
-    // NOTE: 'Pending Review' count is not available in the Dosen model.
-    // We will use a static value as in the original UI.
-    const String pendingReviewCount = '15';
+    // --- PERUBAHAN DI SINI ---
+    // Use `viewModel.dosenProfile` to get the student count.
+    final String mahasiswaCount = viewModel.dosenProfile?.jumlahMahasiswaAktif.toString() ?? '0';
+
+    // The 'Pending Review' count is still static as it's not in the Dosen model.
+    const String pendingReviewCount = '0';
 
     return Container(
       width: MediaQuery.of(context).size.width - 48,
@@ -204,51 +189,27 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Mahasiswa',
-                  style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 16),
-                ),
-                Text(
-                  isLoading ? '...' : mahasiswaCount, // Show '...' while loading
-                  style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _buildCounterItem(context, 'Mahasiswa', isLoading ? '...' : mahasiswaCount),
           const VerticalDivider(color: Colors.black, thickness: 1.5),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Pending Review',
-                  style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 16),
-                ),
-                Text(
-                  isLoading ? '...' : pendingReviewCount, // Show '...' while loading
-                  style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+          _buildCounterItem(context, 'Pending Review', isLoading ? '...' : pendingReviewCount),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCounterItem(BuildContext context, String title, String count) {
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 16)),
+          Text(
+            count,
+            style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ],
       ),
     );
   }
 }
-
-

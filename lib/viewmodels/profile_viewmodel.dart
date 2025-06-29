@@ -5,6 +5,8 @@ import 'package:digita_mobile/services/profile_service.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 
+import '../models/dosen_profile.dart';
+
 enum ProfileState { idle, loading, success, error }
 enum UpdateProfileState { idle, loading, success, error }
 
@@ -26,6 +28,7 @@ class ProfileViewModel extends ChangeNotifier {
   MahasiswaProfile? mahasiswaProfile;
 
   Dosen? dosenProfile;
+  DosenProfile? loggedInDosenProfile;
 
   ProfileState _supervisorState = ProfileState.idle;
   ProfileState get supervisorState => _supervisorState;
@@ -63,17 +66,25 @@ class ProfileViewModel extends ChangeNotifier {
 
       mahasiswaProfile = null;
       dosenProfile = null;
+      loggedInDosenProfile = null;
 
       if (role == 'mahasiswa') {
         mahasiswaProfile =
         await _profileService.getCurrentMahasiswaProfile(token: token);
       } else if (role == 'dosen') {
+
         final userId = userData['id'] as int?;
         if (userId == null) throw Exception("User ID Dosen tidak ditemukan.");
-        dosenProfile = await _profileService.getDosenProfile(
-          userId: userId,
-          token: token,
-        );
+
+        final results = await Future.wait([
+          _profileService.getDosenProfile(userId: userId, token: token),
+
+          _profileService.getCurrentDosenProfile(token: token),
+        ]);
+
+        dosenProfile = results[0] as Dosen;
+        loggedInDosenProfile = results[1] as DosenProfile;
+
       } else {
         throw Exception("Peran pengguna tidak dikenali: $role");
       }
@@ -86,6 +97,7 @@ class ProfileViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
 
   Future<void> fetchProgramStudi() async {
     if (_programStudiList.isNotEmpty) return;
@@ -167,4 +179,6 @@ class ProfileViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+
 }
