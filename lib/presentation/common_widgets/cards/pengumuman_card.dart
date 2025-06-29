@@ -1,14 +1,23 @@
+// lib/presentation/common_widgets/cards/pengumuman_card.dart
+
+import 'package:digita_mobile/presentation/common_widgets/dialogs/pengumuman_detail_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class PengumumanCard extends StatefulWidget {
   final String title;
   final String description;
+  final String tglMulai;
+  final String tglSelesai;
+  final String? attachment;
 
   const PengumumanCard({
     super.key,
     required this.title,
     required this.description,
+    required this.tglMulai,
+    required this.tglSelesai,
+    this.attachment,
   });
 
   @override
@@ -17,16 +26,11 @@ class PengumumanCard extends StatefulWidget {
 
 class _PengumumanCardState extends State<PengumumanCard> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
       width: 260,
-      padding: EdgeInsets.all(12),
-      margin: EdgeInsets.symmetric(
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(
         horizontal: 4,
         vertical: 8,
       ),
@@ -38,42 +42,66 @@ class _PengumumanCardState extends State<PengumumanCard> {
             color: Colors.black.withAlpha(50),
             spreadRadius: 0,
             blurRadius: 4,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.title,
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  fontSize: 14,
+          // The text content should be flexible.
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.title,
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              Text(
-                widget.description,
-                softWrap: true,
-                overflow: TextOverflow.fade,
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+                const SizedBox(height: 4),
+                // Wrap the description Text in an Expanded widget.
+                // This makes it fill the remaining space without overflowing.
+                Expanded(
+                  child: Text(
+                    widget.description,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          // The button is aligned to the bottom.
           Align(
             alignment: Alignment.centerRight,
             child: SizedBox(
               height: 32,
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return PengumumanDetailDialog(
+                        title: widget.title,
+                        description: widget.description,
+                        tglMulai: widget.tglMulai,
+                        tglSelesai: widget.tglSelesai,
+                        attachment: widget.attachment,
+                      );
+                    },
+                  );
+                },
                 style: TextButton.styleFrom(
-                  backgroundColor: Color(0xFF0F47AD),
+                  backgroundColor: const Color(0xFF0F47AD),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),
                   ),

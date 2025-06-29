@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:digita_mobile/models/dosen_model.dart';
 
 class HomeDosenScreen extends StatefulWidget {
   const HomeDosenScreen({super.key});
@@ -16,40 +15,39 @@ class HomeDosenScreen extends StatefulWidget {
 }
 
 class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
-  final List<Map<String, String>> pengumumanCards = [
+  // Data pengumuman diperbarui dengan field tanggal dan lampiran
+  final List<Map<String, String?>> pengumumanCards = [
     {
-      'title': 'Buku Panduan',
-      'description': 'Buku panduan tugas Akhir jurusan teknik informatika',
+      'title': 'Buku Panduan Tugas Akhir',
+      'description': 'Buku panduan lengkap mengenai standar dan format penulisan Tugas Akhir untuk mahasiswa Jurusan Teknik Informatika angkatan 2021. Buku panduan lengkap mengenai standar dan format penulisan Tugas Akhir untuk mahasiswa Jurusan Teknik Informatika angkatan 2021. Buku panduan lengkap mengenai standar dan format penulisan Tugas Akhir untuk mahasiswa Jurusan Teknik Informatika angkatan 2021.',
+      'tgl_mulai': '01 Agu 2024',
+      'tgl_selesai': '31 Des 2024',
+      'attachment': 'panduan_ta_2024.pdf',
     },
     {
-      'title': 'Jadwal Seminar',
-      'description': 'Jadwal seminar tugas akhir semester ini',
+      'title': 'Jadwal Seminar Proposal',
+      'description': 'Jadwal lengkap pelaksanaan seminar proposal Tugas Akhir untuk semester ganjil tahun ajaran 2024/2025.',
+      'tgl_mulai': '15 Sep 2024',
+      'tgl_selesai': '20 Sep 2024',
+      'attachment': null, // Contoh tanpa lampiran
     },
     {
-      'title': 'Template Laporan',
-      'description': 'Template laporan tugas akhir yang harus diikuti',
+      'title': 'Template Laporan TA',
+      'description': 'Template resmi dalam format .docx untuk penyusunan laporan Tugas Akhir. Wajib diikuti oleh semua mahasiswa.',
+      'tgl_mulai': '01 Agu 2024',
+      'tgl_selesai': '31 Des 2024',
+      'attachment': 'template_laporan_ta.docx',
     },
     {
-      'title': 'Daftar Dosen',
-      'description': 'Daftar dosen pembimbing tugas akhir',
-    },
-    {
-      'title': 'Prosedur TA',
-      'description': 'Prosedur lengkap pendaftaran tugas akhir',
-    },
-    {
-      'title': 'Kontak Admin',
-      'description': 'Informasi kontak admin untuk bantuan tugas akhir',
+      'title': 'Daftar Dosen Pembimbing',
+      'description': 'Daftar nama dosen beserta kuota bimbingan yang tersedia untuk Tugas Akhir semester ini.',
+      'tgl_mulai': '25 Jul 2024',
+      'tgl_selesai': '05 Agu 2024',
+      'attachment': 'daftar_dosen_pembimbing.xlsx',
     },
   ];
 
   final List<Map<String, String>> upcomingCards = [
-    {'title': 'Bimbingan dengan dosen', 'description': 'Besok, 14:00 WIB'},
-    {
-      'title': 'Pengumpulan Daftar isi',
-      'description': '12 September, 23:59 WIB',
-    },
-    {'title': 'Bimbingan dengan dosen', 'description': 'Besok, 14:00 WIB'},
     {'title': 'Bimbingan dengan dosen', 'description': 'Besok, 14:00 WIB'},
     {
       'title': 'Pengumpulan Daftar isi',
@@ -89,11 +87,11 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Lihat Alur Pendaftaran Tugas Akhir',
+                            'Pengumuman Tugas Akhir',
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
                           SizedBox(
-                            height: 128,
+                            height: 150,
                             child: ListView.separated(
                               separatorBuilder: (context, index) =>
                               const SizedBox(width: 16),
@@ -102,10 +100,13 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
                               shrinkWrap: true,
                               itemCount: pengumumanCards.length,
                               itemBuilder: (context, index) {
+                                final item = pengumumanCards[index];
                                 return PengumumanCard(
-                                  title: pengumumanCards[index]['title']!,
-                                  description:
-                                  pengumumanCards[index]['description']!,
+                                  title: item['title']!,
+                                  description: item['description']!,
+                                  tglMulai: item['tgl_mulai']!,
+                                  tglSelesai: item['tgl_selesai']!,
+                                  attachment: item['attachment'],
                                 );
                               },
                             ),
@@ -157,7 +158,6 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
         return Center(child: Text('Gagal: ${viewModel.errorMessage}'));
       case ProfileState.success:
         final updatedProfile = viewModel.loggedInDosenProfile;
-        final originalProfile = viewModel.dosenProfile;
 
         return ProfileSection(
           name: updatedProfile?.namaLengkap ?? 'Nama Tidak Ditemukan',

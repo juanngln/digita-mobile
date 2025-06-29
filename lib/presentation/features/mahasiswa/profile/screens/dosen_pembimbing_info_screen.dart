@@ -85,7 +85,7 @@ class _DosenPembimbingInfoScreenState extends State<DosenPembimbingInfoScreen> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
+                color: Colors.grey.withAlpha(50),
                 spreadRadius: 2,
                 blurRadius: 7,
                 offset: const Offset(0, 3),

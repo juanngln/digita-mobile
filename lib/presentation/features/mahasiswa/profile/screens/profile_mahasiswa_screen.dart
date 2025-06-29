@@ -128,7 +128,6 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
   Widget _buildMenuCard(BuildContext context, TextTheme textTheme) {
     final profileViewModel = Provider.of<ProfileViewModel>(context, listen: false);
     if (profileViewModel.mahasiswaProfile == null) return const SizedBox.shrink();
-    final mahasiswa = profileViewModel.mahasiswaProfile!;
 
     return Container(
       padding: const EdgeInsets.all(12),

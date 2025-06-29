@@ -74,7 +74,7 @@ class JadwalViewModel extends ChangeNotifier {
       List<dynamic> responseData = response.data;
       _ruanganList = responseData.map((data) => Ruangan.fromJson(data)).toList();
       notifyListeners();
-    } on DioException catch (e) {
+    } on DioException { //d
     }
   }
 

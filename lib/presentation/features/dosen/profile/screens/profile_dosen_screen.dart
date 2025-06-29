@@ -81,10 +81,8 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
     }
   }
 
-  // Build the profile content with data from the DosenProfile object
   Widget _buildProfileContent(BuildContext context, DosenProfile dosen) {
     final textTheme = Theme.of(context).textTheme;
-    final viewModel = Provider.of<ProfileViewModel>(context, listen: false);
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
