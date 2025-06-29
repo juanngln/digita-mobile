@@ -13,6 +13,7 @@ import 'package:digita_mobile/models/quote.dart';
 import 'package:digita_mobile/services/quote_service.dart';
 
 
+import '../../../../../viewmodels/dokumen_mahasiswa_viewmodel.dart';
 import '../../../../../viewmodels/pengumuman_viewmodel.dart';
 
 class HomeMahasiswaScreen extends StatefulWidget {
@@ -29,11 +30,11 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch quotes
     _quoteFuture = _apiService.fetchRandomQuote();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<PengumumanViewModel>(context, listen: false).fetchAnnouncements();
+      Provider.of<DokumenViewModel>(context, listen: false).fetchDokumenStatus();
     });
   }
 
@@ -138,35 +139,42 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                     // Progress Section
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                      child: Consumer<DokumenViewModel>(
+                        builder: (context, dokumenViewModel, child) {
+                          final progress = dokumenViewModel.progressPercentage;
+                          final progressText = '${(progress * 100).toStringAsFixed(0)}%';
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Progress TA',
-                                style: Theme.of(context).textTheme.titleSmall,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    'Progress TA',
+                                    style: Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                  Text(
+                                    progressText, // Dynamic Text
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                '20%',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                              const SizedBox(height: 4),
+                              LinearProgressIndicator(
+                                value: progress, // Dynamic Value
+                                minHeight: 10,
+                                backgroundColor: const Color(0xFF9DCFF7),
+                                color: const Color(0xFF0F47AD),
+                                borderRadius: BorderRadius.circular(50),
                               ),
                             ],
-                          ),
-                          const SizedBox(height: 4),
-                          LinearProgressIndicator(
-                            value: 0.2,
-                            minHeight: 10,
-                            backgroundColor: const Color(0xFF9DCFF7),
-                            color: const Color(0xFF0F47AD),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                        ],
+                          );
+                        },
                       ),
                     ),
 

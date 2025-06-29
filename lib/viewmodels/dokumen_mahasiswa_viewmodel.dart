@@ -9,7 +9,8 @@ class DokumenViewModel extends ChangeNotifier {
   final DokumenService _dokumenService = DokumenService();
   bool _isFetchingViewUrl = false;
   bool get isFetchingViewUrl => _isFetchingViewUrl;
-
+  double _progressPercentage = 0.0;
+  double get progressPercentage => _progressPercentage;
   List<DokumenStatusChecklist> _uploadedDocuments = [];
   List<DokumenStatusChecklist> _notUploadedDocuments = [];
   bool _isLoading = false;
@@ -26,10 +27,23 @@ class DokumenViewModel extends ChangeNotifier {
   bool get isUpdating => _isUpdating; // Getter for editing state
   bool get isDeleting => _isDeleting; // Getter for deleting state
 
+  void calculateProgress() {
+    const double totalDocuments = 6.0;
+    final int approvedCount = uploadedDocuments
+        .where((doc) => doc.documentDetails?.status?.toLowerCase() == 'disetujui')
+        .length;
+
+    if (totalDocuments > 0) {
+      _progressPercentage = approvedCount / totalDocuments;
+    } else {
+      _progressPercentage = 0.0;
+    }
+  }
+
   Future<void> fetchDokumenStatus() async {
     _isLoading = true;
     _errorMessage = null;
-
+    // REMOVE calculateProgress(); from here.
     notifyListeners();
 
     try {
@@ -38,6 +52,10 @@ class DokumenViewModel extends ChangeNotifier {
           allDocuments.where((doc) => doc.isUploaded).toList();
       _notUploadedDocuments =
           allDocuments.where((doc) => !doc.isUploaded).toList();
+
+      // PASTE IT HERE, after the lists are updated.
+      calculateProgress();
+
     } on NetworkException catch (e) {
       _errorMessage = e.message;
     } catch (e) {
@@ -47,6 +65,7 @@ class DokumenViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
 
   Future<bool> uploadDokumen({
     required String namaDokumen,
