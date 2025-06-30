@@ -54,7 +54,7 @@ class RequestPembimbingKeDosenService {
             },
             body: jsonBody,
           )
-          .timeout(const Duration(seconds: 30));
+          .timeout(AppConfig.apiTimeout);
 
       if (kDebugMode) {
         print("Submission Response Status: ${response.statusCode}");

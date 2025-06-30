@@ -45,7 +45,7 @@ class RegistrationService {
     try {
       final response = await _client
           .get(url, headers: {'Accept': 'application/json'})
-          .timeout(const Duration(seconds: 15));
+          .timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
         final List<dynamic> decodedData = jsonDecode(response.body);
@@ -82,7 +82,7 @@ class RegistrationService {
     try {
       final response = await _client
           .get(url, headers: {'Accept': 'application/json'})
-          .timeout(const Duration(seconds: 15));
+          .timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
         final List<dynamic> decodedData = jsonDecode(response.body);
@@ -166,7 +166,7 @@ class RegistrationService {
             headers: {'Content-Type': 'application/json; charset=UTF-8'},
             body: jsonBody,
           )
-          .timeout(const Duration(seconds: 20));
+          .timeout(AppConfig.apiTimeout);
 
       if (kDebugMode) {
         print("Registration Response ($role): ${response.statusCode}");

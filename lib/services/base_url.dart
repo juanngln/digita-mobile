@@ -9,7 +9,7 @@ class AppConfig {
 
   // --- Switch for development URL ---
   // Set to true to use the local server, false to use the remote server.
-  static const bool _useLocalServer = true;
+  static const bool _useLocalServer = false;
 
   static String get _developmentUrl {
     return _useLocalServer ? _localDevelopmentUrl : _remoteDevelopmentUrl;
@@ -23,5 +23,5 @@ class AppConfig {
     }
   }
 
-  static const Duration apiTimeout = Duration(seconds: 20);
+  static const Duration apiTimeout = Duration(seconds: 100);
 }

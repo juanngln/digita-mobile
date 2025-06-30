@@ -30,7 +30,7 @@ class ProfileService {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
         },
-      ).timeout(const Duration(seconds: 15));
+      ).timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
         return Mahasiswa.fromJson(jsonDecode(response.body));
@@ -53,7 +53,7 @@ class ProfileService {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
         },
-      ).timeout(const Duration(seconds: 15));
+      ).timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
         return MahasiswaProfile.fromJson(jsonDecode(response.body));
@@ -80,7 +80,7 @@ class ProfileService {
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode(body),
-      ).timeout(const Duration(seconds: 15));
+      ).timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
         return MahasiswaProfile.fromJson(jsonDecode(response.body));
@@ -103,7 +103,7 @@ class ProfileService {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
         },
-      ).timeout(const Duration(seconds: 15));
+      ).timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
         final List<dynamic> body = jsonDecode(response.body);
@@ -132,7 +132,7 @@ class ProfileService {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
         },
-      ).timeout(const Duration(seconds: 15));
+      ).timeout(AppConfig.apiTimeout);
       if (response.statusCode == 200) {
         return Dosen.fromJson(jsonDecode(response.body));
       } else {
@@ -154,7 +154,7 @@ class ProfileService {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
         },
-      ).timeout(const Duration(seconds: 15));
+      ).timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
         return DosenProfile.fromJson(jsonDecode(response.body));
@@ -181,7 +181,7 @@ class ProfileService {
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode(body),
-      ).timeout(const Duration(seconds: 15));
+      ).timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
         return DosenProfile.fromJson(jsonDecode(response.body));
@@ -205,7 +205,7 @@ class ProfileService {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
         },
-      ).timeout(const Duration(seconds: 15));
+      ).timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
         final List<dynamic> body = jsonDecode(response.body);

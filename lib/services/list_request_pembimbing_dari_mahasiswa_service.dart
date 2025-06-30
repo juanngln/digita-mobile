@@ -28,7 +28,7 @@ class ListRequestPembimbingDariMahasiswaService {
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
         },
-      ).timeout(const Duration(seconds: 20));
+      ).timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
         final List<dynamic> responseData = jsonDecode(utf8.decode(response.bodyBytes));
@@ -73,7 +73,7 @@ class ListRequestPembimbingDariMahasiswaService {
           'status': status,
           'dosen_response': responseMessage,
         }),
-      ).timeout(const Duration(seconds: 20));
+      ).timeout(AppConfig.apiTimeout);
 
       if (response.statusCode != 200) {
         String errorMessage = "Gagal mengirim respons (Status: ${response.statusCode})";

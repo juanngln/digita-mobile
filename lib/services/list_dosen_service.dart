@@ -39,7 +39,7 @@ class DosenService {
               'Authorization': 'Bearer $token',
             },
           )
-          .timeout(const Duration(seconds: 20));
+          .timeout(AppConfig.apiTimeout);
 
       if (kDebugMode) {
         print("Dosen List Response Status: ${response.statusCode}");

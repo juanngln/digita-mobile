@@ -56,7 +56,7 @@ class LoginService {
             headers: {'Content-Type': 'application/json; charset=UTF-8'},
             body: jsonBody,
           )
-          .timeout(const Duration(seconds: 20));
+          .timeout(AppConfig.apiTimeout);
 
       if (kDebugMode) {
         print("Login Response Status: ${response.statusCode}");
@@ -130,7 +130,7 @@ class LoginService {
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
         body: body,
       )
-          .timeout(const Duration(seconds: 15));
+          .timeout(AppConfig.apiTimeout);
 
       if (kDebugMode) {
         print("Refresh Response Status: ${response.statusCode}");
@@ -164,7 +164,7 @@ class LoginService {
     }
   }
 
-  // --- NEW METHOD: Logout ---
+  // --- METHOD: Logout ---
   Future<void> logout(String refreshToken) async {
     final url = Uri.parse('${AppConfig.baseUrl}/api/v1/users/logout/');
     final body = jsonEncode({'refresh': refreshToken});
@@ -223,7 +223,7 @@ class LoginService {
               'Authorization': 'Bearer $token',
             },
           )
-          .timeout(const Duration(seconds: 15));
+          .timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
         final List<dynamic> responseData = jsonDecode(response.body);
