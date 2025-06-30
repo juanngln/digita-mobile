@@ -113,6 +113,100 @@ class LoginService {
     }
   }
 
+  Future<String> refreshAccessToken(String refreshToken) async {
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/users/token/refresh/');
+    final body = jsonEncode({'refresh': refreshToken});
+
+    if (kDebugMode) {
+      print("--- Refreshing Token ---");
+      print("URL: $url");
+      print("Body: $body");
+    }
+
+    try {
+      final response = await _client
+          .post(
+        url,
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        body: body,
+      )
+          .timeout(const Duration(seconds: 15));
+
+      if (kDebugMode) {
+        print("Refresh Response Status: ${response.statusCode}");
+        print("Refresh Response Body: ${response.body}");
+      }
+
+      final responseBody = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        // Assuming the new access token is returned under the 'access' key
+        final String? newAccessToken = responseBody['access'];
+        if (newAccessToken != null) {
+          return newAccessToken;
+        } else {
+          throw AuthenticationException(
+              "Token refresh successful, but new access token not found.");
+        }
+      } else {
+        // If refresh fails (e.g., refresh token is expired), throw an exception.
+        final String errorMessage =
+            responseBody['detail'] ?? "Gagal memperbarui sesi Anda. Silakan login kembali.";
+        throw AuthenticationException(errorMessage);
+      }
+    } on SocketException {
+      throw NetworkException("Koneksi gagal saat memperbarui sesi.");
+    } on TimeoutException {
+      throw NetworkException("Koneksi timeout saat memperbarui sesi.");
+    } catch (e) {
+      if (kDebugMode) print("Unknown refresh token error: $e");
+      throw Exception("Terjadi kesalahan: $e");
+    }
+  }
+
+  // --- NEW METHOD: Logout ---
+  Future<void> logout(String refreshToken) async {
+    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/users/logout/');
+    final body = jsonEncode({'refresh': refreshToken});
+
+    if (kDebugMode) {
+      print("--- Logging out ---");
+      print("URL: $url");
+      print("Body: $body");
+    }
+
+    try {
+      final response = await _client
+          .post(
+        url,
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        body: body,
+      )
+          .timeout(AppConfig.apiTimeout);
+
+      if (kDebugMode) {
+        print("Logout Response Status: ${response.statusCode}");
+        print("Logout Response Body: ${response.body}");
+      }
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return; // Success
+      } else {
+        return;
+      }
+    } on TimeoutException {
+      throw NetworkException("Koneksi timeout saat mencoba logout.");
+    } on SocketException {
+      throw NetworkException(
+          "Tidak dapat terhubung ke server. Logout akan dilakukan secara lokal.");
+    } catch (e) {
+      if (kDebugMode) {
+        print("Unknown logout error in Service: $e. Proceeding with local logout.");
+      }
+    }
+  }
+
+
   // --- Method to Check Mahasiswa Request Status  ---
   Future<Map<String, dynamic>?> checkThesisRequestStatus(String token) async {
     final requestStatusUrl = Uri.parse(

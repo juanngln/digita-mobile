@@ -30,7 +30,7 @@ class DokumenViewModel extends ChangeNotifier {
   void calculateProgress() {
     const double totalDocuments = 6.0;
     final int approvedCount = uploadedDocuments
-        .where((doc) => doc.documentDetails?.status?.toLowerCase() == 'disetujui')
+        .where((doc) => doc.documentDetails?.status.toLowerCase() == 'disetujui')
         .length;
 
     if (totalDocuments > 0) {

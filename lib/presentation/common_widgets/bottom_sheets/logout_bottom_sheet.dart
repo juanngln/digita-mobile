@@ -15,6 +15,7 @@ class LogoutDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
+
     return Container(
       height: 201,
       decoration: const BoxDecoration(
@@ -28,11 +29,7 @@ class LogoutDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Keluar Akun",
-              //==================================================
-              //== PERUBAHAN UTAMA DI SINI
-              //== Menambahkan fontSize: 20 secara eksplisit
-              //==================================================
+              "Logout",
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
@@ -40,7 +37,7 @@ class LogoutDialog extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              "Apakah kamu yakin ingin Keluar Akun?",
+              "Apakah kamu yakin ingin Logout?",
               textAlign: TextAlign.center,
               style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w300, color: Colors.black54),
             ),
@@ -71,7 +68,7 @@ class LogoutDialog extends StatelessWidget {
                     elevation: 0,
                     textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
-                  child: const Text("Keluar"),
+                  child: const Text("Logout"),
                 ),
               ],
             ),

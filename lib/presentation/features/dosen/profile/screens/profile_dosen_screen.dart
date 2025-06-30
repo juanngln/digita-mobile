@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 // Import the new DosenProfile model
 import 'package:digita_mobile/models/dosen_profile.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
-import 'package:digita_mobile/presentation/common_widgets/dialogs/logout_dialog.dart';
+import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/logout_bottom_sheet.dart';
 
 import '../widgets/account_secure_sheet_dosen.dart';
 
@@ -167,7 +167,7 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
             onTap: () async {
               final bool? shouldLogout = await showLogoutDialog(context);
               if (shouldLogout == true && mounted) {
-                // Handle logout logic
+                await context.read<ProfileViewModel>().logout(context);
               }
             },
           ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:digita_mobile/presentation/common_widgets/dialogs/logout_dialog.dart';
+import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/logout_bottom_sheet.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/profile/widgets/account_secure_sheet.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/profile/screens/dosen_pembimbing_info_screen.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
@@ -196,8 +196,8 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
                 size: 16, color: Colors.black54),
             onTap: () async {
               final bool? shouldLogout = await showLogoutDialog(context);
-              if (shouldLogout == true) {
-                // Handle logout logic
+              if (shouldLogout == true && context.mounted) {
+                await context.read<ProfileViewModel>().logout(context);
               }
             },
           ),

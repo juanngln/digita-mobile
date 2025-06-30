@@ -7,6 +7,7 @@ import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 
 import '../models/dosen_profile.dart';
+import '../services/login_service.dart';
 
 enum ProfileState { idle, loading, success, error }
 enum UpdateProfileState { idle, loading, success, error }
@@ -14,6 +15,7 @@ enum UpdateProfileState { idle, loading, success, error }
 class ProfileViewModel extends ChangeNotifier {
   final ProfileService _profileService;
   final SecureStorageService _secureStorageService;
+  final LoginService _loginService = LoginService();
 
   ProfileViewModel({
     required ProfileService profileService,
@@ -56,6 +58,8 @@ class ProfileViewModel extends ChangeNotifier {
   String? _jurusanErrorMessage;
   String? get jurusanErrorMessage => _jurusanErrorMessage;
 
+  bool _isLoggingOut = false;
+  bool get isLoggingOut => _isLoggingOut;
 
   // Profile update state
   UpdateProfileState _updateState = UpdateProfileState.idle;
@@ -244,6 +248,32 @@ class ProfileViewModel extends ChangeNotifier {
       _supervisorErrorMessage = e.toString();
       _supervisorState = ProfileState.error;
     } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<void> logout(BuildContext context) async {
+    _isLoggingOut = true;
+    notifyListeners();
+
+    try {
+      final refreshToken = await _secureStorageService.getRefreshToken();
+
+      if (refreshToken != null) {
+        await _loginService.logout(refreshToken);
+      }
+
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      await _secureStorageService.deleteAllData();
+
+      if (context.mounted) {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
+      }
+
+      _isLoggingOut = false;
       notifyListeners();
     }
   }

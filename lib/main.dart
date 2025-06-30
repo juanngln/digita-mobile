@@ -1,8 +1,8 @@
+import 'package:digita_mobile/presentation/features/auth/auth_check_screen.dart';
 import 'package:digita_mobile/presentation/features/auth/login/screens/login_screen.dart';
 import 'package:digita_mobile/presentation/features/auth/register/screens/register_dosen_screen.dart';
 import 'package:digita_mobile/presentation/features/auth/register/screens/register_mahasiswa_screen.dart';
 import 'package:digita_mobile/presentation/features/dosen/main_layout_dosen.dart';
-import 'package:digita_mobile/presentation/features/onboarding/screens/landing_screen.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/main_layout_mahasiswa.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/tidak_ada_dospem/screens/cari_dospem_screen.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/tidak_ada_dospem/screens/list_dospem_screen.dart';
@@ -82,7 +82,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => const LandingScreen(),
+        '/': (context) => createAuthCheckScreen(),
         '/login':
             (context) => ChangeNotifierProvider(
               create: (context) => LoginViewModel(LoginService()),
