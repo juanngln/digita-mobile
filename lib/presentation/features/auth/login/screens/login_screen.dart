@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _launchPasswordResetURL() async {
     final Uri url =
-    Uri.parse('https://digita-admin-api.onrender.com/users/auth/password-reset/');
+    Uri.parse('https://djangodigitaadmin-production.up.railway.app/users/auth/password-reset/');
     try {
       await launchUrl(url, mode: LaunchMode.inAppWebView);
     } catch (e) {

@@ -5,7 +5,8 @@
 
     // --- Development URLs ---
     static const String _localDevelopmentUrl = "http://10.0.2.2:8000";
-    static const String _remoteDevelopmentUrl = "https://digita-admin-api.onrender.com";
+    // static const String _remoteDevelopmentUrl = "https://digita-admin-api.onrender.com";
+    static const String _remoteDevelopmentUrl = "https://djangodigitaadmin-production.up.railway.app";
 
     // --- Switch for development URL ---
     // Set to true to use the local server, false to use the remote server.
