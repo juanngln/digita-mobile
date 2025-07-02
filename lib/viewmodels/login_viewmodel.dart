@@ -3,6 +3,8 @@ import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:digita_mobile/models/mahasiswa.dart';
 
+import '../services/notification_service.dart';
+
 enum ViewState { idle, busy, error, success }
 
 enum LoginResult {
@@ -16,6 +18,7 @@ enum LoginResult {
 
 class LoginViewModel extends ChangeNotifier {
   final LoginService _loginService;
+  final NotificationService _notificationService = NotificationService();
   Mahasiswa? _mahasiswa;
 
   Mahasiswa? get mahasiswa => _mahasiswa;
@@ -98,6 +101,7 @@ class LoginViewModel extends ChangeNotifier {
       if (refreshToken != null) {
         await _secureStorageService.saveRefreshToken(refreshToken);
       }
+      await _notificationService.registerDevice();
 
 
       // --- Role-Based Navigation Logic ---
@@ -177,17 +181,6 @@ class LoginViewModel extends ChangeNotifier {
       _setState(ViewState.error);
     }
   }
-
-  // --- Logout (Example) ---
-  // Future<void> logout() async {
-  //   await _secureStorageService.deleteAllTokensAndData();
-  //   _authToken = null;
-  //   _selectedRole = null;
-  //   // Reset other states and navigate to login screen
-  //   _loginResult = LoginResult.idle;
-  //   _setState(ViewState.idle);
-  //   notifyListeners();
-  // }
 
   // --- Method to load token on app start  ---
   Future<String?> tryLoadTokenAndSetAuthStatus() async {

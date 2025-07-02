@@ -20,9 +20,13 @@ import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:digita_mobile/services/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await NotificationService().initialize();
   await initializeDateFormatting('id_ID', null);
   await FlutterDownloader.initialize(
       debug: true,
@@ -38,6 +42,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'DigiTA Mobile',
+      navigatorKey: NotificationService().navigatorKey,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
