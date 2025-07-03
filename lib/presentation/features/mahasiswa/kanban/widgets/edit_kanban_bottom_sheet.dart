@@ -6,41 +6,46 @@ import 'package:digita_mobile/presentation/features/mahasiswa/kanban/widgets/sec
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class TambahKanbanBottomSheet extends StatefulWidget {
-  const TambahKanbanBottomSheet({super.key});
+class EditKanbanBottomSheet extends StatefulWidget {
+  final Kanban kanban;
+
+  const EditKanbanBottomSheet({super.key, required this.kanban});
 
   @override
-  State<TambahKanbanBottomSheet> createState() =>
-      _TambahKanbanBottomSheetState();
+  State<EditKanbanBottomSheet> createState() => _EditKanbanBottomSheetState();
 }
 
-class _TambahKanbanBottomSheetState extends State<TambahKanbanBottomSheet> {
+class _EditKanbanBottomSheetState extends State<EditKanbanBottomSheet> {
   final DBHelper dbHelper = DBHelper();
-  String selectedSection = 'To Do';
-  final TextEditingController _babController = TextEditingController();
-  final TextEditingController _keteranganController = TextEditingController();
-  final TextEditingController _dueController = TextEditingController();
-
-  void addKanban() async {
-    String section = selectedSection;
-    String bab = _babController.text.trim();
-    String keterangan = _keteranganController.text.trim();
-    String due = _dueController.text.trim();
-    Kanban kanban = Kanban(section: section, bab: bab, keterangan: keterangan, due: due);
-
-    await dbHelper.insertKanban(kanban);
-
-    _babController.clear();
-    _keteranganController.clear();
-    _dueController.clear();
-  }
+  late String selectedSection;
+  late TextEditingController _babController;
+  late TextEditingController _keteranganController;
+  late TextEditingController _dueController;
 
   @override
-  void dispose() {
-    _babController.dispose();
-    _keteranganController.dispose();
-    _dueController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    selectedSection = widget.kanban.section;
+    _babController = TextEditingController(text: widget.kanban.bab);
+    _keteranganController =
+        TextEditingController(text: widget.kanban.keterangan);
+    _dueController = TextEditingController(text: widget.kanban.due);
+  }
+
+  void updateKanban() async {
+    final updatedKanban = Kanban(
+      id: widget.kanban.id,
+      section: selectedSection,
+      bab: _babController.text.trim(),
+      keterangan: _keteranganController.text.trim(),
+      due: _dueController.text.trim(),
+    );
+
+    await dbHelper.updateKanban(updatedKanban);
+  }
+
+  void deleteKanban() async {
+    await dbHelper.deleteKanban(widget.kanban.id!);
   }
 
   @override
@@ -62,7 +67,7 @@ class _TambahKanbanBottomSheetState extends State<TambahKanbanBottomSheet> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Text(
-                  'Tambah Papan Kanban',
+                  'Edit Papan Kanban',
                   style: GoogleFonts.poppins(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -175,12 +180,42 @@ class _TambahKanbanBottomSheetState extends State<TambahKanbanBottomSheet> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
-                child: PrimaryActionButton(
-                  label: 'SIMPAN',
-                  onPressed: () async {
-                    addKanban();
-                    Navigator.of(context).pop();
-                  },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          deleteKanban();
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 50),
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          'HAPUS',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12.0),
+                    Expanded(
+                      child: PrimaryActionButton(
+                        label: 'SIMPAN',
+                        onPressed: () {
+                          updateKanban();
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

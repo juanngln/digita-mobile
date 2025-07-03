@@ -1,3 +1,6 @@
+import 'package:digita_mobile/helper/db_helper.dart';
+import 'package:digita_mobile/models/kanban_model.dart';
+import 'package:digita_mobile/presentation/features/mahasiswa/kanban/widgets/edit_kanban_bottom_sheet.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/kanban/widgets/kanban_card.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/kanban/widgets/tambah_kanban_bottom_sheet.dart';
 import 'package:flutter/material.dart';
@@ -11,16 +14,21 @@ class KanbanBoardScreen extends StatefulWidget {
 }
 
 class _KanbanBoardScreenState extends State<KanbanBoardScreen> {
-  final List<Map<String, String>> kanban = [
-    {
-      'title': 'BAB IV: Implementasi dan pembahasan',
-      'date': '04 Maret 2025, 14:00',
-    },
-    {
-      'title': 'BAB IV: Implementasi dan pembahasan',
-      'date': '04 Maret 2025, 14:00',
-    },
-  ];
+  final DBHelper dbHelper = DBHelper();
+  List<Kanban> kanbanList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchKanbanList();
+  }
+
+  Future<void> fetchKanbanList() async {
+    final data = await dbHelper.getKanbans();
+    setState(() {
+      kanbanList = data;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,51 +97,9 @@ class _KanbanBoardScreenState extends State<KanbanBoardScreen> {
                 Expanded(
                   child: TabBarView(
                     children: [
-                      Column(
-                        children: [
-                          ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: kanban.length,
-                            itemBuilder: (context, index) {
-                              return KanbanCard(
-                                title: kanban[index]['title']!,
-                                date: kanban[index]['date']!,
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: kanban.length,
-                            itemBuilder: (context, index) {
-                              return KanbanCard(
-                                title: kanban[index]['title']!,
-                                date: kanban[index]['date']!,
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: kanban.length,
-                            itemBuilder: (context, index) {
-                              return KanbanCard(
-                                title: kanban[index]['title']!,
-                                date: kanban[index]['date']!,
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                      _buildKanbanListBySection('To Do'),
+                      _buildKanbanListBySection('In Progress'),
+                      _buildKanbanListBySection('Done'),
                     ],
                   ),
                 ),
@@ -142,6 +108,49 @@ class _KanbanBoardScreenState extends State<KanbanBoardScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildKanbanListBySection(String section) {
+    final filteredList =
+        kanbanList.where((kanban) => kanban.section == section).toList();
+
+    if (filteredList.isEmpty) {
+      return Center(
+        child: Text('Tidak ada kanban', style: GoogleFonts.poppins()),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: filteredList.length,
+      itemBuilder: (context, index) {
+        final kanban = filteredList[index];
+        return KanbanCard(
+          title: kanban.bab,
+          date: kanban.due,
+          onTap: () async {
+            final result = await showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.white,
+              useSafeArea: true,
+              isScrollControlled: true,
+              isDismissible: true,
+              enableDrag: true,
+              showDragHandle: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+              ),
+              builder: (BuildContext context) {
+                return EditKanbanBottomSheet(kanban: kanban);
+              },
+            ).whenComplete(() => fetchKanbanList());
+
+            if (result == true) {
+              setState(() {});
+            }
+          },
+        );
+      },
     );
   }
 
@@ -160,6 +169,6 @@ class _KanbanBoardScreenState extends State<KanbanBoardScreen> {
       builder: (BuildContext context) {
         return TambahKanbanBottomSheet();
       },
-    );
+    ).whenComplete(() => fetchKanbanList());
   }
 }

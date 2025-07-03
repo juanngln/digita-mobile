@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SectionDropdown extends StatefulWidget {
-  const SectionDropdown({super.key});
+class SectionDropdown extends StatelessWidget {
+  final String? selectedSection;
+  final List<String> sections;
+  final ValueChanged<String?> onChanged;
 
-  @override
-  State<SectionDropdown> createState() => _SectionDropdownState();
-}
-
-class _SectionDropdownState extends State<SectionDropdown> {
-  String? _selectedSection = 'To Do';
-  final List<String> _sections = ['To Do', 'In Progress', 'Done'];
+  const SectionDropdown({
+    super.key,
+    required this.selectedSection,
+    required this.onChanged,
+    this.sections = const ['To Do', 'In Progress', 'Done'],
+  });
 
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: _selectedSection,
+      value: selectedSection,
       hint: Text(
         'Select Section',
         style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[500]),
@@ -38,10 +39,6 @@ class _SectionDropdownState extends State<SectionDropdown> {
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide.none,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          borderSide: BorderSide.none,
-        ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: BorderSide(
@@ -58,22 +55,19 @@ class _SectionDropdownState extends State<SectionDropdown> {
           borderSide: const BorderSide(color: Colors.red, width: 1.5),
         ),
       ),
-      onChanged: (value) {
-        setState(() {
-          _selectedSection = value;
-        });
-      },
-      items: _sections.map((section) {
-        return DropdownMenuItem<String>(
-          value: section,
-          child: Text(
-            section,
-            overflow: TextOverflow.ellipsis,
-          ),
-        );
-      }).toList(),
-      validator: (value) =>
-          value == null ? 'Section tidak boleh kosong' : null,
+      onChanged: onChanged,
+      items:
+          sections.map((section) {
+            return DropdownMenuItem<String>(
+              value: section,
+              child: Text(section, overflow: TextOverflow.ellipsis),
+            );
+          }).toList(),
+      validator:
+          (value) =>
+              value == null || value.isEmpty
+                  ? 'Section tidak boleh kosong'
+                  : null,
       autovalidateMode: AutovalidateMode.onUserInteraction,
     );
   }
