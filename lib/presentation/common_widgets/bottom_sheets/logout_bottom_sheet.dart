@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 Future<bool?> showLogoutDialog(BuildContext context) {
   return showModalBottomSheet<bool>(
@@ -14,7 +15,6 @@ class LogoutDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-
 
     return Container(
       height: 201,
@@ -37,38 +37,38 @@ class LogoutDialog extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              "Apakah kamu yakin ingin Logout?",
+              "Apakah kamu yakin ingin keluar akun?",
               textAlign: TextAlign.center,
-              style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w300, color: Colors.black54),
+              style: textTheme.bodyMedium,
             ),
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton(
+                TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE3F2FD),
-                    foregroundColor: Colors.blue.shade800,
+                  style: TextButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                    foregroundColor: Colors.black,
                     fixedSize: const Size(110, 40),
                     shape: const StadiumBorder(),
                     elevation: 0,
-                    textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+                    textStyle: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   child: const Text("Batal"),
                 ),
                 const SizedBox(width: 70),
-                ElevatedButton(
+                TextButton(
                   onPressed: () => Navigator.pop(context, true),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue.shade700,
+                  style: TextButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
                     fixedSize: const Size(110, 40),
                     shape: const StadiumBorder(),
                     elevation: 0,
-                    textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+                    textStyle: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
-                  child: const Text("Logout"),
+                  child: const Text("Keluar"),
                 ),
               ],
             ),

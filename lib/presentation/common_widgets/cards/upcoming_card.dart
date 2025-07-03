@@ -41,6 +41,7 @@ class _UpcomingCardState extends State<UpcomingCard> {
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(

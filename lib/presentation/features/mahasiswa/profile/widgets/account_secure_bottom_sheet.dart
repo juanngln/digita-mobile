@@ -1,4 +1,7 @@
+import 'package:digita_mobile/presentation/common_widgets/buttons/primary_action_button.dart';
+import 'package:digita_mobile/presentation/common_widgets/forms/text_input_field.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:digita_mobile/models/program_studi_model.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
@@ -6,12 +9,17 @@ import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 void showAccountInfoSheet(BuildContext context, ProfileViewModel viewModel) {
   showModalBottomSheet(
     context: context,
+    useSafeArea: true,
+    isDismissible: true,
     isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (context) => ChangeNotifierProvider.value(
-      value: viewModel,
-      child: const AccountInfoSheet(),
-    ),
+    enableDrag: true,
+    showDragHandle: true,
+    backgroundColor: Colors.white,
+    builder:
+        (context) => ChangeNotifierProvider.value(
+          value: viewModel,
+          child: const AccountInfoSheet(),
+        ),
   );
 }
 
@@ -48,8 +56,9 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
       _selectedProdi = profile.programStudi;
     }
 
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => viewModel.fetchProgramStudi());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => viewModel.fetchProgramStudi(),
+    );
   }
 
   @override
@@ -93,8 +102,9 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-            Text(viewModel.updateErrorMessage ?? "Gagal memperbarui profil."),
+            content: Text(
+              viewModel.updateErrorMessage ?? "Gagal memperbarui profil.",
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -108,14 +118,15 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
     final viewModel = context.watch<ProfileViewModel>();
 
     return Padding(
-      padding:
-      EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
         ),
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
@@ -123,21 +134,14 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 153,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                ),
-                const SizedBox(height: 20),
                 Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: Alignment.center,
                   child: Text(
-                    "Informasi Akun",
-                    style: textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
+                    'Kelola Akun',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -146,8 +150,9 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
                   controller: _nameController,
                   label: "Nama lengkap",
                   hint: "Masukkan nama lengkap Anda",
-                  validator: (value) =>
-                  value!.isEmpty ? 'Nama tidak boleh kosong' : null,
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? 'Nama tidak boleh kosong' : null,
                 ),
                 const SizedBox(height: 16),
                 _buildEditableTextField(
@@ -158,7 +163,9 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value!.isEmpty) return 'Email tidak boleh kosong';
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                    if (!RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    ).hasMatch(value)) {
                       return 'Format email tidak valid';
                     }
                     return null;
@@ -178,25 +185,22 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
                 SizedBox(
                   width: double.infinity,
                   height: 50,
-                  child: ElevatedButton(
-                    onPressed: viewModel.updateState == UpdateProfileState.loading
-                        ? null
-                        : _handleSaveChanges,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      textStyle: textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w600),
-                    ),
-                    child: viewModel.updateState == UpdateProfileState.loading
-                        ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(color: Colors.white),
-                    )
-                        : const Text("SIMPAN PERUBAHAN"),
+                  child: PrimaryActionButton(
+                    label: 'SIMPAN',
+                    onPressed:
+                        viewModel.updateState == UpdateProfileState.loading
+                            ? null
+                            : _handleSaveChanges,
+                    child:
+                        viewModel.updateState == UpdateProfileState.loading
+                            ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                            : const Text("SIMPAN"),
                   ),
                 ),
               ],
@@ -219,75 +223,97 @@ class _AccountInfoSheetState extends State<AccountInfoSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
-        TextFormField(
+        CustomTextField(
           controller: controller,
           keyboardType: keyboardType,
+          hintText: '',
           readOnly: readOnly,
-          style: textTheme.bodyMedium?.copyWith(
-            color: readOnly ? Colors.grey.shade700 : Colors.black,
-          ),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: readOnly ? Colors.grey.shade200 : Colors.blue.shade50,
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none),
-            hintText: hint,
-            hintStyle: textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
-            contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          ),
           validator: validator,
+          fillColor: Theme.of(context).colorScheme.secondary,
         ),
       ],
     );
   }
 
-  Widget _buildProdiDropdown(
-      {required TextTheme textTheme, required ProfileViewModel viewModel}) {
+  Widget _buildProdiDropdown({
+    required TextTheme textTheme,
+    required ProfileViewModel viewModel,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Program Studi",
-            style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600)),
+        Text(
+          "Program Studi",
+          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
         if (viewModel.prodiState == ProfileState.loading)
           const Center(child: CircularProgressIndicator())
         else if (viewModel.prodiState == ProfileState.error)
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(viewModel.prodiErrorMessage ?? "Gagal memuat data", style: TextStyle(color: Colors.red)),
+            child: Text(
+              viewModel.prodiErrorMessage ?? "Gagal memuat data",
+              style: TextStyle(color: Colors.red),
+            ),
           )
         else
           DropdownButtonFormField<ProgramStudi>(
             value: _selectedProdi,
-            items: viewModel.programStudiList.map((ProgramStudi prodi) {
-              return DropdownMenuItem<ProgramStudi>(
-                value: prodi,
-                child: Text(prodi.namaProdi),
-              );
-            }).toList(),
+            items:
+                viewModel.programStudiList.map((ProgramStudi prodi) {
+                  return DropdownMenuItem<ProgramStudi>(
+                    value: prodi,
+                    child: Text(prodi.namaProdi),
+                  );
+                }).toList(),
             onChanged: (ProgramStudi? newValue) {
               setState(() {
                 _selectedProdi = newValue;
               });
             },
-            style: textTheme.bodyMedium,
+            isExpanded: true,
+            icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[500]),
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
             decoration: InputDecoration(
               filled: true,
-              fillColor: Colors.blue.shade50,
+              fillColor: Theme.of(context).colorScheme.secondary,
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 15.0,
+                horizontal: 20.0,
+              ),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none),
-              contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 1.5,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(color: Colors.red, width: 1.0),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(color: Colors.red, width: 1.5),
+              ),
             ),
-            icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade700),
-            validator: (value) =>
-            value == null ? 'Program Studi tidak boleh kosong' : null,
+            validator:
+                (value) =>
+                    value == null ? 'Program Studi tidak boleh kosong' : null,
           ),
       ],
     );

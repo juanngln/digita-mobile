@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/logout_bottom_sheet.dart';
-import 'package:digita_mobile/presentation/features/mahasiswa/profile/widgets/account_secure_sheet.dart';
+import 'package:digita_mobile/presentation/features/mahasiswa/profile/widgets/account_secure_bottom_sheet.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/profile/screens/dosen_pembimbing_info_screen.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:digita_mobile/models/mahasiswa_profile.dart';
@@ -26,24 +26,9 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final profileViewModel = Provider.of<ProfileViewModel>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        titleTextStyle: textTheme.headlineMedium?.copyWith(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 28,
-        ),
-        title: const Text("Profile"),
-        elevation: 0,
-        backgroundColor: Colors.white,
-      ),
-      backgroundColor: Colors.white,
-      body: _buildBody(context, profileViewModel),
-    );
+    return Scaffold(body: _buildBody(context, profileViewModel));
   }
 
   Widget _buildBody(BuildContext context, ProfileViewModel viewModel) {
@@ -63,7 +48,7 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
               ElevatedButton(
                 onPressed: () => viewModel.loadUserProfile(),
                 child: const Text("Coba Lagi"),
-              )
+              ),
             ],
           ),
         );
@@ -77,57 +62,77 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
     }
   }
 
-  Widget _buildProfileContent(BuildContext context, MahasiswaProfile mahasiswa) {
+  Widget _buildProfileContent(
+    BuildContext context,
+    MahasiswaProfile mahasiswa,
+  ) {
     final textTheme = Theme.of(context).textTheme;
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            const CircleAvatar(
-              radius: 95.5,
-              backgroundImage: AssetImage('assets/img/mhs_pria.png'),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              mahasiswa.namaLengkap,
-              textAlign: TextAlign.center,
-              style: textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Profile',
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.left,
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              mahasiswa.nim,
-              textAlign: TextAlign.center,
-              style: textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+              const SizedBox(height: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const CircleAvatar(
+                    radius: 95.5,
+                    backgroundImage: AssetImage('assets/img/mhs_pria.png'),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    mahasiswa.namaLengkap,
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    mahasiswa.nim,
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    mahasiswa.programStudi.namaProdi,
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  _buildMenuCard(context, textTheme),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              mahasiswa.programStudi.namaProdi,
-              textAlign: TextAlign.center,
-              style: textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 30),
-            _buildMenuCard(context, textTheme),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildMenuCard(BuildContext context, TextTheme textTheme) {
-    final profileViewModel = Provider.of<ProfileViewModel>(context, listen: false);
-    if (profileViewModel.mahasiswaProfile == null) return const SizedBox.shrink();
+    final profileViewModel = Provider.of<ProfileViewModel>(
+      context,
+      listen: false,
+    );
+    if (profileViewModel.mahasiswaProfile == null) {
+      return const SizedBox.shrink();
+    }
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -154,18 +159,18 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
             icon: Icons.person_search_outlined,
             title: "Informasi Dosen Pembimbing",
             onTap: () {
-              final int? dosenId = profileViewModel.mahasiswaProfile?.dosenPembimbingId;
+              final int? dosenId =
+                  profileViewModel.mahasiswaProfile?.dosenPembimbingId;
 
               if (dosenId != null && dosenId > 0) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ChangeNotifierProvider.value(
-                      value: profileViewModel,
-                      child: DosenPembimbingInfoScreen(
-                        dosenId: dosenId,
-                      ),
-                    ),
+                    builder:
+                        (_) => ChangeNotifierProvider.value(
+                          value: profileViewModel,
+                          child: DosenPembimbingInfoScreen(dosenId: dosenId),
+                        ),
                   ),
                 );
               } else {
@@ -192,8 +197,11 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
             textTheme: textTheme,
             icon: Icons.exit_to_app_outlined,
             title: "Keluar Akun",
-            trailing: const Icon(Icons.arrow_forward_ios,
-                size: 16, color: Colors.black54),
+            trailing: const Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: Colors.black54,
+            ),
             onTap: () async {
               final bool? shouldLogout = await showLogoutDialog(context);
               if (shouldLogout == true && context.mounted) {
@@ -221,7 +229,10 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
       ),
       trailing: trailing,
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 8.0,
+        vertical: 4.0,
+      ),
       dense: true,
     );
   }

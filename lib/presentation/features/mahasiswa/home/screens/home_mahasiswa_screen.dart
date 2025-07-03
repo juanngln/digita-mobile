@@ -54,7 +54,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(20.0),
             child: Consumer<ProfileViewModel>(
               builder: (context, viewModel, child) {
                 Widget profileWidget;

@@ -74,14 +74,16 @@ class _FinishedScheduleCard extends State<FinishedScheduleCard> {
                     children: [
                       Icon(Icons.person, color: Colors.black),
                       SizedBox(width: 12),
-                      Text(
-                        widget.supervisor,
-                        softWrap: true,
-                        overflow: TextOverflow.visible,
-                        maxLines: 2,
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                      Expanded(
+                        child: Text(
+                          widget.supervisor,
+                          softWrap: true,
+                          overflow: TextOverflow.visible,
+                          maxLines: 2,
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ],
