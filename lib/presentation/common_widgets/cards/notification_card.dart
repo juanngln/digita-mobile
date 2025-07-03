@@ -38,7 +38,7 @@ class _NotificationCardState extends State<NotificationCard> {
         smallSize: 12,
         child: Container(
           width: MediaQuery.of(context).size.width - 48,
-          height: 72,
+          height: 80,
           padding: EdgeInsets.all(12),
           margin: EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(

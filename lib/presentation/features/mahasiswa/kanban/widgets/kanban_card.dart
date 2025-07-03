@@ -18,7 +18,7 @@ class _KanbanCardState extends State<KanbanCard> {
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
-        height: 75,
+        height: 90,
         margin: EdgeInsets.all(12.0),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -35,7 +35,7 @@ class _KanbanCardState extends State<KanbanCard> {
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(

@@ -76,6 +76,9 @@ class _FinishedScheduleCard extends State<FinishedScheduleCard> {
                       SizedBox(width: 12),
                       Text(
                         widget.supervisor,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                        maxLines: 2,
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
