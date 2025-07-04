@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/logout_bottom_sheet.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/profile/widgets/account_secure_bottom_sheet.dart';
@@ -84,34 +85,34 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const CircleAvatar(
-                    radius: 95.5,
+                    radius: 90,
                     backgroundImage: AssetImage('assets/img/mhs_pria.png'),
                   ),
                   const SizedBox(height: 20),
                   Text(
                     mahasiswa.namaLengkap,
                     textAlign: TextAlign.center,
-                    style: textTheme.bodyLarge?.copyWith(
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(
                     mahasiswa.nim,
                     textAlign: TextAlign.center,
-                    style: textTheme.bodyLarge?.copyWith(
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(
                     mahasiswa.programStudi.namaProdi,
                     textAlign: TextAlign.center,
-                    style: textTheme.bodyLarge?.copyWith(
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -144,19 +145,19 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
         children: [
           _buildMenuListItem(
             textTheme: textTheme,
-            icon: Icons.notifications_outlined,
+            icon: Icons.notifications,
             title: "Notifikasi",
             trailing: Switch(
               value: _isNotificationOn,
               onChanged: (value) => setState(() => _isNotificationOn = value),
-              activeColor: Colors.blue.shade700,
+              activeColor: Theme.of(context).colorScheme.primary,
               inactiveTrackColor: Colors.grey.shade300,
             ),
           ),
-          const Divider(color: Colors.black, thickness: 1, height: 1),
+          const Divider(color: Colors.black, thickness: 2, height: 1),
           _buildMenuListItem(
             textTheme: textTheme,
-            icon: Icons.person_search_outlined,
+            icon: Icons.person_search,
             title: "Informasi Dosen Pembimbing",
             onTap: () {
               final int? dosenId =
@@ -183,24 +184,24 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
               }
             },
           ),
-          const Divider(color: Colors.black, thickness: 1, height: 1),
+          const Divider(color: Colors.black, thickness: 2, height: 1),
           _buildMenuListItem(
             textTheme: textTheme,
-            icon: Icons.shield_outlined,
+            icon: Icons.shield,
             title: "Kelola Akun",
             onTap: () {
               showAccountInfoSheet(context, profileViewModel);
             },
           ),
-          const Divider(color: Colors.black, thickness: 1, height: 1),
+          const Divider(color: Colors.black, thickness: 2, height: 1),
           _buildMenuListItem(
             textTheme: textTheme,
-            icon: Icons.exit_to_app_outlined,
+            icon: Icons.exit_to_app,
             title: "Keluar Akun",
             trailing: const Icon(
               Icons.arrow_forward_ios,
               size: 16,
-              color: Colors.black54,
+              color: Colors.black,
             ),
             onTap: () async {
               final bool? shouldLogout = await showLogoutDialog(context);
@@ -222,10 +223,10 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
     VoidCallback? onTap,
   }) {
     return ListTile(
-      leading: Icon(icon, color: Colors.black54, size: 26),
+      leading: Icon(icon, color: Colors.black, size: 26),
       title: Text(
         title,
-        style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+        style: GoogleFonts.poppins(color: Colors.black),
       ),
       trailing: trailing,
       onTap: onTap,

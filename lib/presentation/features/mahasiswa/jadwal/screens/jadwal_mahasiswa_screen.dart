@@ -6,6 +6,7 @@ import 'package:digita_mobile/viewmodels/jadwal_mahasiswa_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class JadwalMahasiswaScreen extends StatefulWidget {
   const JadwalMahasiswaScreen({super.key});
@@ -19,7 +20,10 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<JadwalViewModel>(context, listen: false).fetchJadwalBimbingan();
+      Provider.of<JadwalViewModel>(
+        context,
+        listen: false,
+      ).fetchJadwalBimbingan();
     });
   }
 
@@ -68,11 +72,15 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
       body: SafeArea(
         child: Consumer<JadwalViewModel>(
           builder: (context, viewModel, child) {
-            if (viewModel.state == ViewState.loading && viewModel.upcomingSchedules.isEmpty && viewModel.finishedSchedules.isEmpty) {
+            if (viewModel.state == ViewState.loading &&
+                viewModel.upcomingSchedules.isEmpty &&
+                viewModel.finishedSchedules.isEmpty) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (viewModel.state == ViewState.error && viewModel.upcomingSchedules.isEmpty && viewModel.finishedSchedules.isEmpty) {
+            if (viewModel.state == ViewState.error &&
+                viewModel.upcomingSchedules.isEmpty &&
+                viewModel.finishedSchedules.isEmpty) {
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -87,23 +95,33 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
             return RefreshIndicator(
               onRefresh: () => viewModel.fetchJadwalBimbingan(),
               child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Jadwal Bimbingan', style: Theme.of(context).textTheme.titleLarge),
+                      Text(
+                        'Jadwal Bimbingan',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
                       // Bagian Jadwal Mendatang
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Subtitle(text: 'Jadwal Mendatang'),
                       ),
                       if (upcomingSchedule.isEmpty)
-                        const Center(child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text('Tidak ada jadwal mendatang.'),
-                        ))
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text(
+                              'Tidak ada jadwal mendatang',
+                              style: GoogleFonts.poppins(),
+                            ),
+                          ),
+                        )
                       else
                         ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
@@ -123,10 +141,15 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
                         child: Subtitle(text: 'Selesai'),
                       ),
                       if (finishedSchedule.isEmpty)
-                        const Center(child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text('Tidak ada jadwal yang selesai.'),
-                        ))
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text(
+                              'Tidak ada jadwal yang selesai',
+                              style: GoogleFonts.poppins(),
+                            ),
+                          ),
+                        )
                       else
                         ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
@@ -136,10 +159,16 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
                             final schedule = finishedSchedule[index];
                             return FinishedScheduleCard(
                               title: schedule.judulBimbingan, //
-                              dateTime: formatDateTime(schedule.tanggal, schedule.waktu), //
-                              supervisor: schedule.dosenPembimbing.namaLengkap, //
+                              dateTime: formatDateTime(
+                                schedule.tanggal,
+                                schedule.waktu,
+                              ), //
+                              supervisor:
+                                  schedule.dosenPembimbing.namaLengkap, //
                               location: schedule.lokasiRuangan.namaRuangan, //
-                              note: schedule.catatanBimbingan ?? 'Tidak ada catatan.', //
+                              note:
+                                  schedule.catatanBimbingan ??
+                                  'Tidak ada catatan.', //
                             );
                           },
                         ),

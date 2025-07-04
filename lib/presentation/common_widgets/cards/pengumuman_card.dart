@@ -49,11 +49,12 @@ class _PengumumanCardState extends State<PengumumanCard> {
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // The text content should be flexible.
           Expanded(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -62,16 +63,16 @@ class _PengumumanCardState extends State<PengumumanCard> {
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
                 ),
-                const SizedBox(height: 4),
-                // Wrap the description Text in an Expanded widget.
-                // This makes it fill the remaining space without overflowing.
+                SizedBox(height: 4.0),
                 Expanded(
                   child: Text(
                     widget.description,
                     maxLines: 2,
+                    softWrap: true,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.poppins(
                       fontSize: 12,
@@ -90,7 +91,7 @@ class _PengumumanCardState extends State<PengumumanCard> {
               child: TextButton(
                 onPressed: () {
                   final pengumumanViewModel = Provider.of<PengumumanViewModel>(context, listen: false);
-
+          
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {

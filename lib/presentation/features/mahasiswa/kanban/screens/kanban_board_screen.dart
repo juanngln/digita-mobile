@@ -117,7 +117,7 @@ class _KanbanBoardScreenState extends State<KanbanBoardScreen> {
 
     if (filteredList.isEmpty) {
       return Center(
-        child: Text('Tidak ada kanban', style: GoogleFonts.poppins()),
+        child: Text('Tidak ada tugas', style: GoogleFonts.poppins()),
       );
     }
 

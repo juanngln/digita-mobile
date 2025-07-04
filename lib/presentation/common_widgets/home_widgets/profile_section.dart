@@ -33,8 +33,10 @@ class _ProfileSectionState extends State<ProfileSection> {
         Expanded(
           child: Row(
             children: [
-              const CircleAvatar(
-                  radius: 28, child: Icon(Icons.person, size: 28)),
+              CircleAvatar(
+                radius: 28,
+                child: Image.asset('assets/img/mhs_pria.png'),
+              ),
               const SizedBox(width: 10),
               Flexible(
                 child: Column(
@@ -78,15 +80,10 @@ class _ProfileSectionState extends State<ProfileSection> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => widget.page,
-                  ),
+                  MaterialPageRoute(builder: (context) => widget.page),
                 );
               },
-              color: Theme
-                  .of(context)
-                  .colorScheme
-                  .primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ),
