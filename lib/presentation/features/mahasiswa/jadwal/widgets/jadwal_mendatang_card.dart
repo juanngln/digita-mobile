@@ -89,11 +89,16 @@ class _UpcomingScheduleCard extends State<UpcomingScheduleCard> {
                   children: [
                     const Icon(Icons.person, color: Colors.black),
                     const SizedBox(width: 12),
-                    Text(
-                      scheduleData.dosenPembimbing.namaLengkap,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                    Expanded(
+                      child: Text(
+                        scheduleData.dosenPembimbing.namaLengkap,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                        maxLines: 2,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
