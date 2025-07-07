@@ -1,4 +1,6 @@
+import 'package:digita_mobile/presentation/common_widgets/subtitle.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:digita_mobile/models/jadwal_bimbingan_model.dart';
@@ -17,18 +19,19 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<JadwalDosenViewModel>(context, listen: false)
-          .fetchJadwalBimbinganDosen();
+      Provider.of<JadwalDosenViewModel>(
+        context,
+        listen: false,
+      ).fetchJadwalBimbinganDosen();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+          padding: const EdgeInsets.all(20.0),
           child: Consumer<JadwalDosenViewModel>(
             builder: (context, viewModel, child) {
               if (viewModel.state == DosenViewState.loading &&
@@ -42,12 +45,13 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                          'Gagal memuat data: ${viewModel.errorMessage ?? "Terjadi kesalahan"}'),
+                        'Gagal memuat data: ${viewModel.errorMessage ?? "Terjadi kesalahan"}',
+                      ),
                       const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () => viewModel.fetchJadwalBimbinganDosen(),
                         child: const Text('Coba Lagi'),
-                      )
+                      ),
                     ],
                   ),
                 );
@@ -57,47 +61,43 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
                 onRefresh: () => viewModel.fetchJadwalBimbinganDosen(),
                 child: ListView(
                   children: [
-                    const Text(
+                    Text(
                       'Jadwal Bimbingan',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black87,
-                        fontFamily: 'Poppins',
-                      ),
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    const SizedBox(height: 16),
-
                     // --- Permintaan Bimbingan Section ---
-                    _buildSectionTitle('Permintaan Bimbingan'),
-                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Subtitle(text: 'Permintaan Bimbingan'),
+                    ),
                     if (viewModel.pendingSchedules.isEmpty)
                       _buildEmptyListPlaceholder('permintaan')
                     else
-                      ...viewModel.pendingSchedules
-                          .map((item) => _buildBimbinganCard(item)),
-
-                    const SizedBox(height: 24),
-
+                      ...viewModel.pendingSchedules.map(
+                        (item) => _buildBimbinganCard(item),
+                      ),
                     // --- Bimbingan Disetujui Section ---
-                    _buildSectionTitle('Bimbingan Disetujui'),
-                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Subtitle(text: 'Bimbingan Disetujui'),
+                    ),
                     if (viewModel.acceptedSchedules.isEmpty)
                       _buildEmptyListPlaceholder('disetujui')
                     else
-                      ...viewModel.acceptedSchedules
-                          .map((item) => _buildBimbinganCard(item)),
-
-                    const SizedBox(height: 24),
-
+                      ...viewModel.acceptedSchedules.map(
+                        (item) => _buildBimbinganCard(item),
+                      ),
                     // --- Bimbingan Selesai Section ---
-                    _buildSectionTitle('Bimbingan Selesai'),
-                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Subtitle(text: 'Bimbingan Selesai'),
+                    ),
                     if (viewModel.doneSchedules.isEmpty)
                       _buildEmptyListPlaceholder('selesai')
                     else
-                      ...viewModel.doneSchedules
-                          .map((item) => _buildBimbinganCard(item)),
+                      ...viewModel.doneSchedules.map(
+                        (item) => _buildBimbinganCard(item),
+                      ),
                   ],
                 ),
               );
@@ -112,7 +112,7 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Text(
-        'Belum ada bimbingan ${status == "permintaan" ? "yang diminta" : status}',
+        'Belum ada bimbingan ${status == "permintaan" ? "yang diajukan" : status}',
         style: const TextStyle(
           fontSize: 14,
           color: Colors.grey,
@@ -123,85 +123,70 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Row(
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            color: Colors.black87,
-            fontWeight: FontWeight.w700,
-            fontFamily: 'Poppins',
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Container(
-            height: 5,
-            decoration: BoxDecoration(
-              color: const Color(0xFF0F47AD),
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildBimbinganCard(JadwalBimbingan bimbingan) {
-    final String formattedDate =
-    DateFormat('dd MMMM yyyy', 'id_ID').format(bimbingan.tanggal);
+    final String formattedDate = DateFormat(
+      'dd MMMM yyyy',
+      'id_ID',
+    ).format(bimbingan.tanggal);
     final String formattedTime = bimbingan.waktu.substring(0, 5);
     final String dateTimeString = '$formattedDate, $formattedTime';
     final String studentInfo =
         '${bimbingan.mahasiswa.nim ?? "N/A"} - ${bimbingan.mahasiswa.namaLengkap}';
 
     return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 12),
+      width: MediaQuery.of(context).size.width - 40,
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        borderRadius: BorderRadius.circular(12.0),
+        boxShadow: [
           BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-            offset: Offset(0, 2),
+            spreadRadius: 0,
+            blurRadius: 4,
+            offset: const Offset(0, 4),
+            color: Colors.black.withAlpha(50),
           ),
         ],
-        border: Border.all(color: Colors.grey.shade300),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              bimbingan.judulBimbingan,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Poppins',
-                color: Color(0xFF0F47AD),
-              ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  bimbingan.judulBimbingan,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                    color: Color(0xFF0F47AD),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildInfoRow(Icons.access_time_filled, dateTimeString),
+                const SizedBox(height: 8),
+                _buildInfoRow(Icons.person, studentInfo),
+                const SizedBox(height: 8),
+                _buildInfoRow(
+                  Icons.location_on,
+                  bimbingan.lokasiRuangan.namaRuangan,
+                ),
+                const SizedBox(height: 8),
+                _buildInfoRow(
+                  Icons.edit_square,
+                  'Catatan: ${bimbingan.catatanBimbingan ?? '-'}',
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            _buildInfoRow(Icons.access_time_filled, dateTimeString),
-            const SizedBox(height: 8),
-            _buildInfoRow(Icons.person, studentInfo),
-            const SizedBox(height: 8),
-            _buildInfoRow(
-                Icons.location_on, bimbingan.lokasiRuangan.namaRuangan),
-            const SizedBox(height: 8),
-            _buildInfoRow(Icons.edit_document,
-                'Catatan: ${bimbingan.catatanBimbingan ?? '-'}'),
-            if (bimbingan.status == 'PENDING')
-              _buildActionButtonsForPending(bimbingan),
-            if (bimbingan.status == 'ACCEPTED')
-              _buildActionButtonForAccepted(bimbingan),
-          ],
-        ),
+          ),
+          if (bimbingan.status == 'PENDING')
+            _buildActionButtonsForPending(bimbingan),
+          if (bimbingan.status == 'ACCEPTED')
+            _buildActionButtonForAccepted(bimbingan),
+        ],
       ),
     );
   }
@@ -210,19 +195,14 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: Colors.black54,
-        ),
-        const SizedBox(width: 8),
+        Icon(icon, color: Colors.black),
+        const SizedBox(width: 12),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(
+            style: GoogleFonts.poppins(
               fontSize: 14,
-              fontFamily: 'Poppins',
-              color: Colors.black87,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -233,42 +213,45 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
   Widget _buildActionButtonsForPending(JadwalBimbingan bimbingan) {
     return Column(
       children: [
-        const SizedBox(height: 16),
-        const Divider(color: Color(0xFF0F47AD), thickness: 1.5),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            ElevatedButton(
-              onPressed: () => _showTolakBottomSheet(bimbingan),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFB3BA),
-                foregroundColor: const Color(0xFFE20030),
-                padding:
-                const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+        Divider(thickness: 5, color: Theme.of(context).colorScheme.primary),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () => _showTolakBottomSheet(bimbingan),
+                style: TextButton.styleFrom(
+                  backgroundColor: const Color(0xFFFFB3BA),
+                  foregroundColor: const Color(0xFFE20030),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  minimumSize: const Size(100, 0),
                 ),
-                minimumSize: const Size(80, 36),
-              ),
-              child: const Text('Tolak'),
-            ),
-            const SizedBox(width: 10),
-            ElevatedButton(
-              onPressed: () => _showSetujuBottomSheet(bimbingan),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFB7FCC9),
-                foregroundColor: const Color(0xFF0A7D0C),
-                padding:
-                const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                child: Text(
+                  'Tolak',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
                 ),
-                minimumSize: const Size(80, 36),
               ),
-              child: const Text('Setuju'),
-            ),
-          ],
+              const SizedBox(width: 12),
+              TextButton(
+                onPressed: () => _showSetujuBottomSheet(bimbingan),
+                style: TextButton.styleFrom(
+                  backgroundColor: const Color(0xFFB7FCC9),
+                  foregroundColor: const Color(0xFF0A7D0C),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  minimumSize: const Size(100, 0),
+                ),
+                child: Text(
+                  'Setuju',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -277,21 +260,27 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
   Widget _buildActionButtonForAccepted(JadwalBimbingan bimbingan) {
     return Column(
       children: [
-        const SizedBox(height: 16),
-        const Divider(color: Color(0xFF0F47AD), thickness: 1.5),
-        const SizedBox(height: 10),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () => _showSelesaikanBottomSheet(bimbingan),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF8110),
-              foregroundColor: const Color(0xFFFFFFFF),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+        Divider(thickness: 5, color: Theme.of(context).colorScheme.primary),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              child: TextButton(
+                onPressed: () => _showSelesaikanBottomSheet(bimbingan),
+                style: TextButton.styleFrom(
+                  backgroundColor: const Color(0xFFFFEEB7),
+                  foregroundColor: const Color(0xFFFF8110),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: Text(
+                  'Selesaikan dan perbarui Catatan',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
-            child: const Text('Selesaikan dan perbarui Catatan'),
           ),
         ),
       ],
@@ -299,25 +288,29 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
   }
 
   // --- Bottom Sheet Handlers (robust async/await pattern) ---
-
   void _showSetujuBottomSheet(JadwalBimbingan bimbingan) async {
-    final success = await context
-        .read<JadwalDosenViewModel>()
-        .approveJadwal(bimbingan.id);
+    final success = await context.read<JadwalDosenViewModel>().approveJadwal(
+      bimbingan.id,
+    );
 
     if (!mounted) return;
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text("Bimbingan disetujui"), backgroundColor: Colors.green),
+          content: Text("Bimbingan disetujui"),
+          backgroundColor: Colors.green,
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(context.read<JadwalDosenViewModel>().errorMessage ??
-                "Gagal menyetujui jadwal"),
-            backgroundColor: Colors.red),
+          content: Text(
+            context.read<JadwalDosenViewModel>().errorMessage ??
+                "Gagal menyetujui jadwal",
+          ),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -329,32 +322,36 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) => CatatanDosenBottomSheet(
-        title: 'Alasan Penolakan',
-        hintText: 'Masukkan alasan penolakan bimbingan...',
-        buttonText: 'TOLAK BIMBINGAN',
-        onSave: (String catatan) async {
-          final success = await context
-              .read<JadwalDosenViewModel>()
-              .rejectJadwal(bimbingan.id, catatan);
-          if (!mounted) return;
-          if (success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text("Bimbingan ditolak"),
-                  backgroundColor: Colors.orange),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text(
+      builder:
+          (ctx) => CatatanDosenBottomSheet(
+            title: 'Alasan Penolakan',
+            hintText: 'Masukkan alasan penolakan bimbingan...',
+            buttonText: 'TOLAK BIMBINGAN',
+            onSave: (String catatan) async {
+              final success = await context
+                  .read<JadwalDosenViewModel>()
+                  .rejectJadwal(bimbingan.id, catatan);
+              if (!mounted) return;
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Bimbingan ditolak"),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
                       context.read<JadwalDosenViewModel>().errorMessage ??
-                          "Gagal menolak jadwal"),
-                  backgroundColor: Colors.red),
-            );
-          }
-        },
-      ),
+                          "Gagal menolak jadwal",
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+          ),
     );
   }
 
@@ -365,33 +362,36 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) => CatatanDosenBottomSheet(
-        title: 'Catatan hasil bimbingan',
-        hintText: 'Masukkan catatan hasil bimbingan...',
-        buttonText: 'SIMPAN',
-        onSave: (String catatan) async {
-          final success = await context
-              .read<JadwalDosenViewModel>()
-              .completeJadwal(bimbingan.id, catatan);
-          if (!mounted) return;
-          if (success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Bimbingan telah diselesaikan"),
-                backgroundColor: Colors.green,
-              ),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text(
+      builder:
+          (ctx) => CatatanDosenBottomSheet(
+            title: 'Catatan hasil bimbingan',
+            hintText: 'Masukkan catatan hasil bimbingan...',
+            buttonText: 'SIMPAN',
+            onSave: (String catatan) async {
+              final success = await context
+                  .read<JadwalDosenViewModel>()
+                  .completeJadwal(bimbingan.id, catatan);
+              if (!mounted) return;
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Bimbingan telah diselesaikan"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
                       context.read<JadwalDosenViewModel>().errorMessage ??
-                          "Gagal menyimpan catatan"),
-                  backgroundColor: Colors.red),
-            );
-          }
-        },
-      ),
+                          "Gagal menyimpan catatan",
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+          ),
     );
   }
 }

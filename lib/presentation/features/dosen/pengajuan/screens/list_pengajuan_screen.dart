@@ -1,8 +1,10 @@
 import 'package:digita_mobile/models/list_request_pembimbing_dari_mahasiswa_model.dart';
+import 'package:digita_mobile/presentation/common_widgets/subtitle.dart';
 import 'package:digita_mobile/services/list_request_pembimbing_dari_mahasiswa_service.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:digita_mobile/presentation/features/dosen/pengajuan/widgets/form_pengajuan_bottom_sheet.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PengajuanMahasiswaScreen extends StatefulWidget {
   const PengajuanMahasiswaScreen({super.key});
@@ -13,7 +15,8 @@ class PengajuanMahasiswaScreen extends StatefulWidget {
 
 class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
   late Future<List<ListRequestPembimbingDariMahasiswaModel>> _requestsFuture;
-  final ListRequestPembimbingDariMahasiswaService _pengajuanService = ListRequestPembimbingDariMahasiswaService();
+  final ListRequestPembimbingDariMahasiswaService _pengajuanService =
+      ListRequestPembimbingDariMahasiswaService();
   final SecureStorageService _storageService = SecureStorageService();
 
   void _refreshRequests() {
@@ -28,7 +31,8 @@ class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
     _requestsFuture = _fetchIncomingRequests();
   }
 
-  Future<List<ListRequestPembimbingDariMahasiswaModel>> _fetchIncomingRequests() async {
+  Future<List<ListRequestPembimbingDariMahasiswaModel>>
+  _fetchIncomingRequests() async {
     final token = await _storageService.getAccessToken();
     if (token == null) {
       throw Exception("Token tidak ditemukan. Silakan login kembali.");
@@ -39,45 +43,25 @@ class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Pengajuan Mahasiswa',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    fontFamily: 'Poppins'),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  const Text(
-                    'Daftar Mahasiswa',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        fontFamily: 'Poppins'),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0F47AD),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Subtitle(text: 'Daftar Mahasiswa'),
               ),
               const SizedBox(height: 16),
               Expanded(
-                child: FutureBuilder<List<ListRequestPembimbingDariMahasiswaModel>>(
+                child: FutureBuilder<
+                  List<ListRequestPembimbingDariMahasiswaModel>
+                >(
                   future: _requestsFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -85,12 +69,16 @@ class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
                     }
                     if (snapshot.hasError) {
                       return Center(
-                          child:
-                          Text('Gagal memuat data: ${snapshot.error}'));
+                        child: Text('Gagal memuat data: ${snapshot.error}'),
+                      );
                     }
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(
-                          child: Text('Tidak ada pengajuan masuk saat ini.'));
+                      return Center(
+                        child: Text(
+                          'Tidak ada pengajuan masuk saat ini',
+                          style: GoogleFonts.poppins(),
+                        ),
+                      );
                     }
 
                     final requests = snapshot.data!;
@@ -105,15 +93,19 @@ class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
                           child: Container(
                             margin: const EdgeInsets.only(bottom: 16),
                             padding: const EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 16),
+                              vertical: 12,
+                              horizontal: 16,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
-                              boxShadow: const [
+                              boxShadow: [
                                 BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 2))
+                                  spreadRadius: 0,
+                                  blurRadius: 4,
+                                  offset: Offset(0, 4),
+                                  color: Colors.black.withAlpha(50),
+                                ),
                               ],
                             ),
                             child: Row(
@@ -130,30 +122,29 @@ class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         request.mahasiswaNama,
-                                        style: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Color(0xFF0F47AD),
-                                            fontFamily: 'Poppins'),
+                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
                                       ),
-                                      const SizedBox(height: 4),
+                                      const SizedBox(height: 2),
                                       Text(
-                                        "${request
-                                            .mahasiswaNim} - ${request.mahasiswaProdi}",
+                                        "${request.mahasiswaNim} - ${request.mahasiswaProdi}",
                                         style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.black,
-                                            fontFamily: 'Poppins'),
+                                          fontSize: 14,
+                                          color: Colors.black,
+                                          fontFamily: 'Poppins',
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                const Icon(Icons.chevron_right_rounded,
-                                    color: Colors.black87, size: 24),
+                                const Icon(
+                                  Icons.arrow_forward,
+                                  color: Colors.black,
+                                  size: 24,
+                                ),
                               ],
                             ),
                           ),
@@ -170,16 +161,19 @@ class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
     );
   }
 
-  void _showFormPengajuanBottomSheet(BuildContext context,
-      ListRequestPembimbingDariMahasiswaModel request) async {
+  void _showFormPengajuanBottomSheet(
+    BuildContext context,
+    ListRequestPembimbingDariMahasiswaModel request,
+  ) async {
     final result = await showModalBottomSheet(
       context: context,
+      useSafeArea: true,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFFF4F3FB),
-      builder: (context) =>
-          FormPengajuanMahasiswaWidget(
-            selectedRequest: request,
-          ),
+      enableDrag: true,
+      showDragHandle: true,
+      backgroundColor: Colors.white,
+      builder:
+          (context) => FormPengajuanMahasiswaWidget(selectedRequest: request),
     );
 
     if (result == true) {
@@ -187,4 +181,3 @@ class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
     }
   }
 }
-

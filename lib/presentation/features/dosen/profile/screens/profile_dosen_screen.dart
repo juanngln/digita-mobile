@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 // Import the new DosenProfile model
 import 'package:digita_mobile/models/dosen_profile.dart';
@@ -27,25 +28,10 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     // Listen to the ViewModel
     final profileViewModel = Provider.of<ProfileViewModel>(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        titleTextStyle: textTheme.headlineMedium?.copyWith(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 28,
-        ),
-        title: const Text("Profile"),
-        elevation: 0,
-        backgroundColor: Colors.white,
-      ),
-      backgroundColor: Colors.white,
-      body: _buildBody(context, profileViewModel),
-    );
+    return Scaffold(body: _buildBody(context, profileViewModel));
   }
 
   // Build the body based on the ViewModel's state
@@ -54,24 +40,26 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
       case ProfileState.loading:
         return const Center(child: CircularProgressIndicator());
       case ProfileState.error:
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(viewModel.errorMessage ?? "Terjadi kesalahan"),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => viewModel.loadUserProfile(),
-                child: const Text("Coba Lagi"),
-              )
-            ],
+        return SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(viewModel.errorMessage ?? "Terjadi kesalahan"),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => viewModel.loadUserProfile(),
+                  child: const Text("Coba Lagi"),
+                ),
+              ],
+            ),
           ),
         );
       case ProfileState.success:
-      // Use the new property 'loggedInDosenProfile' here
+        // Use the new property 'loggedInDosenProfile' here
         if (viewModel.loggedInDosenProfile == null) {
           return const Center(child: Text("Profil dosen tidak ditemukan."));
         }
@@ -84,46 +72,57 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
   Widget _buildProfileContent(BuildContext context, DosenProfile dosen) {
     final textTheme = Theme.of(context).textTheme;
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            const CircleAvatar(
-              radius: 95.5,
-              backgroundImage: AssetImage('assets/img/dosen_pria.png'),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              dosen.namaLengkap,
-              textAlign: TextAlign.center,
-              style: textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Profile',
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.left,
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              dosen.nik, // Dynamic data
-              textAlign: TextAlign.center,
-              style: textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+              const SizedBox(height: 20),
+              Column(
+                children: [
+                  const CircleAvatar(
+                    radius: 90,
+                    backgroundImage: AssetImage('assets/img/dosen_pria.png'),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    dosen.namaLengkap,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    dosen.nik, // Dynamic data
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Dosen ${dosen.jurusan.namaJurusan}", // Dynamic data
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  _buildMenuCard(context, textTheme),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Dosen ${dosen.jurusan.namaJurusan}", // Dynamic data
-              textAlign: TextAlign.center,
-              style: textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 30),
-            _buildMenuCard(context, textTheme),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -133,37 +132,44 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFE3F2FD),
+        color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [
           _buildMenuListItem(
             textTheme: textTheme,
-            icon: Icons.notifications_outlined,
+            icon: Icons.notifications,
             title: "Notifikasi",
             trailing: Switch(
               value: _isNotificationOn,
               onChanged: (value) => setState(() => _isNotificationOn = value),
-              activeColor: Colors.blue.shade700,
+              activeColor: Theme.of(context).colorScheme.primary,
               inactiveTrackColor: Colors.grey.shade300,
             ),
           ),
-          const Divider(color: Colors.black, thickness: 1, height: 1),
+          const Divider(color: Colors.black, thickness: 2, height: 1),
           _buildMenuListItem(
             textTheme: textTheme,
-            icon: Icons.shield_outlined,
+            icon: Icons.shield,
             title: "Kelola Akun",
             onTap: () {
-              showAccountInfoSheetDosen(context, Provider.of<ProfileViewModel>(context, listen: false));
+              showAccountInfoSheetDosen(
+                context,
+                Provider.of<ProfileViewModel>(context, listen: false),
+              );
             },
           ),
-          const Divider(color: Colors.black, thickness: 1, height: 1),
+          const Divider(color: Colors.black, thickness: 2, height: 1),
           _buildMenuListItem(
             textTheme: textTheme,
-            icon: Icons.exit_to_app_outlined,
+            icon: Icons.exit_to_app,
             title: "Keluar Akun",
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black54),
+            trailing: const Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: Colors.black,
+            ),
             onTap: () async {
               final bool? shouldLogout = await showLogoutDialog(context);
               if (shouldLogout == true && mounted) {
@@ -184,14 +190,17 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
     VoidCallback? onTap,
   }) {
     return ListTile(
-      leading: Icon(icon, color: Colors.black54, size: 26),
+      leading: Icon(icon, color: Colors.black, size: 26),
       title: Text(
         title,
-        style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
+        style: GoogleFonts.poppins(color: Colors.black),
       ),
       trailing: trailing,
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 8.0,
+        vertical: 4.0,
+      ),
       dense: true,
     );
   }

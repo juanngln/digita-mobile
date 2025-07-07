@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:digita_mobile/models/list_mahasiswa_bimbingan.dart';
@@ -29,8 +30,10 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
 
     // Langsung panggil method untuk fetch dokumen dari ViewModel gabungan
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<DokumenDosenViewModel>(context, listen: false)
-          .fetchDokumen(widget.mahasiswa.userId);
+      Provider.of<DokumenDosenViewModel>(
+        context,
+        listen: false,
+      ).fetchDokumen(widget.mahasiswa.userId);
     });
   }
 
@@ -42,26 +45,15 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            automaticallyImplyLeading: false,
-            title: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  color: Colors.black,
-                  onPressed: () => Navigator.pop(context),
-                ),
-                Text(
-                  'Dokumen Mahasiswa',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontFamily: 'Poppins',
-                    fontSize: 18,
-                  ),
-                ),
-              ],
+            title: Text(
+              'Dokumen Mahasiswa',
+              style: Theme.of(context).appBarTheme.titleTextStyle,
+            ),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
           ),
           body: Column(
@@ -84,27 +76,23 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
                     SizedBox(width: 12),
                     Expanded(
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             widget.mahasiswa.namaLengkap,
-                            style: TextStyle(
-                              fontSize: 15,
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'Poppins',
                             ),
                           ),
                           Text(
                             "${widget.mahasiswa.nim} - ${widget.mahasiswa.programStudi.namaProdi}",
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.black,
-                              fontFamily: 'Poppins',
-                            ),
+                            style: GoogleFonts.poppins(fontSize: 14),
                           ),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -112,12 +100,13 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
               TabBar(
                 controller: _tabController,
                 labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey,
-                indicatorColor: Color(0xFF0F47AD),
-                labelStyle: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Poppins',
-                ),
+                unselectedLabelColor: Colors.black,
+                labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                indicatorColor: Theme.of(context).colorScheme.primary,
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicatorWeight: 3,
+                dividerColor: Theme.of(context).colorScheme.secondary,
+                dividerHeight: 3,
                 tabs: const [
                   Tab(text: 'Pending'),
                   Tab(text: 'Disetujui'),
@@ -125,9 +114,7 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
                 ],
               ),
               // --- Konten Tab Bar ---
-              Expanded(
-                child: _buildContent(viewModel),
-              )
+              Expanded(child: _buildContent(viewModel)),
             ],
           ),
         );
@@ -157,7 +144,7 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
 
   Widget buildDokumenList(String status, List<DocumentDetails> allDokumen) {
     final filteredDokumen =
-    allDokumen.where((doc) => doc.status == status).toList();
+        allDokumen.where((doc) => doc.status == status).toList();
 
     if (filteredDokumen.isEmpty) {
       return Center(
@@ -173,154 +160,186 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
     }
 
     return ListView.builder(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(20),
       itemCount: filteredDokumen.length,
       itemBuilder: (context, index) => buildDokumenCard(filteredDokumen[index]),
     );
   }
 
   Widget buildDokumenCard(DocumentDetails dokumen) {
-    String formattedDate =
-    DateFormat('dd MMMM yyyy, HH:mm', 'id_ID').format(dokumen.uploadedAt);
+    String formattedDate = DateFormat(
+      'dd MMMM yyyy, HH:mm',
+      'id_ID',
+    ).format(dokumen.uploadedAt);
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(vertical: 8.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withAlpha(50),
-              blurRadius: 5,
-              offset: Offset(0, 4))
+            spreadRadius: 0,
+            blurRadius: 4,
+            offset: Offset(0, 4),
+            color: Colors.black.withAlpha(50),
+          ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                  child: Text(dokumen.babDisplay,
-                      style: TextStyle(
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        dokumen.babDisplay,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: getStatusColor(dokumen.status),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Text(
+                        dokumen.status,
+                        style: TextStyle(
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Color(0xFF0F47AD),
-                          fontFamily: 'Poppins'))),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                    color: getStatusColor(dokumen.status),
-                    borderRadius: BorderRadius.circular(15)),
-                child: Text(dokumen.status,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: getStatusTextColor(dokumen.status),
-                        fontFamily: 'Poppins')),
-              ),
-            ],
+                          color: getStatusTextColor(dokumen.status),
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Di Upload: $formattedDate',
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  'Nama Dokumen: ${dokumen.namaDokumen}\nKeterangan: ${dokumen.catatanRevisi ?? "-"}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
-          SizedBox(height: 12),
-          Text('Di Upload: $formattedDate',
-              style: TextStyle(
-                  fontSize: 13, color: Colors.black54, fontFamily: 'Poppins')),
-          SizedBox(height: 4),
-          Text(
-              'Nama Dokumen: ${dokumen.namaDokumen}\nKeterangan: ${dokumen.catatanRevisi ?? "-"}',
-              style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.black87,
-                  fontFamily: 'Poppins',
-                  height: 1.5)),
-          SizedBox(height: 12),
-          Container(
-              width: double.infinity,
-              height: 1,
-              color: Colors.grey,),
-          SizedBox(height: 4),
-          buildActionButtons(dokumen),
+          Divider(thickness: 5, color: Theme.of(context).colorScheme.primary),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 12.0),
+            child: buildActionButtons(dokumen),
+          ),
         ],
       ),
     );
   }
 
   Widget buildActionButtons(DocumentDetails dokumen) {
-    final viewModel = Provider.of<DokumenDosenViewModel>(context, listen: false);
-    final viewButton = _viewingDokumenId == dokumen.id
-        ? Container(
-      width: 48,
-      height: 48,
-      padding: const EdgeInsets.all(14.0),
-      child: const CircularProgressIndicator(strokeWidth: 2.5),
-    )
-        : IconButton(
-      onPressed: () async {
-        setState(() => _viewingDokumenId = dokumen.id);
-
-        final String? fileUrl = await viewModel.getSecureFileUrl(dokumen.id);
-
-        if (fileUrl != null && mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PdfViewerScreen(
-                fileUrl: fileUrl,
-                documentTitle: dokumen.babDisplay,
-              ),
-            ),
-          );
-        } else if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(
-                    viewModel.dokumenErrorMessage.isNotEmpty
-                        ? viewModel.dokumenErrorMessage
-                        : 'Gagal memuat file.'
-                )
-            ),
-          );
-        }
-
-        if (mounted) setState(() => _viewingDokumenId = null);
-      },
-      icon: Icon(Icons.visibility_outlined, color: Colors.black54),
-      tooltip: "Lihat Dokumen",
+    final viewModel = Provider.of<DokumenDosenViewModel>(
+      context,
+      listen: false,
     );
+    final viewButton =
+        _viewingDokumenId == dokumen.id
+            ? Container(
+              width: 48,
+              height: 48,
+              padding: const EdgeInsets.all(14.0),
+              child: const CircularProgressIndicator(strokeWidth: 2.5),
+            )
+            : IconButton(
+              onPressed: () async {
+                setState(() => _viewingDokumenId = dokumen.id);
 
-    final downloadButton = _downloadingDokumenId == dokumen.id
-        ? Container(
-      width: 48,
-      height: 48,
-      padding: const EdgeInsets.all(14.0),
-      child: const CircularProgressIndicator(strokeWidth: 2.5),
-    )
-        : IconButton(
-      onPressed: () async {
-        setState(() => _downloadingDokumenId = dokumen.id);
-        try {
-          await viewModel.downloadFile(dokumen.id, dokumen.namaDokumen);
+                final String? fileUrl = await viewModel.getSecureFileUrl(
+                  dokumen.id,
+                );
 
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Pengunduhan dimulai. Periksa status bar Anda.')),
+                if (fileUrl != null && mounted) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => PdfViewerScreen(
+                            fileUrl: fileUrl,
+                            documentTitle: dokumen.babDisplay,
+                          ),
+                    ),
+                  );
+                } else if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        viewModel.dokumenErrorMessage.isNotEmpty
+                            ? viewModel.dokumenErrorMessage
+                            : 'Gagal memuat file',
+                      ),
+                    ),
+                  );
+                }
+
+                if (mounted) setState(() => _viewingDokumenId = null);
+              },
+              icon: Icon(Icons.visibility_outlined, color: Colors.black),
+              tooltip: "Lihat Dokumen",
             );
-          }
-        } catch (e) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Gagal memulai unduhan: ${e.toString()}')),
+
+    final downloadButton =
+        _downloadingDokumenId == dokumen.id
+            ? Container(
+              width: 48,
+              height: 48,
+              padding: const EdgeInsets.all(14.0),
+              child: const CircularProgressIndicator(strokeWidth: 2.5),
+            )
+            : IconButton(
+              onPressed: () async {
+                setState(() => _downloadingDokumenId = dokumen.id);
+                try {
+                  await viewModel.downloadFile(dokumen.id, dokumen.namaDokumen);
+
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Pengunduhan dimulai, periksa status bar Anda',
+                        ),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Gagal memulai unduhan: ${e.toString()}'),
+                      ),
+                    );
+                  }
+                } finally {
+                  if (mounted) setState(() => _downloadingDokumenId = null);
+                }
+              },
+              icon: Icon(Icons.file_download_outlined, color: Colors.black),
+              tooltip: "Unduh Dokumen",
             );
-          }
-        } finally {
-          if (mounted) setState(() => _downloadingDokumenId = null);
-        }
-      },
-      icon: Icon(Icons.download_outlined, color: Colors.black54),
-      tooltip: "Unduh Dokumen",
-    );
 
     if (dokumen.status == "Pending") {
       return Row(
@@ -328,23 +347,27 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
           viewButton,
           downloadButton,
           Spacer(),
-          ElevatedButton(
+          TextButton(
             onPressed: () => showRevisiBottomSheet(dokumen),
-            style: ElevatedButton.styleFrom(
+            style: TextButton.styleFrom(
               backgroundColor: Color(0xFFFFB3BA),
               foregroundColor: Color(0xFFE20030),
-              padding: EdgeInsets.symmetric(horizontal: 18),
+              padding: EdgeInsets.symmetric(horizontal: 24),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
+                borderRadius: BorderRadius.circular(30),
+              ),
             ),
-            child: Text("Revisi",
-                style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold)),
+            child: Text(
+              "Revisi",
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-          SizedBox(width: 15),
-          ElevatedButton(
+          SizedBox(width: 12),
+          TextButton(
             onPressed: () async {
               try {
                 await viewModel.approveDokumen(dokumen);
@@ -353,33 +376,43 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
                 if (mounted) {
                   ScaffoldMessenger.of(context)
                     ..hideCurrentSnackBar()
-                    ..showSnackBar(SnackBar(
+                    ..showSnackBar(
+                      SnackBar(
                         content: Text("Dokumen telah disetujui"),
-                        backgroundColor: Colors.green));
+                        backgroundColor: Colors.green,
+                      ),
+                    );
                 }
               } catch (e) {
                 // Handle error
                 if (mounted) {
                   ScaffoldMessenger.of(context)
                     ..hideCurrentSnackBar()
-                    ..showSnackBar(SnackBar(
+                    ..showSnackBar(
+                      SnackBar(
                         content: Text("Error: ${e.toString()}"),
-                        backgroundColor: Colors.red));
+                        backgroundColor: Colors.red,
+                      ),
+                    );
                 }
               }
             },
-            style: ElevatedButton.styleFrom(
+            style: TextButton.styleFrom(
               backgroundColor: Color(0xFFB7FCC9),
               foregroundColor: Color(0xFF0A7D0C),
-              padding: EdgeInsets.symmetric(horizontal: 18),
+              padding: EdgeInsets.symmetric(horizontal: 24),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
+                borderRadius: BorderRadius.circular(30),
+              ),
             ),
-            child: Text("Setuju",
-                style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold)),
+            child: Text(
+              "Setuju",
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       );
@@ -390,44 +423,59 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
 
   /// Menampilkan bottom sheet untuk memberi catatan revisi
   void showRevisiBottomSheet(DocumentDetails dokumen) {
-    final viewModel = Provider.of<DokumenDosenViewModel>(context, listen: false);
+    final viewModel = Provider.of<DokumenDosenViewModel>(
+      context,
+      listen: false,
+    );
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       isScrollControlled: true,
-      builder: (context) => CatatanDosenBottomSheet(
-        title: 'Keterangan Revisi',
-        hintText: 'Masukkan catatan revisi untuk mahasiswa...',
-        onSave: (String catatanRevisi) {
-          viewModel.reviseDokumen(dokumen, catatanRevisi);
-          _tabController.animateTo(2);
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(
-                content: Text("Dokumen dipindahkan ke revisi"),
-                backgroundColor: Colors.orange));
-        },
-      ),
+      builder:
+          (context) => CatatanDosenBottomSheet(
+            title: 'Keterangan Revisi',
+            hintText: 'Masukkan catatan revisi untuk mahasiswa...',
+            onSave: (String catatanRevisi) {
+              viewModel.reviseDokumen(dokumen, catatanRevisi);
+              _tabController.animateTo(2);
+              ScaffoldMessenger.of(context)
+                ..hideCurrentSnackBar()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text("Dokumen dipindahkan ke revisi"),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+            },
+          ),
     );
   }
 
   Color getStatusColor(String status) {
     switch (status) {
-      case "Pending": return Color(0xFFFFEEB7);
-      case "Disetujui": return Color(0xFFB7FCC9);
-      case "Revisi": return Color(0xFFFFB3BA);
-      default: return Colors.grey;
+      case "Pending":
+        return Color(0xFFFFEEB7);
+      case "Disetujui":
+        return Color(0xFFB7FCC9);
+      case "Revisi":
+        return Color(0xFFFFB3BA);
+      default:
+        return Colors.grey;
     }
   }
 
   Color getStatusTextColor(String status) {
     switch (status) {
-      case "Pending": return Color(0xFFFF8110);
-      case "Disetujui": return Color(0xFF0A7D0C);
-      case "Revisi": return Color(0xFFE20030);
-      default: return Colors.black;
+      case "Pending":
+        return Color(0xFFFF8110);
+      case "Disetujui":
+        return Color(0xFF0A7D0C);
+      case "Revisi":
+        return Color(0xFFE20030);
+      default:
+        return Colors.black;
     }
   }
 
@@ -442,7 +490,10 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
             '${dokumen.namaDokumen}.pdf',
             textAlign: TextAlign.center,
             style: const TextStyle(
-                fontSize: 15, fontFamily: 'Poppins', height: 1.4),
+              fontSize: 15,
+              fontFamily: 'Poppins',
+              height: 1.4,
+            ),
           ),
           cancelText: 'Batal',
           confirmText: 'Unduh',
@@ -451,9 +502,12 @@ class _StatusDokumenState extends State<StatusDokumenDosenScreen>
             Navigator.of(context).pop();
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
-              ..showSnackBar(SnackBar(
+              ..showSnackBar(
+                SnackBar(
                   content: Text("Fitur unduh belum diimplementasikan."),
-                  backgroundColor: Colors.blue));
+                  backgroundColor: Colors.blue,
+                ),
+              );
           },
         );
       },

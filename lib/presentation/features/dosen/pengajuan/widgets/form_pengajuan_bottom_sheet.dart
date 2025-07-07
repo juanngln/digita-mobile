@@ -22,7 +22,7 @@ class FormPengajuanMahasiswaWidget extends StatefulWidget {
 class _FormPengajuanMahasiswaWidgetState
     extends State<FormPengajuanMahasiswaWidget> {
   final ListRequestPembimbingDariMahasiswaService _service =
-  ListRequestPembimbingDariMahasiswaService();
+      ListRequestPembimbingDariMahasiswaService();
   final SecureStorageService _storage = SecureStorageService();
   final _rejectionReasonController = TextEditingController();
 
@@ -46,7 +46,7 @@ class _FormPengajuanMahasiswaWidgetState
     try {
       final token = await _storage.getAccessToken();
       if (token == null) {
-        throw Exception("Token tidak ditemukan.");
+        throw Exception("Token tidak ditemukan");
       }
 
       await _service.respondToRequest(
@@ -67,10 +67,7 @@ class _FormPengajuanMahasiswaWidgetState
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) {
@@ -85,37 +82,39 @@ class _FormPengajuanMahasiswaWidgetState
   void _showRejectionDialog() {
     showDialog(
       context: context,
-      builder: (context) => CustomDialog(
-        title: 'Tolak Pengajuan',
-        contentWidget: TextField(
-          controller: _rejectionReasonController,
-          decoration: const InputDecoration(
-            hintText: 'Masukkan alasan penolakan...',
-            border: OutlineInputBorder(),
+      builder:
+          (context) => CustomDialog(
+            title: 'Tolak Pengajuan',
+            contentWidget: TextField(
+              controller: _rejectionReasonController,
+              decoration: const InputDecoration(
+                hintText: 'Masukkan alasan penolakan...',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+            ),
+            cancelText: 'Batal',
+            confirmText: 'Kirim',
+            onCancel: () => Navigator.pop(context),
+            onConfirm: () {
+              if (_rejectionReasonController.text.trim().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Alasan tidak boleh kosong.'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+                return;
+              }
+              Navigator.pop(context);
+              _handleRespond('REJECTED', _rejectionReasonController.text);
+            },
           ),
-          maxLines: 3,
-        ),
-        cancelText: 'Batal',
-        confirmText: 'Kirim',
-        onCancel: () => Navigator.pop(context),
-        onConfirm: () {
-          if (_rejectionReasonController.text.trim().isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Alasan tidak boleh kosong.'),
-              backgroundColor: Colors.orange,
-            ));
-            return;
-          }
-          Navigator.pop(context);
-          _handleRespond('REJECTED', _rejectionReasonController.text);
-        },
-      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
     return BaseBottomSheet(
       title: 'Pengajuan Dosen Pembimbing',
       child: Column(
@@ -138,6 +137,7 @@ class _FormPengajuanMahasiswaWidgetState
           const SizedBox(height: 20),
           CustomDisplayField(
             label: 'Deskripsi Singkat',
+            height: 150,
             value: widget.selectedRequest.deskripsiSingkat,
           ),
           const SizedBox(height: 40),
@@ -145,51 +145,66 @@ class _FormPengajuanMahasiswaWidgetState
           Row(
             children: [
               Expanded(
-                child: ElevatedButton(
+                child: TextButton(
                   onPressed: _isRejecting ? null : _showRejectionDialog,
-                  style: ElevatedButton.styleFrom(
+                  style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFFFFB3BA),
                     foregroundColor: const Color(0xFFE20030),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: _isRejecting
-                      ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Text('Tolak',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Poppins')),
+                  child:
+                      _isRejecting
+                          ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Text(
+                            'Tolak',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: ElevatedButton(
-                  onPressed: _isAccepting
-                      ? null
-                      : () => _handleRespond('ACCEPTED',
-                      'Saya terima pengajuan Anda. Silakan siapkan proposal awal.'),
-                  style: ElevatedButton.styleFrom(
+                child: TextButton(
+                  onPressed:
+                      _isAccepting
+                          ? null
+                          : () => _handleRespond(
+                            'ACCEPTED',
+                            'Saya terima pengajuan Anda. Silakan siapkan proposal awal.',
+                          ),
+                  style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFFB7FCC9),
                     foregroundColor: const Color(0xFF0A7D0C),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: _isAccepting
-                      ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Text('Setuju',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Poppins')),
+                  child:
+                      _isAccepting
+                          ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Text(
+                            'Setuju',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
                 ),
               ),
             ],
@@ -198,5 +213,4 @@ class _FormPengajuanMahasiswaWidgetState
       ),
     );
   }
-
 }

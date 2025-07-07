@@ -121,7 +121,7 @@ class _UpcomingScheduleCard extends State<UpcomingScheduleCard> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.edit_document, color: Colors.black),
+                    const Icon(Icons.edit_square, color: Colors.black),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(

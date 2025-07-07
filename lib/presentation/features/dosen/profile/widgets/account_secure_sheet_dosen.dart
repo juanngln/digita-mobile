@@ -1,17 +1,27 @@
 import 'package:digita_mobile/models/jurusan_model.dart';
+import 'package:digita_mobile/presentation/common_widgets/buttons/primary_action_button.dart';
+import 'package:digita_mobile/presentation/common_widgets/forms/text_input_field.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 
-void showAccountInfoSheetDosen(BuildContext context, ProfileViewModel viewModel) {
+void showAccountInfoSheetDosen(
+  BuildContext context,
+  ProfileViewModel viewModel,
+) {
   showModalBottomSheet(
     context: context,
+    useSafeArea: true,
     isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (context) => ChangeNotifierProvider.value(
-      value: viewModel,
-      child: const AccountInfoSheetDosen(),
-    ),
+    enableDrag: true,
+    showDragHandle: true,
+    backgroundColor: Colors.white,
+    builder:
+        (context) => ChangeNotifierProvider.value(
+          value: viewModel,
+          child: const AccountInfoSheetDosen(),
+        ),
   );
 }
 
@@ -47,8 +57,9 @@ class _AccountInfoSheetDosenState extends State<AccountInfoSheetDosen> {
       _selectedJurusan = profile.jurusan;
     }
 
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => viewModel.fetchJurusan());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => viewModel.fetchJurusan(),
+    );
   }
 
   @override
@@ -91,8 +102,9 @@ class _AccountInfoSheetDosenState extends State<AccountInfoSheetDosen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-            Text(viewModel.updateErrorMessage ?? "Gagal memperbarui profil."),
+            content: Text(
+              viewModel.updateErrorMessage ?? "Gagal memperbarui profil.",
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -106,14 +118,15 @@ class _AccountInfoSheetDosenState extends State<AccountInfoSheetDosen> {
     final viewModel = context.watch<ProfileViewModel>();
 
     return Padding(
-      padding:
-      EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
         ),
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
@@ -121,21 +134,14 @@ class _AccountInfoSheetDosenState extends State<AccountInfoSheetDosen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 153,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                ),
-                const SizedBox(height: 20),
                 Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: Alignment.center,
                   child: Text(
-                    "Informasi Akun",
-                    style: textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold, fontSize: 20),
+                    'Kelola Akun',
+                    style: GoogleFonts.poppins(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -144,8 +150,9 @@ class _AccountInfoSheetDosenState extends State<AccountInfoSheetDosen> {
                   controller: _nameController,
                   label: "Nama lengkap",
                   hint: "Masukkan nama lengkap Anda",
-                  validator: (value) =>
-                  value!.isEmpty ? 'Nama tidak boleh kosong' : null,
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? 'Nama tidak boleh kosong' : null,
                 ),
                 const SizedBox(height: 16),
                 _buildEditableTextField(
@@ -156,8 +163,9 @@ class _AccountInfoSheetDosenState extends State<AccountInfoSheetDosen> {
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value!.isEmpty) return 'Email tidak boleh kosong';
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                        .hasMatch(value)) {
+                    if (!RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    ).hasMatch(value)) {
                       return 'Format email tidak valid';
                     }
                     return null;
@@ -172,30 +180,30 @@ class _AccountInfoSheetDosenState extends State<AccountInfoSheetDosen> {
                   readOnly: true,
                 ),
                 const SizedBox(height: 16),
-                _buildJurusanDropdown(textTheme: textTheme, viewModel: viewModel),
+                _buildJurusanDropdown(
+                  textTheme: textTheme,
+                  viewModel: viewModel,
+                ),
                 const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
-                  child: ElevatedButton(
-                    onPressed: viewModel.updateState == UpdateProfileState.loading
-                        ? null
-                        : _handleSaveChanges,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade700,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      textStyle: textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w600),
-                    ),
-                    child: viewModel.updateState == UpdateProfileState.loading
-                        ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(color: Colors.white),
-                    )
-                        : const Text("SIMPAN PERUBAHAN"),
+                  child: PrimaryActionButton(
+                    label: 'SIMPAN',
+                    onPressed:
+                        viewModel.updateState == UpdateProfileState.loading
+                            ? null
+                            : _handleSaveChanges,
+                    child:
+                        viewModel.updateState == UpdateProfileState.loading
+                            ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                            : const Text("SIMPAN"),
                   ),
                 ),
               ],
@@ -218,78 +226,97 @@ class _AccountInfoSheetDosenState extends State<AccountInfoSheetDosen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
-        TextFormField(
+        CustomTextField(
           controller: controller,
           keyboardType: keyboardType,
+          hintText: '',
           readOnly: readOnly,
-          style: textTheme.bodyMedium?.copyWith(
-            color: readOnly ? Colors.grey.shade700 : Colors.black,
-          ),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: readOnly ? Colors.grey.shade200 : Colors.blue.shade50,
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none),
-            hintText: hint,
-            hintStyle:
-            textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
-            contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          ),
           validator: validator,
+          fillColor: Theme.of(context).colorScheme.secondary,
         ),
       ],
     );
   }
 
-  Widget _buildJurusanDropdown(
-      {required TextTheme textTheme, required ProfileViewModel viewModel}) {
+  Widget _buildJurusanDropdown({
+    required TextTheme textTheme,
+    required ProfileViewModel viewModel,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Jurusan",
-            style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600)),
+        Text(
+          "Jurusan",
+          style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
         if (viewModel.jurusanState == ProfileState.loading)
           const Center(child: CircularProgressIndicator())
         else if (viewModel.jurusanState == ProfileState.error)
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(viewModel.jurusanErrorMessage ?? "Gagal memuat data",
-                style: const TextStyle(color: Colors.red)),
+            child: Text(
+              viewModel.jurusanErrorMessage ?? "Gagal memuat data",
+              style: const TextStyle(color: Colors.red),
+            ),
           )
         else
           DropdownButtonFormField<Jurusan>(
             value: _selectedJurusan,
-            items: viewModel.jurusanList
-                .map<DropdownMenuItem<Jurusan>>((Jurusan jurusan) {
-              return DropdownMenuItem<Jurusan>(
-                value: jurusan,
-                child: Text(jurusan.namaJurusan),
-              );
-            }).toList(),
+            items:
+                viewModel.jurusanList.map<DropdownMenuItem<Jurusan>>((
+                  Jurusan jurusan,
+                ) {
+                  return DropdownMenuItem<Jurusan>(
+                    value: jurusan,
+                    child: Text(jurusan.namaJurusan),
+                  );
+                }).toList(),
             onChanged: (Jurusan? newValue) {
               setState(() {
                 _selectedJurusan = newValue;
               });
             },
-            style: textTheme.bodyMedium,
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
             decoration: InputDecoration(
               filled: true,
-              fillColor: Colors.blue.shade50,
+              fillColor: Theme.of(context).colorScheme.secondary,
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 15.0,
+                horizontal: 20.0,
+              ),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none),
-              contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
+                  width: 1.5,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(color: Colors.red, width: 1.0),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: const BorderSide(color: Colors.red, width: 1.5),
+              ),
             ),
-            icon: Icon(Icons.arrow_drop_down, color: Colors.grey.shade700),
-            validator: (value) =>
-            value == null ? 'Jurusan tidak boleh kosong' : null,
+            icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[500]),
+            validator:
+                (value) => value == null ? 'Jurusan tidak boleh kosong' : null,
           ),
       ],
     );

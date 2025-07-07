@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:digita_mobile/presentation/features/dosen/home/screens/notification_dosen_screen.dart';
 import 'package:digita_mobile/presentation/common_widgets/cards/pengumuman_card.dart';
-import 'package:digita_mobile/presentation/common_widgets/home_widgets/profile_section.dart';
 import 'package:digita_mobile/presentation/common_widgets/cards/upcoming_card.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
@@ -24,7 +24,10 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<PengumumanViewModel>(context, listen: false).fetchAnnouncements();
+      Provider.of<PengumumanViewModel>(
+        context,
+        listen: false,
+      ).fetchAnnouncements();
     });
   }
 
@@ -42,7 +45,7 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          physics: const ClampingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Consumer<ProfileViewModel>(
@@ -78,26 +81,42 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
                               builder: (context, viewModel, child) {
                                 switch (viewModel.state) {
                                   case PengumumanState.loading:
-                                    return const Center(child: CircularProgressIndicator());
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
                                   case PengumumanState.error:
-                                    return const Center(child: Text('Gagal memuat pengumuman.'));
+                                    return const Center(
+                                      child: Text('Gagal memuat pengumuman.'),
+                                    );
                                   case PengumumanState.loaded:
                                     if (viewModel.announcements.isEmpty) {
-                                      return const Center(child: Text('Tidak ada pengumuman.'));
+                                      return const Center(
+                                        child: Text('Tidak ada pengumuman.'),
+                                      );
                                     }
                                     return ListView.separated(
-                                      separatorBuilder: (context, index) => const SizedBox(width: 16),
+                                      separatorBuilder:
+                                          (context, index) =>
+                                              const SizedBox(width: 16),
                                       scrollDirection: Axis.horizontal,
                                       physics: const BouncingScrollPhysics(),
                                       shrinkWrap: true,
-                                      itemCount: math.min(viewModel.announcements.length, 10),
+                                      itemCount: math.min(
+                                        viewModel.announcements.length,
+                                        10,
+                                      ),
                                       itemBuilder: (context, index) {
-                                        final item = viewModel.announcements[index];
+                                        final item =
+                                            viewModel.announcements[index];
                                         return PengumumanCard(
                                           title: item.title,
                                           description: item.description,
-                                          tglMulai: DateFormat('dd MMM yyyy').format(item.tglMulai),
-                                          tglSelesai: DateFormat('dd MMM yyyy').format(item.tglSelesai),
+                                          tglMulai: DateFormat(
+                                            'dd MMM yyyy',
+                                          ).format(item.tglMulai),
+                                          tglSelesai: DateFormat(
+                                            'dd MMM yyyy',
+                                          ).format(item.tglSelesai),
                                           attachment: item.attachment,
                                           lampiranUrl: item.lampiranUrl,
                                         );
@@ -112,7 +131,6 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
                         ],
                       ),
                     ),
-
 
                     // --- Upcoming Section ---
                     Padding(
@@ -132,7 +150,7 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
                               return UpcomingCard(
                                 title: upcomingCards[index]['title']!,
                                 description:
-                                upcomingCards[index]['description']!,
+                                    upcomingCards[index]['description']!,
                               );
                             },
                           ),
@@ -149,16 +167,23 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
     );
   }
 
-  Widget _buildProfileSection(BuildContext context, ProfileViewModel viewModel) {
+  Widget _buildProfileSection(
+    BuildContext context,
+    ProfileViewModel viewModel,
+  ) {
     switch (viewModel.state) {
       case ProfileState.loading:
-        return ProfileSection(name: 'Memuat...', status: '...', page: NotificationDosenScreen());
+        return _profileSection(
+          name: 'Memuat...',
+          status: '...',
+          page: NotificationDosenScreen(),
+        );
       case ProfileState.error:
         return Center(child: Text('Gagal: ${viewModel.errorMessage}'));
       case ProfileState.success:
         final updatedProfile = viewModel.loggedInDosenProfile;
 
-        return ProfileSection(
+        return _profileSection(
           name: updatedProfile?.namaLengkap ?? 'Nama Tidak Ditemukan',
           status: "Dosen ${updatedProfile?.jurusan.namaJurusan ?? ''}",
           page: NotificationDosenScreen(),
@@ -168,10 +193,84 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
     }
   }
 
-  Widget _buildCounterSection(BuildContext context, ProfileViewModel viewModel) {
+  Widget _profileSection({
+    required String name,
+    required String status,
+    required Widget page,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 28,
+                child: Image.asset('assets/img/dosen_pria.png'),
+              ),
+              const SizedBox(width: 10),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      status,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          child: Badge(
+            alignment: Alignment.topRight,
+            offset: const Offset(-6, 8),
+            label: const Text(''),
+            largeSize: 16,
+            smallSize: 12,
+            child: IconButton(
+              icon: Icon(CupertinoIcons.bell_fill),
+              iconSize: 28,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => page),
+                );
+              },
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCounterSection(
+    BuildContext context,
+    ProfileViewModel viewModel,
+  ) {
     final bool isLoading = viewModel.state == ProfileState.loading;
 
-    final String mahasiswaCount = viewModel.dosenProfile?.jumlahMahasiswaAktif.toString() ?? '0';
+    final String mahasiswaCount =
+        viewModel.dosenProfile?.jumlahMahasiswaAktif.toString() ?? '0';
 
     const String pendingReviewCount = '0';
 
@@ -185,9 +284,17 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildCounterItem(context, 'Mahasiswa', isLoading ? '...' : mahasiswaCount),
+          _buildCounterItem(
+            context,
+            'Mahasiswa',
+            isLoading ? '...' : mahasiswaCount,
+          ),
           const VerticalDivider(color: Colors.black, thickness: 1.5),
-          _buildCounterItem(context, 'Pending Review', isLoading ? '...' : pendingReviewCount),
+          _buildCounterItem(
+            context,
+            'Pending Review',
+            isLoading ? '...' : pendingReviewCount,
+          ),
         ],
       ),
     );
@@ -198,10 +305,18 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleSmall!.copyWith(fontSize: 16)),
+          Text(
+            title,
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall!.copyWith(fontSize: 16),
+          ),
           Text(
             count,
-            style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:digita_mobile/models/dosen_model.dart';
+import 'package:digita_mobile/presentation/common_widgets/subtitle.dart';
 import 'package:digita_mobile/services/list_dosen_service.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/tidak_ada_dospem/widgets/form_pengajuan_dospem.dart';
@@ -55,49 +56,22 @@ class _DaftarDosenState extends State<DaftarDosen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          'Daftar Dosen Pembimbing',
-          style: GoogleFonts.poppins(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            fontSize: 22,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1,
-        iconTheme: const IconThemeData(color: Colors.black87),
-      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text(
-                    'Pilih Dosen Pembimbing',
-                    style: GoogleFonts.poppins(
-                      fontSize: 18,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0F47AD),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ],
+              Text(
+                'Daftar Dosen Pembimbing',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontSize: 24),
               ),
-              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Subtitle(text: 'Pilih Dosen Pembimbing'),
+              ),
               Expanded(child: _buildDosenListWidget()),
             ],
           ),
@@ -113,7 +87,7 @@ class _DaftarDosenState extends State<DaftarDosen> {
     if (_errorMessage != null) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -171,10 +145,11 @@ class _DaftarDosenState extends State<DaftarDosen> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                color: Colors.black12,
-                blurRadius: 8,
-                offset: Offset(0, 2),
-                )
+                  spreadRadius: 0,
+                  blurRadius: 4,
+                  offset: Offset(0, 4),
+                  color: Colors.black.withAlpha(50),
+                ),
               ],
             ),
             child: Row(
@@ -209,27 +184,22 @@ class _DaftarDosenState extends State<DaftarDosen> {
                     children: [
                       Text(
                         dosen.nama,
-                        style: GoogleFonts.poppins(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF0F47AD),
-                        ),
+                        style: Theme.of(context).textTheme.bodyLarge
                       ),
                       const SizedBox(height: 4),
                       Text(
                         dosen.jumlahMahasiswaForDisplay,
                         style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: Colors.black54,
+                          fontSize: 14,
                         ),
                       ),
                     ],
                   ),
                 ),
                 const Icon(
-                  Icons.chevron_right_rounded,
-                  color: Colors.black54,
-                  size: 28,
+                  Icons.arrow_forward_outlined,
+                  color: Colors.black,
+                  size: 24,
                 ),
               ],
             ),

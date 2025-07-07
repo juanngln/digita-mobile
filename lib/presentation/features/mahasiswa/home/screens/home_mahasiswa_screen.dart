@@ -2,8 +2,8 @@ import 'dart:math' as math;
 
 import 'package:digita_mobile/presentation/features/mahasiswa/home/screens/notification_mahasiswa_screen.dart';
 import 'package:digita_mobile/presentation/common_widgets/cards/pengumuman_card.dart';
-import 'package:digita_mobile/presentation/common_widgets/home_widgets/profile_section.dart';
 import 'package:digita_mobile/presentation/common_widgets/cards/upcoming_card.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +11,6 @@ import 'package:provider/provider.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:digita_mobile/models/quote.dart';
 import 'package:digita_mobile/services/quote_service.dart';
-
 
 import '../../../../../viewmodels/dokumen_mahasiswa_viewmodel.dart';
 import '../../../../../viewmodels/pengumuman_viewmodel.dart';
@@ -33,8 +32,14 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
     _quoteFuture = _apiService.fetchRandomQuote();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<PengumumanViewModel>(context, listen: false).fetchAnnouncements();
-      Provider.of<DokumenViewModel>(context, listen: false).fetchDokumenStatus();
+      Provider.of<PengumumanViewModel>(
+        context,
+        listen: false,
+      ).fetchAnnouncements();
+      Provider.of<DokumenViewModel>(
+        context,
+        listen: false,
+      ).fetchDokumenStatus();
     });
   }
 
@@ -59,11 +64,17 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
               builder: (context, viewModel, child) {
                 Widget profileWidget;
                 if (viewModel.state == ProfileState.loading) {
-                  profileWidget = const Center(child: CircularProgressIndicator());
+                  profileWidget = const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 } else if (viewModel.state == ProfileState.success) {
-                  profileWidget = ProfileSection(
-                    name: viewModel.mahasiswaProfile?.namaLengkap ?? 'Nama tidak ditemukan',
-                    status: viewModel.mahasiswaProfile?.programStudi.namaProdi ?? 'Status tidak ditemukan',
+                  profileWidget = _buildProfileSection(
+                    name:
+                        viewModel.mahasiswaProfile?.namaLengkap ??
+                        'Nama tidak ditemukan',
+                    status:
+                        viewModel.mahasiswaProfile?.programStudi.namaProdi ??
+                        'Status tidak ditemukan',
                     page: const NotificationMahasiswaScreen(),
                   );
                 } else {
@@ -83,8 +94,11 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                       child: FutureBuilder<Quote>(
                         future: _quoteFuture,
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
                           } else if (snapshot.hasError) {
                             return Text('Error: ${snapshot.error}');
                           } else if (snapshot.hasData) {
@@ -104,7 +118,8 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                                 ],
                               ),
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     '"${snapshot.data!.q}"',
@@ -142,18 +157,21 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                       child: Consumer<DokumenViewModel>(
                         builder: (context, dokumenViewModel, child) {
                           final progress = dokumenViewModel.progressPercentage;
-                          final progressText = '${(progress * 100).toStringAsFixed(0)}%';
+                          final progressText =
+                              '${(progress * 100).toStringAsFixed(0)}%';
 
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
                                     'Progress TA',
-                                    style: Theme.of(context).textTheme.titleSmall,
+                                    style:
+                                        Theme.of(context).textTheme.titleSmall,
                                   ),
                                   Text(
                                     progressText, // Dynamic Text
@@ -195,26 +213,42 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                               builder: (context, viewModel, child) {
                                 switch (viewModel.state) {
                                   case PengumumanState.loading:
-                                    return const Center(child: CircularProgressIndicator());
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
                                   case PengumumanState.error:
-                                    return const Center(child: Text('Gagal memuat pengumuman.'));
+                                    return const Center(
+                                      child: Text('Gagal memuat pengumuman.'),
+                                    );
                                   case PengumumanState.loaded:
                                     if (viewModel.announcements.isEmpty) {
-                                      return const Center(child: Text('Tidak ada pengumuman.'));
+                                      return const Center(
+                                        child: Text('Tidak ada pengumuman.'),
+                                      );
                                     }
                                     return ListView.separated(
-                                      separatorBuilder: (context, index) => const SizedBox(width: 16),
+                                      separatorBuilder:
+                                          (context, index) =>
+                                              const SizedBox(width: 16),
                                       scrollDirection: Axis.horizontal,
                                       physics: const BouncingScrollPhysics(),
                                       shrinkWrap: true,
-                                      itemCount: math.min(viewModel.announcements.length, 10),
+                                      itemCount: math.min(
+                                        viewModel.announcements.length,
+                                        10,
+                                      ),
                                       itemBuilder: (context, index) {
-                                        final item = viewModel.announcements[index];
+                                        final item =
+                                            viewModel.announcements[index];
                                         return PengumumanCard(
                                           title: item.title,
                                           description: item.description,
-                                          tglMulai: DateFormat('dd MMM yyyy').format(item.tglMulai),
-                                          tglSelesai: DateFormat('dd MMM yyyy').format(item.tglSelesai),
+                                          tglMulai: DateFormat(
+                                            'dd MMM yyyy',
+                                          ).format(item.tglMulai),
+                                          tglSelesai: DateFormat(
+                                            'dd MMM yyyy',
+                                          ).format(item.tglSelesai),
                                           attachment: item.attachment,
                                           lampiranUrl: item.lampiranUrl,
                                         );
@@ -247,7 +281,8 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                             itemBuilder: (context, index) {
                               return UpcomingCard(
                                 title: upcomingCards[index]['title']!,
-                                description: upcomingCards[index]['description']!,
+                                description:
+                                    upcomingCards[index]['description']!,
                               );
                             },
                           ),
@@ -261,6 +296,76 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildProfileSection({
+    required String name,
+    required String status,
+    required Widget page,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 28,
+                child: Image.asset('assets/img/mhs_pria.png'),
+              ),
+              const SizedBox(width: 10),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      status,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          child: Badge(
+            alignment: Alignment.topRight,
+            offset: const Offset(-6, 8),
+            label: const Text(''),
+            largeSize: 16,
+            smallSize: 12,
+            child: IconButton(
+              icon: Icon(CupertinoIcons.bell_fill),
+              iconSize: 28,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => page),
+                );
+              },
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,4 +1,6 @@
+import 'package:digita_mobile/presentation/common_widgets/subtitle.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:digita_mobile/viewmodels/dokumen_dosen_viewmodel.dart';
 import 'package:digita_mobile/presentation/features/dosen/dokumen/screens/status_dokumen_dosen_screen.dart';
@@ -16,55 +18,30 @@ class _DokumenDosenScreenState extends State<DokumenDosenScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<DokumenDosenViewModel>(context, listen: false)
-          .fetchMahasiswaBimbingan();
+      Provider.of<DokumenDosenViewModel>(
+        context,
+        listen: false,
+      ).fetchMahasiswaBimbingan();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Dokumen Tugas Akhir',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black87,
-                  fontFamily: 'Poppins',
-                ),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  const Text(
-                    'Pilih Mahasiswa',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0F47AD),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Subtitle(text: 'Pilih Mahasiswa'),
               ),
-              const SizedBox(height: 16),
               Expanded(
                 child: Consumer<DokumenDosenViewModel>(
                   builder: (context, viewModel, child) {
@@ -72,11 +49,17 @@ class _DokumenDosenScreenState extends State<DokumenDosenScreen> {
                       case ViewState.Loading:
                         return const Center(child: CircularProgressIndicator());
                       case ViewState.Error:
-                        return Center(child: Text('Error: ${viewModel.mahasiswaErrorMessage}'));
+                        return Center(
+                          child: Text(
+                            'Error: ${viewModel.mahasiswaErrorMessage}',
+                          ),
+                        );
                       case ViewState.Success:
                         if (viewModel.mahasiswaList.isEmpty) {
                           return const Center(
-                            child: Text('Anda belum memiliki mahasiswa bimbingan.'),
+                            child: Text(
+                              'Anda belum memiliki mahasiswa bimbingan',
+                            ),
                           );
                         }
                         return _buildMahasiswaList(viewModel.mahasiswaList);
@@ -103,27 +86,30 @@ class _DokumenDosenScreenState extends State<DokumenDosenScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => ChangeNotifierProvider.value(
-                  value: Provider.of<DokumenDosenViewModel>(context, listen: false),
-                  child: StatusDokumenDosenScreen(
-                    mahasiswa: mahasiswa,
-                  ),
-                ),
+                builder:
+                    (_) => ChangeNotifierProvider.value(
+                      value: Provider.of<DokumenDosenViewModel>(
+                        context,
+                        listen: false,
+                      ),
+                      child: StatusDokumenDosenScreen(mahasiswa: mahasiswa),
+                    ),
               ),
             );
           },
           child: Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            margin: const EdgeInsets.symmetric(vertical: 10.0),
+            padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha(50),
-                  blurRadius: 5,
+                  spreadRadius: 0,
+                  blurRadius: 4,
                   offset: Offset(0, 4),
-                )
+                  color: Colors.black.withAlpha(50),
+                ),
               ],
             ),
             child: Row(
@@ -139,32 +125,26 @@ class _DokumenDosenScreenState extends State<DokumenDosenScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         mahasiswa.namaLengkap,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF0F47AD),
-                          fontFamily: 'Poppins',
-                        ),
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
                       ),
-                      const SizedBox(height: 4),
                       Text(
                         '${mahasiswa.nim} - ${mahasiswa.programStudi.namaProdi}',
-                        style: const TextStyle(
+                        style: GoogleFonts.poppins(
                           fontSize: 14,
-                          color: Colors.black54,
-                          fontFamily: 'Poppins',
                         ),
                       ),
                     ],
                   ),
                 ),
+                SizedBox(width: 8.0),
                 const Icon(
-                  Icons.chevron_right_rounded,
-                  color: Colors.black87,
+                  Icons.arrow_forward,
+                  color: Colors.black,
                   size: 24,
                 ),
               ],
