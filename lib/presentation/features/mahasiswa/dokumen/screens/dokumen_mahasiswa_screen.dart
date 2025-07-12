@@ -4,6 +4,7 @@ import 'package:digita_mobile/presentation/features/mahasiswa/dokumen/widgets/up
 import 'package:digita_mobile/viewmodels/dokumen_mahasiswa_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class DokumenMahasiswaScreen extends StatefulWidget {
   const DokumenMahasiswaScreen({super.key});
@@ -17,7 +18,10 @@ class _DokumenMahasiswaScreenState extends State<DokumenMahasiswaScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<DokumenViewModel>(context, listen: false).fetchDokumenStatus();
+      Provider.of<DokumenViewModel>(
+        context,
+        listen: false,
+      ).fetchDokumenStatus();
     });
   }
 
@@ -28,7 +32,56 @@ class _DokumenMahasiswaScreenState extends State<DokumenMahasiswaScreen> {
         child: Consumer<DokumenViewModel>(
           builder: (context, viewModel, child) {
             if (viewModel.isLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Dokumen Tugas Akhir',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Subtitle(text: 'Sudah Upload'),
+                    ),
+                    Skeletonizer(
+                      child: ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            child: ListTile(
+                              title: Text(''),
+                              subtitle: Text(''),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Subtitle(text: 'Belum Upload'),
+                    ),
+                    Skeletonizer(
+                      child: ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            child: ListTile(
+                              title: Text(''),
+                              subtitle: Text(''),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
 
             if (viewModel.errorMessage != null) {

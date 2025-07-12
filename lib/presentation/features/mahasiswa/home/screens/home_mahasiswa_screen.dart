@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:digita_mobile/models/quote.dart';
 import 'package:digita_mobile/services/quote_service.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../../viewmodels/dokumen_mahasiswa_viewmodel.dart';
 import '../../../../../viewmodels/pengumuman_viewmodel.dart';
@@ -64,8 +65,15 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
               builder: (context, viewModel, child) {
                 Widget profileWidget;
                 if (viewModel.state == ProfileState.loading) {
-                  profileWidget = const Center(
-                    child: CircularProgressIndicator(),
+                  profileWidget = Skeletonizer(
+                    enableSwitchAnimation: true,
+                    child: Skeleton.shade(
+                      child: _buildProfileSection(
+                        name: '',
+                        status: '',
+                        page: NotificationMahasiswaScreen(),
+                      ),
+                    ),
                   );
                 } else if (viewModel.state == ProfileState.success) {
                   profileWidget = _buildProfileSection(
@@ -96,8 +104,51 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
+                            return Skeletonizer(
+                              enableSwitchAnimation: true,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width - 48,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      spreadRadius: 0,
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 4),
+                                      color: Colors.black.withAlpha(50),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'lorem ipsum',
+                                      textAlign: TextAlign.left,
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        'lorem ipsum',
+                                        textAlign: TextAlign.right,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             );
                           } else if (snapshot.hasError) {
                             return Text('Error: ${snapshot.error}');
@@ -120,6 +171,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                               child: Column(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     '"${snapshot.data!.q}"',
@@ -213,8 +265,30 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                               builder: (context, viewModel, child) {
                                 switch (viewModel.state) {
                                   case PengumumanState.loading:
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
+                                    return Center(
+                                      child: Skeletonizer(
+                                        enableSwitchAnimation: true,
+                                        child: ListView.separated(
+                                          separatorBuilder:
+                                              (context, index) =>
+                                                  const SizedBox(width: 16),
+                                          scrollDirection: Axis.horizontal,
+                                          physics:
+                                              const BouncingScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: 5,
+                                          itemBuilder: (context, index) {
+                                            return PengumumanCard(
+                                              title: 'lorem ipsum',
+                                              description: 'lorem ipsum',
+                                              tglMulai: 'lorem ipsum',
+                                              tglSelesai: 'lorem ipsum',
+                                              attachment: 'lorem ipsum',
+                                              lampiranUrl: 'lorem ipsum',
+                                            );
+                                          },
+                                        ),
+                                      ),
                                     );
                                   case PengumumanState.error:
                                     return const Center(

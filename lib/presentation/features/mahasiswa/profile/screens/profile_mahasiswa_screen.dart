@@ -6,6 +6,7 @@ import 'package:digita_mobile/presentation/features/mahasiswa/profile/widgets/ac
 import 'package:digita_mobile/presentation/features/mahasiswa/profile/screens/dosen_pembimbing_info_screen.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:digita_mobile/models/mahasiswa_profile.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ProfileMahasiswaScreen extends StatefulWidget {
   const ProfileMahasiswaScreen({super.key});
@@ -35,7 +36,61 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
   Widget _buildBody(BuildContext context, ProfileViewModel viewModel) {
     switch (viewModel.state) {
       case ProfileState.loading:
-        return const Center(child: CircularProgressIndicator());
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Profile',
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.left,
+              ),
+              const SizedBox(height: 20),
+              Skeletonizer(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Skeleton.shade(
+                      child: const CircleAvatar(
+                        radius: 90,
+                        backgroundImage: AssetImage(''),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      '',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
       case ProfileState.error:
         return Center(
           child: Column(
@@ -224,10 +279,7 @@ class _ProfileMahasiswaScreen extends State<ProfileMahasiswaScreen> {
   }) {
     return ListTile(
       leading: Icon(icon, color: Colors.black, size: 26),
-      title: Text(
-        title,
-        style: GoogleFonts.poppins(color: Colors.black),
-      ),
+      title: Text(title, style: GoogleFonts.poppins(color: Colors.black)),
       trailing: trailing,
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class JadwalMahasiswaScreen extends StatefulWidget {
   const JadwalMahasiswaScreen({super.key});
@@ -75,7 +76,58 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
             if (viewModel.state == ViewState.loading &&
                 viewModel.upcomingSchedules.isEmpty &&
                 viewModel.finishedSchedules.isEmpty) {
-              return const Center(child: CircularProgressIndicator());
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Jadwal Bimbingan',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    // Jadwal Mendatang Section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Subtitle(text: 'Jadwal Mendatang'),
+                    ),
+                    Skeletonizer(
+                      child: ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            child: ListTile(
+                              title: Text(''),
+                              subtitle: Text(''),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    // Jadwal Selesai Section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Subtitle(text: 'Selesai'),
+                    ),
+                    Skeletonizer(
+                      child: ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: 2,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            child: ListTile(
+                              title: Text(''),
+                              subtitle: Text(''),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
 
             if (viewModel.state == ViewState.error &&
