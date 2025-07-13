@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'DigiTA Mobile',
       navigatorKey: NotificationService().navigatorKey,
+      scrollBehavior: ScrollBehavior(),
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(

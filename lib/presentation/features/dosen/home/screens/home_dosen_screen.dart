@@ -45,141 +45,146 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Consumer<ProfileViewModel>(
-              builder: (context, viewModel, child) {
-                return Column(
-                  children: [
-                    // --- Profile Section ---
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: _buildProfileSection(context, viewModel),
-                    ),
+        child: GlowingOverscrollIndicator(
+          axisDirection: AxisDirection.down,
+          color: Theme.of(context).colorScheme.primary,
+          child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Consumer<ProfileViewModel>(
+                builder: (context, viewModel, child) {
+                  return Column(
+                    children: [
+                      // --- Profile Section ---
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        child: _buildProfileSection(context, viewModel),
+                      ),
 
-                    // --- Counter Section ---
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: _buildCounterSection(context, viewModel),
-                    ),
+                      // --- Counter Section ---
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        child: _buildCounterSection(context, viewModel),
+                      ),
 
-                    // --- Information Section  ---
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Pengumuman Tugas Akhir',
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            height: 150,
-                            child: Consumer<PengumumanViewModel>(
-                              builder: (context, viewModel, child) {
-                                switch (viewModel.state) {
-                                  case PengumumanState.loading:
-                                    return Skeletonizer(
-                                      enableSwitchAnimation: true,
-                                      child: ListView.separated(
+                      // --- Information Section  ---
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Pengumuman Tugas Akhir',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              height: 150,
+                              child: Consumer<PengumumanViewModel>(
+                                builder: (context, viewModel, child) {
+                                  switch (viewModel.state) {
+                                    case PengumumanState.loading:
+                                      return Skeletonizer(
+                                        enableSwitchAnimation: true,
+                                        child: ListView.separated(
+                                          separatorBuilder:
+                                              (context, index) =>
+                                                  const SizedBox(width: 16),
+                                          scrollDirection: Axis.horizontal,
+                                          physics:
+                                              const BouncingScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: 2,
+                                          itemBuilder: (context, index) {
+                                            return PengumumanCard(
+                                              title: 'title pengumuman',
+                                              description: 'description',
+                                              tglMulai: 'date',
+                                              tglSelesai: 'date',
+                                              attachment: 'attachment',
+                                              lampiranUrl: 'lampiran',
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    case PengumumanState.error:
+                                      return const Center(
+                                        child: Text('Gagal memuat pengumuman'),
+                                      );
+                                    case PengumumanState.loaded:
+                                      if (viewModel.announcements.isEmpty) {
+                                        return const Center(
+                                          child: Text('Tidak ada pengumuman'),
+                                        );
+                                      }
+                                      return ListView.separated(
                                         separatorBuilder:
                                             (context, index) =>
                                                 const SizedBox(width: 16),
                                         scrollDirection: Axis.horizontal,
                                         physics: const BouncingScrollPhysics(),
                                         shrinkWrap: true,
-                                        itemCount: 2,
+                                        itemCount: math.min(
+                                          viewModel.announcements.length,
+                                          10,
+                                        ),
                                         itemBuilder: (context, index) {
+                                          final item =
+                                              viewModel.announcements[index];
                                           return PengumumanCard(
-                                            title: 'title pengumuman',
-                                            description: 'description',
-                                            tglMulai: 'date',
-                                            tglSelesai: 'date',
-                                            attachment: 'attachment',
-                                            lampiranUrl: 'lampiran',
+                                            title: item.title,
+                                            description: item.description,
+                                            tglMulai: DateFormat(
+                                              'dd MMM yyyy',
+                                            ).format(item.tglMulai),
+                                            tglSelesai: DateFormat(
+                                              'dd MMM yyyy',
+                                            ).format(item.tglSelesai),
+                                            attachment: item.attachment,
+                                            lampiranUrl: item.lampiranUrl,
                                           );
                                         },
-                                      ),
-                                    );
-                                  case PengumumanState.error:
-                                    return const Center(
-                                      child: Text('Gagal memuat pengumuman'),
-                                    );
-                                  case PengumumanState.loaded:
-                                    if (viewModel.announcements.isEmpty) {
-                                      return const Center(
-                                        child: Text('Tidak ada pengumuman'),
                                       );
-                                    }
-                                    return ListView.separated(
-                                      separatorBuilder:
-                                          (context, index) =>
-                                              const SizedBox(width: 16),
-                                      scrollDirection: Axis.horizontal,
-                                      physics: const BouncingScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: math.min(
-                                        viewModel.announcements.length,
-                                        10,
-                                      ),
-                                      itemBuilder: (context, index) {
-                                        final item =
-                                            viewModel.announcements[index];
-                                        return PengumumanCard(
-                                          title: item.title,
-                                          description: item.description,
-                                          tglMulai: DateFormat(
-                                            'dd MMM yyyy',
-                                          ).format(item.tglMulai),
-                                          tglSelesai: DateFormat(
-                                            'dd MMM yyyy',
-                                          ).format(item.tglSelesai),
-                                          attachment: item.attachment,
-                                          lampiranUrl: item.lampiranUrl,
-                                        );
-                                      },
-                                    );
-                                  default:
-                                    return const SizedBox.shrink();
-                                }
+                                    default:
+                                      return const SizedBox.shrink();
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // --- Upcoming Section ---
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Upcoming',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: upcomingCards.length,
+                              itemBuilder: (context, index) {
+                                return UpcomingCard(
+                                  title: upcomingCards[index]['title']!,
+                                  description:
+                                      upcomingCards[index]['description']!,
+                                );
                               },
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-
-                    // --- Upcoming Section ---
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Upcoming',
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: upcomingCards.length,
-                            itemBuilder: (context, index) {
-                              return UpcomingCard(
-                                title: upcomingCards[index]['title']!,
-                                description:
-                                    upcomingCards[index]['description']!,
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),

@@ -77,7 +77,7 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
                 viewModel.upcomingSchedules.isEmpty &&
                 viewModel.finishedSchedules.isEmpty) {
               return Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -147,11 +147,11 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
             return RefreshIndicator(
               onRefresh: () => viewModel.fetchJadwalBimbingan(),
               child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(
+                physics: const ClampingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics(),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 80),
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

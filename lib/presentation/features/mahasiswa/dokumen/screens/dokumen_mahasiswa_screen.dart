@@ -88,53 +88,57 @@ class _DokumenMahasiswaScreenState extends State<DokumenMahasiswaScreen> {
               return Center(child: Text('Error: ${viewModel.errorMessage}'));
             }
 
-            return SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Dokumen Tugas Akhir',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Subtitle(text: 'Sudah Upload'),
-                    ),
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: viewModel.uploadedDocuments.length,
-                      itemBuilder: (context, index) {
-                        final doc = viewModel.uploadedDocuments[index];
-                        // Pass the entire details object to the card
-                        if (doc.documentDetails == null) {
-                          return const SizedBox.shrink(); // or an error widget
-                        }
-                        return UploadedDocumentCard(
-                          details: doc.documentDetails!,
-                        );
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Subtitle(text: 'Belum Upload'),
-                    ),
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: viewModel.notUploadedDocuments.length,
-                      itemBuilder: (context, index) {
-                        final doc = viewModel.notUploadedDocuments[index];
-                        return NotUploadedDocumentCard(
-                          title: doc.bab,
-                          dateTime: 'Belum diunggah',
-                        );
-                      },
-                    ),
-                  ],
+            return GlowingOverscrollIndicator(
+              axisDirection: AxisDirection.down,
+              color: Theme.of(context).colorScheme.primary,
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Dokumen Tugas Akhir',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Subtitle(text: 'Sudah Upload'),
+                      ),
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: viewModel.uploadedDocuments.length,
+                        itemBuilder: (context, index) {
+                          final doc = viewModel.uploadedDocuments[index];
+                          // Pass the entire details object to the card
+                          if (doc.documentDetails == null) {
+                            return const SizedBox.shrink(); // or an error widget
+                          }
+                          return UploadedDocumentCard(
+                            details: doc.documentDetails!,
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Subtitle(text: 'Belum Upload'),
+                      ),
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: viewModel.notUploadedDocuments.length,
+                        itemBuilder: (context, index) {
+                          final doc = viewModel.notUploadedDocuments[index];
+                          return NotUploadedDocumentCard(
+                            title: doc.bab,
+                            dateTime: 'Belum diunggah',
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );

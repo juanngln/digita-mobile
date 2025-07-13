@@ -57,57 +57,107 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Consumer<ProfileViewModel>(
-              builder: (context, viewModel, child) {
-                Widget profileWidget;
-                final bool isLoading = viewModel.state == ProfileState.loading;
-                if (viewModel.state == ProfileState.loading) {
-                  profileWidget = Skeletonizer(
-                    enabled: isLoading,
-                    enableSwitchAnimation: true,
-                    child: _buildProfileSection(
-                      name: '',
-                      status: '',
-                      page: NotificationMahasiswaScreen(),
-                      isLoading: isLoading,
-                    ),
-                  );
-                } else if (viewModel.state == ProfileState.success) {
-                  profileWidget = _buildProfileSection(
-                    name:
-                        viewModel.mahasiswaProfile?.namaLengkap ??
-                        'Nama tidak ditemukan',
-                    status:
-                        viewModel.mahasiswaProfile?.programStudi.namaProdi ??
-                        'Status tidak ditemukan',
-                    page: const NotificationMahasiswaScreen(),
-                  );
-                } else {
-                  profileWidget = Text('Error: ${viewModel.errorMessage}');
-                }
-
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: profileWidget,
-                    ),
-
-                    // Quote Section
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: FutureBuilder<Quote>(
-                        future: _quoteFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Skeletonizer(
-                              enableSwitchAnimation: true,
-                              child: Container(
+        child: GlowingOverscrollIndicator(
+          axisDirection: AxisDirection.down,
+          color: Theme.of(context).colorScheme.primary,
+          child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Consumer<ProfileViewModel>(
+                builder: (context, viewModel, child) {
+                  Widget profileWidget;
+                  final bool isLoading = viewModel.state == ProfileState.loading;
+                  if (viewModel.state == ProfileState.loading) {
+                    profileWidget = Skeletonizer(
+                      enabled: isLoading,
+                      enableSwitchAnimation: true,
+                      child: _buildProfileSection(
+                        name: '',
+                        status: '',
+                        page: NotificationMahasiswaScreen(),
+                        isLoading: isLoading,
+                      ),
+                    );
+                  } else if (viewModel.state == ProfileState.success) {
+                    profileWidget = _buildProfileSection(
+                      name:
+                          viewModel.mahasiswaProfile?.namaLengkap ??
+                          'Nama tidak ditemukan',
+                      status:
+                          viewModel.mahasiswaProfile?.programStudi.namaProdi ??
+                          'Status tidak ditemukan',
+                      page: const NotificationMahasiswaScreen(),
+                    );
+                  } else {
+                    profileWidget = Text('Error: ${viewModel.errorMessage}');
+                  }
+            
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        child: profileWidget,
+                      ),
+            
+                      // Quote Section
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        child: FutureBuilder<Quote>(
+                          future: _quoteFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Skeletonizer(
+                                enableSwitchAnimation: true,
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width - 48,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        spreadRadius: 0,
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 4),
+                                        color: Colors.black.withAlpha(50),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'lorem ipsum',
+                                        textAlign: TextAlign.left,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
+                                          'name',
+                                          textAlign: TextAlign.right,
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (snapshot.hasData) {
+                              return Container(
                                 width: MediaQuery.of(context).size.width - 48,
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
@@ -128,7 +178,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'lorem ipsum',
+                                      '"${snapshot.data!.q}"',
                                       textAlign: TextAlign.left,
                                       style: GoogleFonts.poppins(
                                         fontSize: 14,
@@ -139,7 +189,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: Text(
-                                        'name',
+                                        '- ${snapshot.data!.a}',
                                         textAlign: TextAlign.right,
                                         style: GoogleFonts.poppins(
                                           fontSize: 14,
@@ -149,222 +199,175 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                                     ),
                                   ],
                                 ),
-                              ),
-                            );
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else if (snapshot.hasData) {
-                            return Container(
-                              width: MediaQuery.of(context).size.width - 48,
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    spreadRadius: 0,
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 4),
-                                    color: Colors.black.withAlpha(50),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '"${snapshot.data!.q}"',
-                                    textAlign: TextAlign.left,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
+                              );
+                            } else {
+                              return const Text('No quote found.');
+                            }
+                          },
+                        ),
+                      ),
+            
+                      // Progress Section
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        child: Consumer<DokumenViewModel>(
+                          builder: (context, dokumenViewModel, child) {
+                            final progress = dokumenViewModel.progressPercentage;
+                            final progressText =
+                                '${(progress * 100).toStringAsFixed(0)}%';
+            
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      'Progress TA',
+                                      style:
+                                          Theme.of(context).textTheme.titleSmall,
                                     ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      '- ${snapshot.data!.a}',
-                                      textAlign: TextAlign.right,
+                                    Text(
+                                      progressText, // Dynamic Text
                                       style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                LinearProgressIndicator(
+                                  value: progress, // Dynamic Value
+                                  minHeight: 10,
+                                  backgroundColor: const Color(0xFF9DCFF7),
+                                  color: const Color(0xFF0F47AD),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                              ],
                             );
-                          } else {
-                            return const Text('No quote found.');
-                          }
-                        },
+                          },
+                        ),
                       ),
-                    ),
-
-                    // Progress Section
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: Consumer<DokumenViewModel>(
-                        builder: (context, dokumenViewModel, child) {
-                          final progress = dokumenViewModel.progressPercentage;
-                          final progressText =
-                              '${(progress * 100).toStringAsFixed(0)}%';
-
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    'Progress TA',
-                                    style:
-                                        Theme.of(context).textTheme.titleSmall,
-                                  ),
-                                  Text(
-                                    progressText, // Dynamic Text
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              LinearProgressIndicator(
-                                value: progress, // Dynamic Value
-                                minHeight: 10,
-                                backgroundColor: const Color(0xFF9DCFF7),
-                                color: const Color(0xFF0F47AD),
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-
-                    // Information Section
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Pengumuman',
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            height: 150,
-                            child: Consumer<PengumumanViewModel>(
-                              builder: (context, viewModel, child) {
-                                switch (viewModel.state) {
-                                  case PengumumanState.loading:
-                                    return Skeletonizer(
-                                      enableSwitchAnimation: true,
-                                      child: ListView.separated(
+            
+                      // Information Section
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Pengumuman',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              height: 150,
+                              child: Consumer<PengumumanViewModel>(
+                                builder: (context, viewModel, child) {
+                                  switch (viewModel.state) {
+                                    case PengumumanState.loading:
+                                      return Skeletonizer(
+                                        enableSwitchAnimation: true,
+                                        child: ListView.separated(
+                                          separatorBuilder:
+                                              (context, index) =>
+                                                  const SizedBox(width: 16),
+                                          scrollDirection: Axis.horizontal,
+                                          physics: const BouncingScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemCount: 2,
+                                          itemBuilder: (context, index) {
+                                            return PengumumanCard(
+                                              title: 'title pengumuman',
+                                              description: 'description',
+                                              tglMulai: 'date',
+                                              tglSelesai: 'date',
+                                              attachment: 'attachment',
+                                              lampiranUrl: 'lampiran',
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    case PengumumanState.error:
+                                      return const Center(
+                                        child: Text('Gagal memuat pengumuman'),
+                                      );
+                                    case PengumumanState.loaded:
+                                      if (viewModel.announcements.isEmpty) {
+                                        return const Center(
+                                          child: Text('Tidak ada pengumuman'),
+                                        );
+                                      }
+                                      return ListView.separated(
                                         separatorBuilder:
                                             (context, index) =>
                                                 const SizedBox(width: 16),
                                         scrollDirection: Axis.horizontal,
-                                        physics:
-                                            const BouncingScrollPhysics(),
+                                        physics: const BouncingScrollPhysics(),
                                         shrinkWrap: true,
-                                        itemCount: 2,
+                                        itemCount: math.min(
+                                          viewModel.announcements.length,
+                                          10,
+                                        ),
                                         itemBuilder: (context, index) {
+                                          final item =
+                                              viewModel.announcements[index];
                                           return PengumumanCard(
-                                            title: 'title pengumuman',
-                                            description: 'description',
-                                            tglMulai: 'date',
-                                            tglSelesai: 'date',
-                                            attachment: 'attachment',
-                                            lampiranUrl: 'lampiran',
+                                            title: item.title,
+                                            description: item.description,
+                                            tglMulai: DateFormat(
+                                              'dd MMM yyyy',
+                                            ).format(item.tglMulai),
+                                            tglSelesai: DateFormat(
+                                              'dd MMM yyyy',
+                                            ).format(item.tglSelesai),
+                                            attachment: item.attachment,
+                                            lampiranUrl: item.lampiranUrl,
                                           );
                                         },
-                                      ),
-                                    );
-                                  case PengumumanState.error:
-                                    return const Center(
-                                      child: Text('Gagal memuat pengumuman'),
-                                    );
-                                  case PengumumanState.loaded:
-                                    if (viewModel.announcements.isEmpty) {
-                                      return const Center(
-                                        child: Text('Tidak ada pengumuman'),
                                       );
-                                    }
-                                    return ListView.separated(
-                                      separatorBuilder:
-                                          (context, index) =>
-                                              const SizedBox(width: 16),
-                                      scrollDirection: Axis.horizontal,
-                                      physics: const BouncingScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: math.min(
-                                        viewModel.announcements.length,
-                                        10,
-                                      ),
-                                      itemBuilder: (context, index) {
-                                        final item =
-                                            viewModel.announcements[index];
-                                        return PengumumanCard(
-                                          title: item.title,
-                                          description: item.description,
-                                          tglMulai: DateFormat(
-                                            'dd MMM yyyy',
-                                          ).format(item.tglMulai),
-                                          tglSelesai: DateFormat(
-                                            'dd MMM yyyy',
-                                          ).format(item.tglSelesai),
-                                          attachment: item.attachment,
-                                          lampiranUrl: item.lampiranUrl,
-                                        );
-                                      },
-                                    );
-                                  default:
-                                    return const SizedBox.shrink();
-                                }
+                                    default:
+                                      return const SizedBox.shrink();
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+            
+                      // Upcoming Section... (tidak diubah)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Upcoming',
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: upcomingCards.length,
+                              itemBuilder: (context, index) {
+                                return UpcomingCard(
+                                  title: upcomingCards[index]['title']!,
+                                  description:
+                                      upcomingCards[index]['description']!,
+                                );
                               },
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-
-                    // Upcoming Section... (tidak diubah)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Upcoming',
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: upcomingCards.length,
-                            itemBuilder: (context, index) {
-                              return UpcomingCard(
-                                title: upcomingCards[index]['title']!,
-                                description:
-                                    upcomingCards[index]['description']!,
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),
