@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:digita_mobile/models/jadwal_bimbingan_model.dart';
 import 'package:digita_mobile/presentation/features/dosen/jadwal/widgets/catatan_jadwal_bottom_sheet.dart';
 import 'package:digita_mobile/viewmodels/jadwal_dosen_viewmodel.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class JadwalDosenScreen extends StatefulWidget {
   const JadwalDosenScreen({super.key});
@@ -36,7 +37,51 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
             builder: (context, viewModel, child) {
               if (viewModel.state == DosenViewState.loading &&
                   viewModel.pendingSchedules.isEmpty) {
-                return const Center(child: CircularProgressIndicator());
+                return Skeletonizer(
+                  child: ListView(
+                    children: [
+                      Skeleton.ignore(
+                        child: Text(
+                          'Jadwal Bimbingan',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ),
+                      Skeleton.ignore(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Subtitle(text: 'Permintaan Bimbingan'),
+                        ),
+                      ),
+                      Skeleton.shade(
+                        child: Card(
+                          child: ListTile(title: Text(''), subtitle: Text('')),
+                        ),
+                      ),
+                      Skeleton.ignore(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Subtitle(text: 'Bimbingan Disetujui'),
+                        ),
+                      ),
+                      Skeleton.shade(
+                        child: Card(
+                          child: ListTile(title: Text(''), subtitle: Text('')),
+                        ),
+                      ),
+                      Skeleton.ignore(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Subtitle(text: 'Bimbingan Selesai'),
+                        ),
+                      ),
+                      Skeleton.shade(
+                        child: Card(
+                          child: ListTile(title: Text(''), subtitle: Text('')),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               }
 
               if (viewModel.state == DosenViewState.error) {

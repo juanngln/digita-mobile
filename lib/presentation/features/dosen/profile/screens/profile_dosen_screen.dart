@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:digita_mobile/models/dosen_profile.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:digita_mobile/presentation/common_widgets/bottom_sheets/logout_bottom_sheet.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../widgets/account_secure_sheet_dosen.dart';
 
@@ -36,9 +37,69 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
 
   // Build the body based on the ViewModel's state
   Widget _buildBody(BuildContext context, ProfileViewModel viewModel) {
+    final textTheme = Theme.of(context).textTheme;
     switch (viewModel.state) {
       case ProfileState.loading:
-        return const Center(child: CircularProgressIndicator());
+        return Skeletonizer(
+          enableSwitchAnimation: true,
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Skeleton.ignore(
+                  child: Text(
+                    'Profile',
+                    style: Theme.of(context).textTheme.titleLarge,
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Skeleton.shade(
+                  child: Column(
+                    children: [
+                      const CircleAvatar(
+                        radius: 90,
+                        backgroundImage: AssetImage(''),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        '',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '', // Dynamic data
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '', // Dynamic data
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Skeleton.ignore(
+                        child: _buildMenuCard(context, textTheme),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
       case ProfileState.error:
         return SafeArea(
           child: Center(
@@ -191,10 +252,7 @@ class _ProfileDosenScreenState extends State<ProfileDosenScreen> {
   }) {
     return ListTile(
       leading: Icon(icon, color: Colors.black, size: 26),
-      title: Text(
-        title,
-        style: GoogleFonts.poppins(color: Colors.black),
-      ),
+      title: Text(title, style: GoogleFonts.poppins(color: Colors.black)),
       trailing: trailing,
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(

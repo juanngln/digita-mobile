@@ -64,15 +64,16 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
             child: Consumer<ProfileViewModel>(
               builder: (context, viewModel, child) {
                 Widget profileWidget;
+                final bool isLoading = viewModel.state == ProfileState.loading;
                 if (viewModel.state == ProfileState.loading) {
                   profileWidget = Skeletonizer(
+                    enabled: isLoading,
                     enableSwitchAnimation: true,
-                    child: Skeleton.shade(
-                      child: _buildProfileSection(
-                        name: '',
-                        status: '',
-                        page: NotificationMahasiswaScreen(),
-                      ),
+                    child: _buildProfileSection(
+                      name: '',
+                      status: '',
+                      page: NotificationMahasiswaScreen(),
+                      isLoading: isLoading,
                     ),
                   );
                 } else if (viewModel.state == ProfileState.success) {
@@ -138,7 +139,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: Text(
-                                        'lorem ipsum',
+                                        'name',
                                         textAlign: TextAlign.right,
                                         style: GoogleFonts.poppins(
                                           fontSize: 14,
@@ -265,39 +266,37 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                               builder: (context, viewModel, child) {
                                 switch (viewModel.state) {
                                   case PengumumanState.loading:
-                                    return Center(
-                                      child: Skeletonizer(
-                                        enableSwitchAnimation: true,
-                                        child: ListView.separated(
-                                          separatorBuilder:
-                                              (context, index) =>
-                                                  const SizedBox(width: 16),
-                                          scrollDirection: Axis.horizontal,
-                                          physics:
-                                              const BouncingScrollPhysics(),
-                                          shrinkWrap: true,
-                                          itemCount: 5,
-                                          itemBuilder: (context, index) {
-                                            return PengumumanCard(
-                                              title: 'lorem ipsum',
-                                              description: 'lorem ipsum',
-                                              tglMulai: 'lorem ipsum',
-                                              tglSelesai: 'lorem ipsum',
-                                              attachment: 'lorem ipsum',
-                                              lampiranUrl: 'lorem ipsum',
-                                            );
-                                          },
-                                        ),
+                                    return Skeletonizer(
+                                      enableSwitchAnimation: true,
+                                      child: ListView.separated(
+                                        separatorBuilder:
+                                            (context, index) =>
+                                                const SizedBox(width: 16),
+                                        scrollDirection: Axis.horizontal,
+                                        physics:
+                                            const BouncingScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: 2,
+                                        itemBuilder: (context, index) {
+                                          return PengumumanCard(
+                                            title: 'title pengumuman',
+                                            description: 'description',
+                                            tglMulai: 'date',
+                                            tglSelesai: 'date',
+                                            attachment: 'attachment',
+                                            lampiranUrl: 'lampiran',
+                                          );
+                                        },
                                       ),
                                     );
                                   case PengumumanState.error:
                                     return const Center(
-                                      child: Text('Gagal memuat pengumuman.'),
+                                      child: Text('Gagal memuat pengumuman'),
                                     );
                                   case PengumumanState.loaded:
                                     if (viewModel.announcements.isEmpty) {
                                       return const Center(
-                                        child: Text('Tidak ada pengumuman.'),
+                                        child: Text('Tidak ada pengumuman'),
                                       );
                                     }
                                     return ListView.separated(
@@ -377,6 +376,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
     required String name,
     required String status,
     required Widget page,
+    bool isLoading = false,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -385,34 +385,63 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
         Expanded(
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 28,
-                child: Image.asset('assets/img/mhs_pria.png'),
-              ),
+              if (isLoading)
+                Skeleton.shade(child: CircleAvatar(radius: 28))
+              else
+                CircleAvatar(
+                  radius: 28,
+                  child: Image.asset('assets/img/mhs_pria.png'),
+                ),
               const SizedBox(width: 10),
-              Flexible(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      name,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    if (isLoading)
+                      Skeleton.shade(
+                        child: Container(
+                          width: double.infinity,
+                          height: 16,
+                          margin: EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white70,
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                        ),
+                      )
+                    else
+                      Text(
+                        name,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      status,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                    if (isLoading)
+                      Skeleton.shade(
+                        child: Container(
+                          width: double.infinity,
+                          height: 16,
+                          margin: EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white70,
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                        ),
+                      )
+                    else
+                      Text(
+                        status,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -420,22 +449,24 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
           ),
         ),
         SizedBox(
-          child: Badge(
-            alignment: Alignment.topRight,
-            offset: const Offset(-6, 8),
-            label: const Text(''),
-            largeSize: 16,
-            smallSize: 12,
-            child: IconButton(
-              icon: Icon(CupertinoIcons.bell_fill),
-              iconSize: 28,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => page),
-                );
-              },
-              color: Theme.of(context).colorScheme.primary,
+          child: Skeleton.shade(
+            child: Badge(
+              alignment: Alignment.topRight,
+              offset: const Offset(-6, 8),
+              label: const Text(''),
+              largeSize: 16,
+              smallSize: 12,
+              child: IconButton(
+                icon: Icon(CupertinoIcons.bell_fill),
+                iconSize: 28,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => page),
+                  );
+                },
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           ),
         ),

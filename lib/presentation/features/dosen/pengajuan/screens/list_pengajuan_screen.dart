@@ -5,6 +5,7 @@ import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:digita_mobile/presentation/features/dosen/pengajuan/widgets/form_pengajuan_bottom_sheet.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class PengajuanMahasiswaScreen extends StatefulWidget {
   const PengajuanMahasiswaScreen({super.key});
@@ -65,7 +66,79 @@ class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
                   future: _requestsFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+                      return Skeletonizer(
+                        enableSwitchAnimation: true,
+                        child: ListView.builder(
+                          itemCount: 3,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    spreadRadius: 0,
+                                    blurRadius: 4,
+                                    offset: Offset(0, 4),
+                                    color: Colors.black.withAlpha(50),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Skeleton.shade(
+                                    child: ClipOval(
+                                      child: Image.asset(
+                                        '',
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(fontSize: 16),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          '',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black,
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Skeleton.shade(
+                                    child: const Icon(
+                                      Icons.arrow_forward,
+                                      color: Colors.black,
+                                      size: 24,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      );
                     }
                     if (snapshot.hasError) {
                       return Center(
@@ -126,7 +199,10 @@ class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
                                     children: [
                                       Text(
                                         request.mahasiswaNama,
-                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 16),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge
+                                            ?.copyWith(fontSize: 16),
                                       ),
                                       const SizedBox(height: 2),
                                       Text(

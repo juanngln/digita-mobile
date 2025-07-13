@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:digita_mobile/viewmodels/profile_viewmodel.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../../../viewmodels/pengumuman_viewmodel.dart';
 
@@ -81,17 +82,36 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
                               builder: (context, viewModel, child) {
                                 switch (viewModel.state) {
                                   case PengumumanState.loading:
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
+                                    return Skeletonizer(
+                                      enableSwitchAnimation: true,
+                                      child: ListView.separated(
+                                        separatorBuilder:
+                                            (context, index) =>
+                                                const SizedBox(width: 16),
+                                        scrollDirection: Axis.horizontal,
+                                        physics: const BouncingScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: 2,
+                                        itemBuilder: (context, index) {
+                                          return PengumumanCard(
+                                            title: 'title pengumuman',
+                                            description: 'description',
+                                            tglMulai: 'date',
+                                            tglSelesai: 'date',
+                                            attachment: 'attachment',
+                                            lampiranUrl: 'lampiran',
+                                          );
+                                        },
+                                      ),
                                     );
                                   case PengumumanState.error:
                                     return const Center(
-                                      child: Text('Gagal memuat pengumuman.'),
+                                      child: Text('Gagal memuat pengumuman'),
                                     );
                                   case PengumumanState.loaded:
                                     if (viewModel.announcements.isEmpty) {
                                       return const Center(
-                                        child: Text('Tidak ada pengumuman.'),
+                                        child: Text('Tidak ada pengumuman'),
                                       );
                                     }
                                     return ListView.separated(
@@ -171,12 +191,18 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
     BuildContext context,
     ProfileViewModel viewModel,
   ) {
+    final bool isLoading = viewModel.state == ProfileState.loading;
     switch (viewModel.state) {
       case ProfileState.loading:
-        return _profileSection(
-          name: 'Memuat...',
-          status: '...',
-          page: NotificationDosenScreen(),
+        return Skeletonizer(
+          enabled: isLoading,
+          enableSwitchAnimation: true,
+          child: _profileSection(
+            name: '',
+            status: '',
+            page: NotificationDosenScreen(),
+            isLoading: isLoading,
+          ),
         );
       case ProfileState.error:
         return Center(child: Text('Gagal: ${viewModel.errorMessage}'));
@@ -197,6 +223,7 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
     required String name,
     required String status,
     required Widget page,
+    bool isLoading = false,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -205,34 +232,62 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
         Expanded(
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 28,
-                child: Image.asset('assets/img/dosen_pria.png'),
-              ),
+              if (isLoading)
+                Skeleton.shade(child: CircleAvatar(radius: 28))
+              else
+                CircleAvatar(
+                  radius: 28,
+                  child: Image.asset('assets/img/dosen_pria.png'),
+                ),
               const SizedBox(width: 10),
-              Flexible(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      name,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    if (isLoading)
+                      Skeleton.shade(
+                        child: Container(
+                          width: double.infinity,
+                          height: 16,
+                          margin: EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white70,
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                        ),
+                      )
+                    else
+                      Text(
+                        name,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      status,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                    if (isLoading)
+                      Skeleton.shade(
+                        child: Container(
+                          width: double.infinity,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: Colors.white70,
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                        ),
+                      )
+                    else
+                      Text(
+                        status,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -240,22 +295,24 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
           ),
         ),
         SizedBox(
-          child: Badge(
-            alignment: Alignment.topRight,
-            offset: const Offset(-6, 8),
-            label: const Text(''),
-            largeSize: 16,
-            smallSize: 12,
-            child: IconButton(
-              icon: Icon(CupertinoIcons.bell_fill),
-              iconSize: 28,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => page),
-                );
-              },
-              color: Theme.of(context).colorScheme.primary,
+          child: Skeleton.shade(
+            child: Badge(
+              alignment: Alignment.topRight,
+              offset: const Offset(-6, 8),
+              label: const Text(''),
+              largeSize: 16,
+              smallSize: 12,
+              child: IconButton(
+                icon: Icon(CupertinoIcons.bell_fill),
+                iconSize: 28,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => page),
+                  );
+                },
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           ),
         ),
@@ -284,23 +341,25 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildCounterItem(
-            context,
-            'Mahasiswa',
-            isLoading ? '...' : mahasiswaCount,
-          ),
+          _buildCounterItem(context, 'Mahasiswa', mahasiswaCount, isLoading),
           const VerticalDivider(color: Colors.black, thickness: 1.5),
           _buildCounterItem(
             context,
             'Pending Review',
-            isLoading ? '...' : pendingReviewCount,
+            pendingReviewCount,
+            isLoading,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCounterItem(BuildContext context, String title, String count) {
+  Widget _buildCounterItem(
+    BuildContext context,
+    String title,
+    String count,
+    bool isLoading,
+  ) {
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -311,13 +370,26 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
               context,
             ).textTheme.titleSmall!.copyWith(fontSize: 16),
           ),
-          Text(
-            count,
-            style: GoogleFonts.poppins(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+          const SizedBox(height: 8),
+          if (isLoading)
+            Skeleton.shade(
+              child: Container(
+                height: 28,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white70,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+              ),
+            )
+          else
+            Text(
+              count,
+              style: GoogleFonts.poppins(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
         ],
       ),
     );
