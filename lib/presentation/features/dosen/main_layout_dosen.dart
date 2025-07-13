@@ -38,7 +38,7 @@ class _MainLayoutDosenState extends State<MainLayoutDosen> {
 
   final List<Widget> _pages = <Widget>[
     const HomeDosenScreen(),
-    JadwalDosenScreen(),
+    const JadwalDosenScreen(),
     const DokumenDosenScreen(),
     const PengajuanMahasiswaScreen(),
     const ProfileDosenScreen(),
@@ -61,10 +61,11 @@ class _MainLayoutDosenState extends State<MainLayoutDosen> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ProfileViewModel>(
-          create: (context) => ProfileViewModel(
-            profileService: _profileService,
-            secureStorageService: _secureStorageService,
-          ),
+          create:
+              (context) => ProfileViewModel(
+                profileService: _profileService,
+                secureStorageService: _secureStorageService,
+              ),
         ),
         ChangeNotifierProvider<PengumumanViewModel>(
           create: (context) => PengumumanViewModel(),
@@ -74,13 +75,14 @@ class _MainLayoutDosenState extends State<MainLayoutDosen> {
         ),
       ],
       child: Scaffold(
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _pages,
+        body: SafeArea(
+          child: IndexedStack(index: _selectedIndex, children: _pages),
         ),
-        bottomNavigationBar: BottomNavbarDosen(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
+        bottomNavigationBar: SafeArea(
+          child: BottomNavbarDosen(
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+          ),
         ),
       ),
     );

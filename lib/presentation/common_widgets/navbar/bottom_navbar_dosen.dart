@@ -20,21 +20,23 @@ class _BottomNavbarDosenState extends State<BottomNavbarDosen> {
 
   @override
   Widget build(BuildContext context) {
-    return CurvedNavigationBar(
-      key: _bottomNavigationKey,
-      index: widget.currentIndex,
-      backgroundColor: Colors.transparent,
-      color: Theme.of(context).colorScheme.primary,
-      buttonBackgroundColor: Theme.of(context).colorScheme.primary,
-      animationDuration: Duration(milliseconds: 500),
-      items: <Widget>[
-        Icon(Icons.home_filled, size: 28, color: Colors.white),
-        Icon(Icons.calendar_month_rounded, size: 28, color: Colors.white),
-        Icon(Icons.edit_document, size: 28, color: Colors.white),
-        Icon(Icons.person_pin_rounded, size: 28, color: Colors.white),
-        Icon(Icons.person, size: 28, color: Colors.white),
-      ],
-      onTap: widget.onTap,
+    return SafeArea(
+      child: CurvedNavigationBar(
+        key: _bottomNavigationKey,
+        index: widget.currentIndex,
+        backgroundColor: Colors.transparent,
+        color: Theme.of(context).colorScheme.primary,
+        buttonBackgroundColor: Theme.of(context).colorScheme.primary,
+        animationDuration: Duration(milliseconds: 500),
+        items: <Widget>[
+          Icon(Icons.home_filled, size: 28, color: Colors.white),
+          Icon(Icons.calendar_month_rounded, size: 28, color: Colors.white),
+          Icon(Icons.sticky_note_2_rounded, size: 28, color: Colors.white),
+          Icon(Icons.person_pin_rounded, size: 28, color: Colors.white),
+          Icon(Icons.person, size: 28, color: Colors.white),
+        ],
+        onTap: widget.onTap,
+      ),
     );
   }
 }

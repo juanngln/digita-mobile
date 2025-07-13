@@ -55,10 +55,11 @@ class _MainLayoutMahasiswa extends State<MainLayoutMahasiswa> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ProfileViewModel>(
-          create: (context) => ProfileViewModel(
-            profileService: _profileService,
-            secureStorageService: _secureStorageService,
-          ),
+          create:
+              (context) => ProfileViewModel(
+                profileService: _profileService,
+                secureStorageService: _secureStorageService,
+              ),
         ),
         ChangeNotifierProvider<JadwalViewModel>(
           create: (context) => JadwalViewModel(dio: _dioClient.dio),
@@ -71,13 +72,14 @@ class _MainLayoutMahasiswa extends State<MainLayoutMahasiswa> {
         ),
       ],
       child: Scaffold(
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _pages,
+        body: SafeArea(
+          child: IndexedStack(index: _selectedIndex, children: _pages),
         ),
-        bottomNavigationBar: BottomNavbarMahasiswa(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
+        bottomNavigationBar: SafeArea(
+          child: BottomNavbarMahasiswa(
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+          ),
         ),
       ),
     );
