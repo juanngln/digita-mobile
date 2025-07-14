@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:digita_mobile/helper/db_helper.dart';
 import 'package:digita_mobile/presentation/features/mahasiswa/home/screens/notification_mahasiswa_screen.dart';
 import 'package:digita_mobile/presentation/common_widgets/cards/pengumuman_card.dart';
 import 'package:digita_mobile/presentation/common_widgets/cards/upcoming_card.dart';
@@ -27,6 +28,8 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
   late Future<Quote> _quoteFuture;
   final ApiService _apiService = ApiService();
 
+  int unreadNotification = 0;
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +44,15 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
         context,
         listen: false,
       ).fetchDokumenStatus();
+    });
+
+    _loadUnreadNotification();
+  }
+
+  Future<void> _loadUnreadNotification() async {
+    final count = await DBHelper.instance.getUnreadNotificationCount();
+    setState(() {
+      unreadNotification = count;
     });
   }
 
@@ -67,7 +79,8 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
               child: Consumer<ProfileViewModel>(
                 builder: (context, viewModel, child) {
                   Widget profileWidget;
-                  final bool isLoading = viewModel.state == ProfileState.loading;
+                  final bool isLoading =
+                      viewModel.state == ProfileState.loading;
                   if (viewModel.state == ProfileState.loading) {
                     profileWidget = Skeletonizer(
                       enabled: isLoading,
@@ -92,14 +105,14 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                   } else {
                     profileWidget = Text('Error: ${viewModel.errorMessage}');
                   }
-            
+
                   return Column(
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(bottom: 20.0),
                         child: profileWidget,
                       ),
-            
+
                       // Quote Section
                       Padding(
                         padding: const EdgeInsets.only(bottom: 20.0),
@@ -128,7 +141,8 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                                   child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'lorem ipsum',
@@ -206,16 +220,17 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                           },
                         ),
                       ),
-            
+
                       // Progress Section
                       Padding(
                         padding: const EdgeInsets.only(bottom: 20.0),
                         child: Consumer<DokumenViewModel>(
                           builder: (context, dokumenViewModel, child) {
-                            final progress = dokumenViewModel.progressPercentage;
+                            final progress =
+                                dokumenViewModel.progressPercentage;
                             final progressText =
                                 '${(progress * 100).toStringAsFixed(0)}%';
-            
+
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -227,7 +242,9 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                                     Text(
                                       'Progress TA',
                                       style:
-                                          Theme.of(context).textTheme.titleSmall,
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.titleSmall,
                                     ),
                                     Text(
                                       progressText, // Dynamic Text
@@ -251,7 +268,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                           },
                         ),
                       ),
-            
+
                       // Information Section
                       Padding(
                         padding: const EdgeInsets.only(bottom: 20),
@@ -276,7 +293,8 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                                               (context, index) =>
                                                   const SizedBox(width: 16),
                                           scrollDirection: Axis.horizontal,
-                                          physics: const BouncingScrollPhysics(),
+                                          physics:
+                                              const BouncingScrollPhysics(),
                                           shrinkWrap: true,
                                           itemCount: 2,
                                           itemBuilder: (context, index) {
@@ -338,7 +356,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                           ],
                         ),
                       ),
-            
+
                       // Upcoming Section... (tidak diubah)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 20),
@@ -454,10 +472,11 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
         SizedBox(
           child: Skeleton.shade(
             child: Badge(
+              isLabelVisible: unreadNotification > 0,
               alignment: Alignment.topRight,
               offset: const Offset(-6, 8),
-              label: const Text(''),
-              largeSize: 16,
+              label: Text(unreadNotification.toString()),
+              largeSize: 12,
               smallSize: 12,
               child: IconButton(
                 icon: Icon(CupertinoIcons.bell_fill),
@@ -467,6 +486,7 @@ class _HomeMahasiswaScreenState extends State<HomeMahasiswaScreen> {
                     context,
                     MaterialPageRoute(builder: (context) => page),
                   );
+                  _loadUnreadNotification();
                 },
                 color: Theme.of(context).colorScheme.primary,
               ),

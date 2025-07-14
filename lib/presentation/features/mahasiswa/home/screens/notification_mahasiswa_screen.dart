@@ -1,31 +1,60 @@
+import 'package:digita_mobile/helper/db_helper.dart';
+import 'package:digita_mobile/models/notification_model.dart';
 import 'package:digita_mobile/presentation/common_widgets/cards/notification_card.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class NotificationMahasiswaScreen extends StatefulWidget {
   const NotificationMahasiswaScreen({super.key});
 
   @override
-  State<NotificationMahasiswaScreen> createState() => _NotificationMahasiswaScreenState();
+  State<NotificationMahasiswaScreen> createState() =>
+      _NotificationMahasiswaScreenState();
 }
 
-class _NotificationMahasiswaScreenState extends State<NotificationMahasiswaScreen> {
-  final List<Map<String, dynamic>> notificationCards = [
-    {
-      'title': 'Jadwal Bimbingan',
-      'message': 'Jangan lupa bimbingan online jam 14:00',
-      'isRead': false,
-    },
-    {
-      'title': 'Dokumen Tugas Akhir',
-      'message': 'Jadwal lupa mengumpulkan BAB II: Latar Belakang',
-      'isRead': false,
-    },
-    {
-      'title': 'Jadwal Bimbingan',
-      'message': 'Jangan lupa bimbingan jam 10:00 di GU 706',
-      'isRead': false,
-    },
-  ];
+class _NotificationMahasiswaScreenState
+    extends State<NotificationMahasiswaScreen> {
+  late Future<List<NotificationModel>> _notifications;
+
+  @override
+  void initState() {
+    super.initState();
+    _notifications = DBHelper.instance.getNotifications();
+  }
+
+  Map<String, List<NotificationModel>> _groupNotifications(
+    List<NotificationModel> notifications,
+  ) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    final Map<String, List<NotificationModel>> grouped = {
+      'Hari Ini': [],
+      'Kemarin': [],
+      'Sebelumnya': [],
+    };
+
+    for (var notif in notifications) {
+      final receivedAt = notif.receivedAt;
+      final notifDate = DateTime(
+        receivedAt.year,
+        receivedAt.month,
+        receivedAt.day,
+      );
+
+      if (notifDate == today) {
+        grouped['Hari Ini']!.add(notif);
+      } else if (notifDate == yesterday) {
+        grouped['Kemarin']!.add(notif);
+      } else {
+        grouped['Sebelumnya']!.add(notif);
+      }
+    }
+
+    return grouped;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,79 +71,75 @@ class _NotificationMahasiswaScreenState extends State<NotificationMahasiswaScree
           },
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              // Hari ini
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Hari ini',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleSmall!.copyWith(fontSize: 16),
-                    ),
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: notificationCards.length,
-                      itemBuilder: (context, index) {
-                        return NotificationCard(
-                          title: notificationCards[index]['title'] ?? '',
-                          message: notificationCards[index]['message'] ?? '',
-                          isRead: notificationCards[index]['isRead'] ?? false,
-                          onTap: () {
-                            setState(() {
-                              notificationCards[index]['isRead'] = true;
-                            });
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
+      body: FutureBuilder<List<NotificationModel>>(
+        future: _notifications,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Skeletonizer(
+              child: ListView.builder(
+                itemCount: 3,
+                itemBuilder: (context, builder) {
+                  return NotificationCard(
+                    title: 'notification title',
+                    message: 'notification',
+                    isRead: false,
+                    onTap: () {},
+                  );
+                },
               ),
-              // Kemarin
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Kemarin',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleSmall!.copyWith(fontSize: 16),
-                    ),
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: notificationCards.length,
-                      itemBuilder: (context, index) {
-                        return NotificationCard(
-                          title: notificationCards[index]['title'] ?? '',
-                          message: notificationCards[index]['message'] ?? '',
-                          isRead: notificationCards[index]['isRead'] ?? false,
-                          onTap: () {
-                            setState(() {
-                              notificationCards[index]['isRead'] = true;
-                            });
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+            );
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: Text("Tidak ada notifikasi", style: GoogleFonts.poppins()),
+            );
+          }
+
+          final items = snapshot.data!;
+          final grouped = _groupNotifications(items);
+
+          return Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: ListView(
+              children:
+                  grouped.entries.where((entry) => entry.value.isNotEmpty).map((
+                    entry,
+                  ) {
+                    final title = entry.key;
+                    final notifs = entry.value;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleSmall!.copyWith(fontSize: 16),
+                        ),
+                        ...notifs.map(
+                          (notif) => NotificationCard(
+                            title: notif.title,
+                            message: notif.body,
+                            isRead: notif.isRead,
+                            onTap: () async {
+                              await DBHelper.instance.markAsReadNotification(
+                                notif.id,
+                              );
+                              setState(() {
+                                _notifications =
+                                    DBHelper.instance.getNotifications();
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+            ),
+          );
+        },
       ),
     );
   }

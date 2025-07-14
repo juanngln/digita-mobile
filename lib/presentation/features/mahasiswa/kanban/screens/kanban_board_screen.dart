@@ -14,7 +14,7 @@ class KanbanBoardScreen extends StatefulWidget {
 }
 
 class _KanbanBoardScreenState extends State<KanbanBoardScreen> {
-  final DBHelper dbHelper = DBHelper();
+  final DBHelper dbHelper = DBHelper.instance;
   List<Kanban> kanbanList = [];
 
   @override

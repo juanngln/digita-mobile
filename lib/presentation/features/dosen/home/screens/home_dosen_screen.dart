@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:digita_mobile/helper/db_helper.dart';
 import 'package:digita_mobile/presentation/features/dosen/home/screens/notification_dosen_screen.dart';
 import 'package:digita_mobile/presentation/common_widgets/cards/pengumuman_card.dart';
 import 'package:digita_mobile/presentation/common_widgets/cards/upcoming_card.dart';
@@ -21,6 +22,8 @@ class HomeDosenScreen extends StatefulWidget {
 }
 
 class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
+  int unreadNotification = 0;
+
   @override
   void initState() {
     super.initState();
@@ -29,6 +32,15 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
         context,
         listen: false,
       ).fetchAnnouncements();
+    });
+
+    _loadUnreadNotification();
+  }
+
+  Future<void> _loadUnreadNotification() async {
+    final count = await DBHelper.instance.getUnreadNotificationCount();
+    setState(() {
+      unreadNotification = count;
     });
   }
 
@@ -302,10 +314,11 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
         SizedBox(
           child: Skeleton.shade(
             child: Badge(
+              isLabelVisible: unreadNotification > 0,
               alignment: Alignment.topRight,
               offset: const Offset(-6, 8),
-              label: const Text(''),
-              largeSize: 16,
+              label: Text(unreadNotification.toString()),
+              largeSize: 12,
               smallSize: 12,
               child: IconButton(
                 icon: Icon(CupertinoIcons.bell_fill),
@@ -315,6 +328,7 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
                     context,
                     MaterialPageRoute(builder: (context) => page),
                   );
+                  _loadUnreadNotification();
                 },
                 color: Theme.of(context).colorScheme.primary,
               ),

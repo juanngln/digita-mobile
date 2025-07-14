@@ -15,7 +15,7 @@ class TambahKanbanBottomSheet extends StatefulWidget {
 }
 
 class _TambahKanbanBottomSheetState extends State<TambahKanbanBottomSheet> {
-  final DBHelper dbHelper = DBHelper();
+  final DBHelper dbHelper = DBHelper.instance;
   String selectedSection = 'To Do';
   final TextEditingController _babController = TextEditingController();
   final TextEditingController _keteranganController = TextEditingController();

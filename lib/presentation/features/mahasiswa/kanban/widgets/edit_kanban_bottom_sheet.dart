@@ -16,7 +16,7 @@ class EditKanbanBottomSheet extends StatefulWidget {
 }
 
 class _EditKanbanBottomSheetState extends State<EditKanbanBottomSheet> {
-  final DBHelper dbHelper = DBHelper();
+  final DBHelper dbHelper = DBHelper.instance;
   late String selectedSection;
   late TextEditingController _babController;
   late TextEditingController _keteranganController;

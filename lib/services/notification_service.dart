@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:digita_mobile/helper/db_helper.dart';
+import 'package:digita_mobile/models/notification_model.dart';
 import 'package:digita_mobile/services/base_url.dart';
 import 'package:digita_mobile/services/secure_storage_service.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -9,17 +11,19 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 
-
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print("Handling a background message: ${message.messageId}");
 
-  final FlutterLocalNotificationsPlugin localNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin localNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   const AndroidInitializationSettings androidSettings =
-  AndroidInitializationSettings('@drawable/ic_notification');
-  const InitializationSettings settings = InitializationSettings(android: androidSettings);
+      AndroidInitializationSettings('@drawable/ic_notification');
+  const InitializationSettings settings = InitializationSettings(
+    android: androidSettings,
+  );
   await localNotificationsPlugin.initialize(settings);
 
   const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
@@ -45,6 +49,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       payload: jsonEncode(message.data),
     );
   }
+
+  await DBHelper.instance.insertNotification(
+    NotificationModel(
+      title: message.data['title'],
+      body: message.data['body'],
+      receivedAt: DateTime.now(),
+    ),
+  );
 }
 
 class NotificationService {
@@ -56,7 +68,7 @@ class NotificationService {
   // --- Class Members ---
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
   final SecureStorageService _secureStorage = SecureStorageService();
 
   // --- Public Navigator Key ---
@@ -78,9 +90,7 @@ class NotificationService {
     );
 
     const AndroidInitializationSettings androidSettings =
-    AndroidInitializationSettings(
-      '@drawable/ic_notification',
-    );
+        AndroidInitializationSettings('@drawable/ic_notification');
 
     const InitializationSettings settings = InitializationSettings(
       android: androidSettings,
@@ -109,25 +119,33 @@ class NotificationService {
     });
   }
 
-  void _showLocalNotification(RemoteMessage message) {
+  void _showLocalNotification(RemoteMessage message) async {
     const AndroidNotificationDetails androidDetails =
-    AndroidNotificationDetails(
-      'high_importance_channel',
-      'High Importance Notifications',
-      channelDescription: 'This channel is for important announcements.',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
+        AndroidNotificationDetails(
+          'high_importance_channel',
+          'High Importance Notifications',
+          channelDescription: 'This channel is for important announcements.',
+          importance: Importance.max,
+          priority: Priority.high,
+        );
     const NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
     );
 
     _localNotificationsPlugin.show(
       message.hashCode,
-      message.data['title'],      // Read title from data
-      message.data['body'],       // Read body from data
+      message.data['title'], // Read title from data
+      message.data['body'], // Read body from data
       notificationDetails,
       payload: jsonEncode(message.data),
+    );
+
+    await DBHelper.instance.insertNotification(
+      NotificationModel(
+        title: message.data['title'],
+        body: message.data['body'],
+        receivedAt: DateTime.now(),
+      ),
     );
   }
 

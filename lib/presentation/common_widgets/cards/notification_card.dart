@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:badges/badges.dart' as badges;
 
 class NotificationCard extends StatefulWidget {
   final String title;
@@ -29,18 +30,18 @@ class _NotificationCardState extends State<NotificationCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.onTap,
-      child: Badge(
-        isLabelVisible: !widget.isRead,
-        label: Text(''),
-        alignment: Alignment.topRight,
-        offset: Offset(4, 6),
-        largeSize: 16,
-        smallSize: 12,
+      child: badges.Badge(
+        showBadge: !widget.isRead,
+        position: badges.BadgePosition.topEnd(top: 8, end: 1),
+        badgeStyle: badges.BadgeStyle(
+          badgeColor: Colors.red,
+          elevation: 0,
+          padding: EdgeInsets.all(6.0),
+        ),
         child: Container(
           width: MediaQuery.of(context).size.width - 48,
-          height: 80,
           padding: EdgeInsets.all(12),
-          margin: EdgeInsets.symmetric(vertical: 10),
+          margin: EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
@@ -57,10 +58,7 @@ class _NotificationCardState extends State<NotificationCard> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                widget.title,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+              Text(widget.title, style: Theme.of(context).textTheme.bodyLarge),
               Text(
                 widget.message,
                 style: GoogleFonts.poppins(
