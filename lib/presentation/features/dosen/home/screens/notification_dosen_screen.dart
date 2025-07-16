@@ -36,7 +36,7 @@ class _NotificationDosenScreenState extends State<NotificationDosenScreen> {
     };
 
     for (var notif in notifications) {
-      final receivedAt = DateTime.parse(notif.receivedAt as String);
+      final receivedAt = notif.receivedAt;
       final notifDate = DateTime(
         receivedAt.year,
         receivedAt.month,
@@ -81,7 +81,7 @@ class _NotificationDosenScreenState extends State<NotificationDosenScreen> {
                   return NotificationCard(
                     title: 'notification title',
                     message: 'notification',
-                    isRead: false,
+                    isRead: true,
                     onTap: () {},
                   );
                 },
@@ -108,32 +108,35 @@ class _NotificationDosenScreenState extends State<NotificationDosenScreen> {
                     final title = entry.key;
                     final notifs = entry.value;
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.titleSmall!.copyWith(fontSize: 16),
-                        ),
-                        ...notifs.map(
-                          (notif) => NotificationCard(
-                            title: notif.title,
-                            message: notif.body,
-                            isRead: false,
-                            onTap: () async {
-                              await DBHelper.instance.markAsReadNotification(
-                                notif.id,
-                              );
-                              setState(() {
-                                _notifications =
-                                    DBHelper.instance.getNotifications();
-                              });
-                            },
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleSmall!.copyWith(fontSize: 16),
                           ),
-                        ),
-                      ],
+                          ...notifs.map(
+                            (notif) => NotificationCard(
+                              title: notif.title,
+                              message: notif.body,
+                              isRead: notif.isRead,
+                              onTap: () async {
+                                await DBHelper.instance.markAsReadNotification(
+                                  notif.id,
+                                );
+                                setState(() {
+                                  _notifications =
+                                      DBHelper.instance.getNotifications();
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   }).toList(),
             ),

@@ -82,7 +82,7 @@ class _NotificationMahasiswaScreenState
                   return NotificationCard(
                     title: 'notification title',
                     message: 'notification',
-                    isRead: false,
+                    isRead: true,
                     onTap: () {},
                   );
                 },
