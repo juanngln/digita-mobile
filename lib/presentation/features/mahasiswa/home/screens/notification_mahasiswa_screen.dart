@@ -109,32 +109,35 @@ class _NotificationMahasiswaScreenState
                     final title = entry.key;
                     final notifs = entry.value;
 
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.titleSmall!.copyWith(fontSize: 16),
-                        ),
-                        ...notifs.map(
-                          (notif) => NotificationCard(
-                            title: notif.title,
-                            message: notif.body,
-                            isRead: notif.isRead,
-                            onTap: () async {
-                              await DBHelper.instance.markAsReadNotification(
-                                notif.id,
-                              );
-                              setState(() {
-                                _notifications =
-                                    DBHelper.instance.getNotifications();
-                              });
-                            },
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.titleSmall!.copyWith(fontSize: 16),
                           ),
-                        ),
-                      ],
+                          ...notifs.map(
+                            (notif) => NotificationCard(
+                              title: notif.title,
+                              message: notif.body,
+                              isRead: notif.isRead,
+                              onTap: () async {
+                                await DBHelper.instance.markAsReadNotification(
+                                  notif.id,
+                                );
+                                setState(() {
+                                  _notifications =
+                                      DBHelper.instance.getNotifications();
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   }).toList(),
             ),
