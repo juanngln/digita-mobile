@@ -316,7 +316,7 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
             child: Badge(
               isLabelVisible: unreadNotification > 0,
               alignment: Alignment.topRight,
-              offset: const Offset(-10, 6),
+              offset: const Offset(-6, 8),
               label: Text(unreadNotification.toString()),
               largeSize: 12,
               smallSize: 12,
