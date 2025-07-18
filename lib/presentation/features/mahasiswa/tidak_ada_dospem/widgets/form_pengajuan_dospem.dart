@@ -174,6 +174,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
               ),
               const SizedBox(height: 8),
               TextAreaField(
+                key: const Key('fieldAlasan'),
                 controller: _alasanMemilihDosenController,
                 hintText: 'Jelaskan alasan Anda memilih dosen ini...',
                 maxLines: 3,
@@ -197,6 +198,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
               ),
               const SizedBox(height: 8),
               CustomTextField(
+                key: const Key('fieldJudul'),
                 controller: _rencanaJudulController,
                 hintText: 'Masukkan rencana judul Tugas Akhir Anda',
                 validator: (value) {
@@ -219,6 +221,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
               ),
               const SizedBox(height: 8),
               TextAreaField(
+                key: const Key('fieldDeskripsi'),
                 controller: _deskripsiSingkatController,
                 hintText: 'Jelaskan secara singkat mengenai rencana TA Anda...',
                 maxLines: 5,
@@ -232,6 +235,7 @@ class _FormPengajuanDosenWidgetState extends State<FormPengajuanDosenWidget> {
               ),
               const SizedBox(height: 24),
               PrimaryActionButton(
+                key: const Key('btnSubmitPengajuan'),
                 label: 'AJUKAN PENGAJUAN',
                 isLoading: _isSubmitting,
                 onPressed: _isSubmitting ? null : _submitPengajuan,

@@ -21,6 +21,7 @@ class _CariDosenState extends State<CariDosen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
+                  key: const Key('imgWaduh'),
                   'assets/img/waduh.png',
                   height: 300,
                 ),
@@ -54,6 +55,7 @@ class _CariDosenState extends State<CariDosen> {
                   width: double.infinity,
                   height: 50,
                   child: TextButton(
+                    key: const Key('btnCariDospem'),
                     onPressed: () {
                       Navigator.pushNamed(context, '/daftar_dosen');
                     },

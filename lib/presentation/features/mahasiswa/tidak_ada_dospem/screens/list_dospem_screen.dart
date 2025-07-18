@@ -138,6 +138,7 @@ class _DaftarDosenState extends State<DaftarDosen> {
             );
           },
           child: Container(
+            key: Key('dosen_card_$index'),
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(

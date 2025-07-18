@@ -16,7 +16,7 @@ class LandingScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Logo
-                Image.asset('assets/img/digita_logo.png', height: 300),
+                Image.asset(key: const Key('imgLogo'), 'assets/img/digita_logo.png', height: 300),
                 const SizedBox(height: 24),
                 // Text
                 Text(
@@ -31,6 +31,7 @@ class LandingScreen extends StatelessWidget {
                   width: double.infinity,
                   height: 50,
                   child: TextButton(
+                    key: const Key('btnLogin'),
                     onPressed: () {
                       Navigator.pushNamed(context, '/login');
                     },

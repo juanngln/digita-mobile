@@ -84,6 +84,7 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
               title: 'Yah, Pengajuanmu Ditolak!',
               description: 'Alasan: "$reason"',
               actionButton: ElevatedButton(
+                key: const Key('btnCariDospem'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0F47AD),
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -156,7 +157,7 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset('assets/img/terkirim.png', height: 250),
+                    Image.asset(key: const Key('imgStatusTerkirim') ,'assets/img/terkirim.png', height: 250),
                     const SizedBox(height: 24),
                     Text(
                       'Pengajuan Terkirim!',
@@ -182,6 +183,7 @@ class _StatusPengajuanState extends State<StatusPengajuan> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
+                        key: const Key('btnStatusPengajuan'),
                         onPressed:
                             _isLoadingButton
                                 ? null

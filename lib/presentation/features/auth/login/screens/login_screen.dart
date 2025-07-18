@@ -245,6 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     viewModel,
                                   ),
                           child: Container(
+                            key: const Key('roleSelector'),
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 16,
@@ -284,6 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         // --- Form Fields ---
                         CustomTextField(
+                          key: const Key('fieldNim'),
                           controller: _identifierController,
                           hintText: "NIM/NIK",
                           enabled: !isLoading,
@@ -291,6 +293,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 16),
                         PasswordInputField(
+                          key: const Key('fieldPassword'),
                           controller: _passwordController,
                           hintText: "Kata Sandi",
                           enabled: !isLoading,
@@ -313,6 +316,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         // --- Login Button ---
                         OnboardingActionButton(
+                          key: const Key('btnSubmitLogin'),
                           text: "MASUK",
                           isLoading: isLoading,
                           onPressed: () {

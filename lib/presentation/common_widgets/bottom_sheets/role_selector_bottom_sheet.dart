@@ -146,6 +146,7 @@ class _RoleSelectionBottomSheetState extends State<RoleSelectionBottomSheet> {
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
+              key: const Key('btnRoleSelect'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0F47AD),
                 shape: RoundedRectangleBorder(

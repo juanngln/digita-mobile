@@ -22,7 +22,7 @@ class StatusPengajuanDospemBottomSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(imagePath, height: 300),
+          Image.asset(key: const Key('imgStatusPengajuan'), imagePath, height: 300),
           const SizedBox(height: 24),
           Text(
             title,
