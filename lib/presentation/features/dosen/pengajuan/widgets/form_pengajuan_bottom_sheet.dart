@@ -59,6 +59,7 @@ class _FormPengajuanMahasiswaWidgetState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          key: const Key('snackbarPengajuan'),
           content: Text('Pengajuan telah berhasil di-$status.'),
           backgroundColor: Colors.green,
         ),
@@ -86,6 +87,7 @@ class _FormPengajuanMahasiswaWidgetState
           (context) => CustomDialog(
             title: 'Tolak Pengajuan',
             contentWidget: TextField(
+              key: const Key('fieldAlasanPenolakan'),
               controller: _rejectionReasonController,
               decoration: const InputDecoration(
                 hintText: 'Masukkan alasan penolakan...',
@@ -146,6 +148,7 @@ class _FormPengajuanMahasiswaWidgetState
             children: [
               Expanded(
                 child: TextButton(
+                  key: const Key('btnTolak'),
                   onPressed: _isRejecting ? null : _showRejectionDialog,
                   style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFFFFB3BA),
@@ -175,12 +178,13 @@ class _FormPengajuanMahasiswaWidgetState
               const SizedBox(width: 16),
               Expanded(
                 child: TextButton(
+                  key: const Key('btnSetuju'),
                   onPressed:
                       _isAccepting
                           ? null
                           : () => _handleRespond(
                             'ACCEPTED',
-                            'Saya terima pengajuan Anda. Silakan siapkan proposal awal.',
+                            'Saya terima pengajuan Anda. Silahkan siapkan proposal awal',
                           ),
                   style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFFB7FCC9),

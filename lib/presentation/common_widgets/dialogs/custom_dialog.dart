@@ -79,6 +79,7 @@ class CustomDialog extends StatelessWidget {
                   child: SizedBox(
                     height: 48,
                     child: ElevatedButton(
+                      key: const Key('btnConfirm'),
                       onPressed: onConfirm,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0F47AD),

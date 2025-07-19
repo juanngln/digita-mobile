@@ -253,6 +253,7 @@ class _HomeMahasiswaScreenState extends State<HomeDosenScreen> {
                 Skeleton.shade(child: CircleAvatar(radius: 28))
               else
                 CircleAvatar(
+                  key: const Key('imgAvatarDosen'),
                   radius: 28,
                   child: Image.asset('assets/img/dosen_pria.png'),
                 ),

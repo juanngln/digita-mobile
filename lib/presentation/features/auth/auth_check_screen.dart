@@ -31,7 +31,7 @@ class _AuthCheckScreenState extends State<AuthCheckScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Added logo, similar to LandingScreen
-              Image.asset('assets/img/digita_logo.png', height: 300),
+              Image.asset(key: const Key('imgLogo'), 'assets/img/digita_logo.png', height: 300),
               const SizedBox(height: 48),
               const CircularProgressIndicator(),
               const SizedBox(height: 20),

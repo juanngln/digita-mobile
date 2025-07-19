@@ -285,7 +285,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         // --- Form Fields ---
                         CustomTextField(
-                          key: const Key('fieldNim'),
+                          key: const Key('fieldNimNik'),
                           controller: _identifierController,
                           hintText: "NIM/NIK",
                           enabled: !isLoading,

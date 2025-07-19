@@ -97,7 +97,7 @@ class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
                                     Skeleton.shade(
                                       child: ClipOval(
                                         child: Image.asset(
-                                          '',
+                                          'assets/img/mhs_pria.png',
                                           width: 50,
                                           height: 50,
                                           fit: BoxFit.cover,
@@ -167,6 +167,7 @@ class _PengajuanMahasiswaState extends State<PengajuanMahasiswaScreen> {
                               _showFormPengajuanBottomSheet(context, request);
                             },
                             child: Container(
+                              key: Key('card_mhs_$index'),
                               margin: const EdgeInsets.only(bottom: 16),
                               padding: const EdgeInsets.symmetric(
                                 vertical: 12,
