@@ -16,6 +16,6 @@ Noper Ardi, S.Pd., M.Eng
 
 ## Anggota Tim
 
-3312301010 - Alia Pramestia Nurdenia
-3312301051 - Muhammad Padanta Tarigan
-3312301074 - Steven Situmorang
+3312301010 - Alia Pramestia Nurdenia  
+3312301051 - Muhammad Padanta Tarigan  
+3312301074 - Steven Situmorang  
