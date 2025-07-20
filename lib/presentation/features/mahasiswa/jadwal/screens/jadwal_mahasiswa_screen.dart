@@ -51,6 +51,7 @@ class _JadwalMahasiswaScreenState extends State<JadwalMahasiswaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        key: const Key('fabJadwal'),
         heroTag: 'addSchedule',
         onPressed: () {
           _showTambahJadwalForm(context);

@@ -265,6 +265,7 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
+                key: const Key('btnTolakJadwal'),
                 onPressed: () => _showTolakBottomSheet(bimbingan),
                 style: TextButton.styleFrom(
                   backgroundColor: const Color(0xFFFFB3BA),
@@ -281,6 +282,7 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
               ),
               const SizedBox(width: 12),
               TextButton(
+                key: const Key('btnSetujuJadwal'),
                 onPressed: () => _showSetujuBottomSheet(bimbingan),
                 style: TextButton.styleFrom(
                   backgroundColor: const Color(0xFFB7FCC9),
@@ -343,6 +345,7 @@ class _JadwalDosenState extends State<JadwalDosenScreen> {
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
+          key: Key('snackbarSetuju'),
           content: Text("Bimbingan disetujui"),
           backgroundColor: Colors.green,
         ),

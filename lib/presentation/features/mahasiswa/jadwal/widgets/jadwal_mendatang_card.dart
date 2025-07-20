@@ -189,6 +189,7 @@ Widget _buildActionButton(BuildContext context, ScheduleStatus status, JadwalBim
   final rescheduleButton = Padding(
     padding: const EdgeInsets.symmetric(horizontal: 12.0),
     child: TextButton(
+      key: const Key('btnReschedule'),
       onPressed: () {
         showModalBottomSheet(
           backgroundColor: Colors.white,

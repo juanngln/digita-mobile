@@ -38,6 +38,7 @@ class _CatatanDosenBottomSheetState extends State<CatatanDosenBottomSheet> {
         children: [
           // Now using the semantically correct TextAreaField widget
           TextAreaField(
+            key: const Key('fieldAlasanTolak'),
             controller: _controller,
             hintText: widget.hintText,
             maxLines: 8,
@@ -45,6 +46,7 @@ class _CatatanDosenBottomSheetState extends State<CatatanDosenBottomSheet> {
           ),
           const SizedBox(height: 24),
           PrimaryActionButton(
+            key: const Key('btnSubmitAlasan'),
             label: widget.buttonText,
             // isLoading: _isSaving, // Example of how to use the loading state
             onPressed: () {

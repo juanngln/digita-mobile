@@ -83,7 +83,7 @@ class _TambahJadwalBottomSheetState extends State<TambahJadwalBottomSheet> {
         if (success) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Jadwal berhasil diajukan, menunggu persetujuan dosen.')),
+            const SnackBar(key: Key('snackbarJadwal'), content: Text('Jadwal berhasil diajukan, menunggu persetujuan dosen.')),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -123,6 +123,7 @@ class _TambahJadwalBottomSheetState extends State<TambahJadwalBottomSheet> {
           children: [
             _buildSectionTitle("Judul Bimbingan"),
             TextFormField(
+              key: const Key('fieldJudul'),
               controller: _titleController,
               decoration: baseDecoration.copyWith(hintText: 'Masukkan judul bimbingan'),
               style: textStyle,
@@ -131,6 +132,7 @@ class _TambahJadwalBottomSheetState extends State<TambahJadwalBottomSheet> {
             const SizedBox(height: 16),
             _buildSectionTitle("Tanggal"),
             TextFormField(
+              key: const Key('fieldTanggal'),
               controller: _dateController,
               readOnly: true,
               onTap: () => _selectDate(context),
@@ -141,6 +143,7 @@ class _TambahJadwalBottomSheetState extends State<TambahJadwalBottomSheet> {
             const SizedBox(height: 16),
             _buildSectionTitle("Waktu"),
             TextFormField(
+              key: const Key('fieldWaktu'),
               controller: _timeController,
               readOnly: true,
               onTap: () => _selectTime(context),
@@ -153,6 +156,7 @@ class _TambahJadwalBottomSheetState extends State<TambahJadwalBottomSheet> {
             Consumer<JadwalViewModel>(
               builder: (context, viewModel, child) {
                 return DropdownButtonFormField<int>(
+                  key: const Key('dropdownLokasi'),
                   value: _selectedLocationId,
                   hint: Text('Pilih Lokasi', style: hintStyle),
                   style: textStyle,
@@ -179,7 +183,7 @@ class _TambahJadwalBottomSheetState extends State<TambahJadwalBottomSheet> {
               builder: (context, viewModel, child) {
                 return viewModel.isCreating
                     ? const Center(child: CircularProgressIndicator())
-                    : PrimaryActionButton(label: 'AJUKAN JADWAL', onPressed: _submitData);
+                    : PrimaryActionButton(key: const Key('btnSubmitJadwal'), label: 'AJUKAN JADWAL', onPressed: _submitData);
               },
             ),
           ],

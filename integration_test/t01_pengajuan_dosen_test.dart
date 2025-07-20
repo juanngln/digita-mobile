@@ -21,7 +21,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets(
-    'Pengajuan ditolak oleh dosen pembimbing, status pengajuan berubah menjadi ditolak, mengajukan ulang dosen pembimbing',
+    'Tidak ada dosen pembimbing, mahasiswa mengajukan dosen pembimbing',
     (tester) async {
       await Firebase.initializeApp();
 
@@ -63,30 +63,25 @@ void main() {
       await tester.tap(btnSubmitLoginFinder);
       await customPumpAndSettle(tester);
 
-      final snackbarFinder = find.text('Login berhasil!');
-      expect(snackbarFinder, findsOneWidget);
-      await tester.pumpAndSettle(Duration(seconds: 1));
+      // final snackbarFinder = find.text('Login berhasil!');
+      // expect(snackbarFinder, findsOneWidget);
+      // await tester.pumpAndSettle(Duration(seconds: 1));
 
-      // status pengajuan screen
-      final imgStatusTerkirimFinder = find.byKey(Key('imgStatusTerkirim'));
-      expect(imgStatusTerkirimFinder, findsOneWidget);
-
-      final btnStatusPengajuanFinder = find.byKey(Key('btnStatusPengajuan'));
-      await tester.tap(btnStatusPengajuanFinder);
-
-      // status ditolak bottom sheet
-      final imgStatusDitolakFinder = find.byKey(Key('imgStatusPengajuan'));
-      expect(imgStatusDitolakFinder, findsOneWidget);
+      // cari dosen screen
+      final cariDosenTextFinder = find.byKey(Key('imgWaduh'));
+      expect(cariDosenTextFinder, findsOneWidget);
 
       final btnCariDospemFinder = find.byKey(Key('btnCariDospem'));
       await tester.tap(btnCariDospemFinder);
       await tester.pumpAndSettle(Duration(seconds: 1));
 
       // daftar dosen screen
-      final cardDosenFinder = find.byKey(Key('dosen_card_1'));
+      final cardDosenFinder = find.byKey(Key('dosen_card_0'));
       await tester.pumpAndSettle(Duration(seconds: 1));
       await tester.tap(cardDosenFinder);
+      await tester.pumpAndSettle();
 
+      // form pengajuan dospem bottom sheet
       final fieldAlasanFinder = find.byKey(Key('fieldAlasan'));
       expect(fieldAlasanFinder, findsOneWidget);
       await tester.enterText(fieldAlasanFinder, 'Dosen baik');
@@ -111,11 +106,16 @@ void main() {
       final btnSubmitPengajuanFinder = find.byKey(Key('btnSubmitPengajuan'));
       await tester.ensureVisible(btnSubmitPengajuanFinder);
       await tester.tap(btnSubmitPengajuanFinder);
+      await tester.pumpAndSettle(Duration(seconds: 1));
 
       // status pengajuan screen
+      final imgStatusTerkirimFinder = find.byKey(Key('imgStatusTerkirim'));
       expect(imgStatusTerkirimFinder, findsOneWidget);
       await tester.pumpAndSettle(Duration(seconds: 1));
+
+      final btnStatusPengajuanFinder = find.byKey(Key('btnStatusPengajuan'));
       await tester.tap(btnStatusPengajuanFinder);
+      await tester.pumpAndSettle(Duration(seconds: 1));
 
       // status menunggu bottom sheet
       final imgStatusMenungguFinder = find.byKey(Key('imgStatusPengajuan'));

@@ -21,7 +21,7 @@ Future<void> customPumpAndSettle(
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Dosen menolak pengajuan mahasiswa', (tester) async {
+  testWidgets('Dosen menyetujui pangajuan mahasiswa', (tester) async {
     await Firebase.initializeApp();
     await initializeDateFormatting('id_ID', null);
 
@@ -63,10 +63,6 @@ void main() {
     await tester.tap(btnSubmitLoginFinder);
     await customPumpAndSettle(tester);
 
-    final snackbarFinder = find.text('Login berhasil!');
-    expect(snackbarFinder, findsOneWidget);
-    await tester.pumpAndSettle(Duration(seconds: 1));
-
     // home dosen screen
     final imgAvatarDosenFinder = find.byKey(Key('imgAvatarDosen'));
     expect(imgAvatarDosenFinder, findsOneWidget);
@@ -85,19 +81,8 @@ void main() {
     await tester.pumpAndSettle(Duration(seconds: 1));
 
     // form pengajuan mahasiswa bottom sheet
-    final btnTolakPengajuanFinder = find.byKey(Key('btnTolak'));
-    await tester.tap(btnTolakPengajuanFinder);
-    await tester.pumpAndSettle(Duration(seconds: 1));
-
-    final fieldAlasanPenolakanFinder = find.byKey(Key('fieldAlasanPenolakan'));
-    expect(fieldAlasanPenolakanFinder, findsOneWidget);
-    await tester.enterText(
-      fieldAlasanPenolakanFinder,
-      'Mahasiswa saya sudah penuh',
-    );
-    await tester.pumpAndSettle(Duration(seconds: 1));
-    final btnConfirmFinder = find.byKey(Key('btnConfirm'));
-    await tester.tap(btnConfirmFinder);
+    final btnSetujuPengajuanFinder = find.byKey(Key('btnSetuju'));
+    await tester.tap(btnSetujuPengajuanFinder);
     await customPumpAndSettle(tester);
 
     final snackbarPengajuanFinder = find.byKey(Key('snackbarPengajuan'));

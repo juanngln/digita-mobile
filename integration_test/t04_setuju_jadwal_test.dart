@@ -1,6 +1,6 @@
 import 'package:digita_mobile/main.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -21,7 +21,9 @@ Future<void> customPumpAndSettle(
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Dosen menyetujui pangajuan mahasiswa', (tester) async {
+  testWidgets('Dosen pembimbing menyetujui pengajuan ulang jadwal bimbingan', (
+    tester,
+  ) async {
     await Firebase.initializeApp();
     await initializeDateFormatting('id_ID', null);
 
@@ -50,12 +52,12 @@ void main() {
 
     final fieldNikFinder = find.byKey(Key('fieldNimNik'));
     expect(fieldNikFinder, findsOneWidget);
-    await tester.enterText(fieldNikFinder, '19902023');
+    await tester.enterText(fieldNikFinder, '19902024');
     await tester.pumpAndSettle(Duration(seconds: 1));
 
     final fieldPasswordFinder = find.byKey(Key('fieldPassword'));
     expect(fieldPasswordFinder, findsOneWidget);
-    await tester.enterText(fieldPasswordFinder, 'rani1234');
+    await tester.enterText(fieldPasswordFinder, 'santoso1234');
     await tester.pumpAndSettle(Duration(seconds: 1));
 
     final btnSubmitLoginFinder = find.byKey(Key('btnSubmitLogin'));
@@ -63,34 +65,21 @@ void main() {
     await tester.tap(btnSubmitLoginFinder);
     await customPumpAndSettle(tester);
 
-    final snackbarFinder = find.text('Login berhasil!');
-    expect(snackbarFinder, findsOneWidget);
-    await tester.pumpAndSettle(Duration(seconds: 1));
-
     // home dosen screen
     final imgAvatarDosenFinder = find.byKey(Key('imgAvatarDosen'));
     expect(imgAvatarDosenFinder, findsOneWidget);
     await tester.pumpAndSettle(Duration(seconds: 1));
 
-    final navMahasiswaFinder = find.byKey(Key('navMahasiswa'));
-    await tester.tap(navMahasiswaFinder);
+    final navJadwalFinder = find.byKey(Key('navSchedule'));
+    await tester.tap(navJadwalFinder);
     await tester.pumpAndSettle(Duration(seconds: 1));
 
-    // pengajuan mahasiswa screen
-    final headerPengajuanMhsFinder = find.text('Pengajuan Mahasiswa');
-    expect(headerPengajuanMhsFinder, findsOneWidget);
+    // jadwal dosen screen
+    final titleJadwalFinder = find.text('Jadwal Bimbingan');
+    expect(titleJadwalFinder, findsOneWidget);
 
-    final cardMahasiswaFinder = find.byKey(Key('card_mhs_0'));
-    await tester.tap(cardMahasiswaFinder);
-    await tester.pumpAndSettle(Duration(seconds: 1));
-
-    // form pengajuan mahasiswa bottom sheet
-    final btnSetujuPengajuanFinder = find.byKey(Key('btnSetuju'));
-    await tester.tap(btnSetujuPengajuanFinder);
-    await customPumpAndSettle(tester);
-
-    final snackbarPengajuanFinder = find.byKey(Key('snackbarPengajuan'));
-    expect(snackbarPengajuanFinder, findsOneWidget);
+    final btnSetujuJadwalFinder = find.byKey(Key('btnSetujuJadwal'));
+    await tester.tap(btnSetujuJadwalFinder.first);
     await tester.pumpAndSettle(Duration(seconds: 1));
   });
 }

@@ -108,7 +108,7 @@ class _RescheduleJadwalBottomSheetState extends State<RescheduleJadwalBottomShee
         if (success) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Jadwal berhasil di-reschedule, menunggu persetujuan dosen.')),
+            const SnackBar(key: Key('snackbarReschedule'), content: Text('Jadwal berhasil di-reschedule, menunggu persetujuan dosen.')),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -149,6 +149,7 @@ class _RescheduleJadwalBottomSheetState extends State<RescheduleJadwalBottomShee
           children: [
             _buildSectionTitle("Judul Bimbingan"),
             TextFormField(
+              key: const Key('fieldTitleReschedule'),
               controller: _titleController,
               decoration: baseDecoration.copyWith(hintText: 'Masukkan judul bimbingan'),
               style: textStyle,
@@ -157,6 +158,7 @@ class _RescheduleJadwalBottomSheetState extends State<RescheduleJadwalBottomShee
             const SizedBox(height: 16),
             _buildSectionTitle("Tanggal"),
             TextFormField(
+              key: const Key('fieldDateReschedule'),
               controller: _dateController,
               readOnly: true,
               onTap: () => _selectDate(context),
@@ -167,6 +169,7 @@ class _RescheduleJadwalBottomSheetState extends State<RescheduleJadwalBottomShee
             const SizedBox(height: 16),
             _buildSectionTitle("Waktu"),
             TextFormField(
+              key: const Key('fieldTimeReschedule'),
               controller: _timeController,
               readOnly: true,
               onTap: () => _selectTime(context),
@@ -179,6 +182,7 @@ class _RescheduleJadwalBottomSheetState extends State<RescheduleJadwalBottomShee
             Consumer<JadwalViewModel>(
               builder: (context, viewModel, child) {
                 return DropdownButtonFormField<int>(
+                  key: const Key('fieldLocationReschedule'),
                   value: _selectedLocationId,
                   hint: Text('Pilih Lokasi', style: hintStyle),
                   style: textStyle,
@@ -204,7 +208,7 @@ class _RescheduleJadwalBottomSheetState extends State<RescheduleJadwalBottomShee
               builder: (context, viewModel, child) {
                 return viewModel.isRescheduling
                     ? const Center(child: CircularProgressIndicator())
-                    : PrimaryActionButton(label: 'RESCHEDULE JADWAL', onPressed: _submitData);
+                    : PrimaryActionButton(key: const Key('btnSubmitRechedule'), label: 'RESCHEDULE JADWAL', onPressed: _submitData);
               },
             ),
           ],
