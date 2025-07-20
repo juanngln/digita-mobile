@@ -1,18 +1,21 @@
-# digita_mobile
+## Judul Proyek
 
-A new Flutter project.
+DigiTA Mobile: Sistem Digital untuk Proses Bimbingan TA (Tugas Akhir) yang Efisien berbasis Mobile
 
-## Getting Started
+## Kode PBL
 
-This project is a starting point for a Flutter application.
+PBL-IF09
 
-A few resources to get you started if this is your first Flutter project:
+## Manajer Proyek dan Pengusul Proyek
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Noper Ardi, S.Pd., M.Eng
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# digita-mobile
-# digita-mobile
+## Ketua Tim
+
+3312301009 - Juan Jonathan Nainggolan
+
+## Anggota Tim
+
+3312301010 - Alia Pramestia Nurdenia
+3312301051 - Muhammad Padanta Tarigan
+3312301074 - Steven Situmorang
