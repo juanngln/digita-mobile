@@ -17,41 +17,61 @@ class NetworkException implements Exception {
 }
 
 class DokumenService {
-  final SecureStorageService _secureStorageService = SecureStorageService();
   final http.Client _client;
+  final SecureStorageService _secureStorageService;
 
-  DokumenService({http.Client? client}) : _client = client ?? http.Client();
+  DokumenService({
+    SecureStorageService? secureStorageService,
+    http.Client? client,
+  }) : _secureStorageService = secureStorageService ?? SecureStorageService(),
+       _client = client ?? http.Client();
 
   Future<List<DokumenStatusChecklist>> getDokumenStatus() async {
     final String? token = await _secureStorageService.getAccessToken();
     if (token == null) {
-      throw NetworkException('Authentication token not found. Please log in again.');
+      throw NetworkException(
+        'Authentication token not found. Please log in again.',
+      );
     }
 
-    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/tugas-akhir/dokumen/status-checklist/');
+    final url = Uri.parse(
+      '${AppConfig.baseUrl}/api/v1/tugas-akhir/dokumen/status-checklist/',
+    );
 
     try {
-      final response = await _client.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-      ).timeout(AppConfig.apiTimeout);
+      final response = await _client
+          .get(
+            url,
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
-        final List<dynamic> responseData = jsonDecode(utf8.decode(response.bodyBytes));
+        final List<dynamic> responseData = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
         return responseData
-            .map((data) => DokumenStatusChecklist.fromJson(data as Map<String, dynamic>))
+            .map(
+              (data) =>
+                  DokumenStatusChecklist.fromJson(data as Map<String, dynamic>),
+            )
             .toList();
       } else {
         throw NetworkException(
-            "Gagal memuat dokumen. Status: ${response.statusCode}, Pesan: ${response.body}");
+          "Gagal memuat dokumen. Status: ${response.statusCode}, Pesan: ${response.body}",
+        );
       }
     } on SocketException {
-      throw NetworkException("Tidak dapat terhubung ke server. Pastikan server backend Anda berjalan dan periksa alamat IP di base_url.dart.");
+      throw NetworkException(
+        "Tidak dapat terhubung ke server. Pastikan server backend Anda berjalan dan periksa alamat IP di base_url.dart.",
+      );
     } on TimeoutException {
-      throw NetworkException("Koneksi timeout. Server tidak merespons tepat waktu.");
+      throw NetworkException(
+        "Koneksi timeout. Server tidak merespons tepat waktu.",
+      );
     } catch (e) {
       if (kDebugMode) print("Error in getDokumenStatus: $e");
       if (e is NetworkException) rethrow;
@@ -66,34 +86,46 @@ class DokumenService {
   }) async {
     final String? token = await _secureStorageService.getAccessToken();
     if (token == null) {
-      throw NetworkException('Authentication token not found. Please log in again.');
+      throw NetworkException(
+        'Authentication token not found. Please log in again.',
+      );
     }
 
     final url = Uri.parse('${AppConfig.baseUrl}/api/v1/tugas-akhir/dokumen/');
 
     try {
-      var request = http.MultipartRequest('POST', url)
-        ..headers['Authorization'] = 'Bearer $token'
-        ..fields['nama_dokumen'] = namaDokumen
-        ..fields['bab'] = bab
-        ..files.add(await http.MultipartFile.fromPath(
-          'file',
-          file.path,
-          filename: basename(file.path),
-        ));
+      var request =
+          http.MultipartRequest('POST', url)
+            ..headers['Authorization'] = 'Bearer $token'
+            ..fields['nama_dokumen'] = namaDokumen
+            ..fields['bab'] = bab
+            ..files.add(
+              await http.MultipartFile.fromPath(
+                'file',
+                file.path,
+                filename: basename(file.path),
+              ),
+            );
 
-      final streamedResponse = await request.send().timeout(AppConfig.apiTimeout);
+      final streamedResponse = await request.send().timeout(
+        AppConfig.apiTimeout,
+      );
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 201) {
-        final Map<String, dynamic> responseData = jsonDecode(utf8.decode(response.bodyBytes));
+        final Map<String, dynamic> responseData = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
         return DocumentDetails.fromJson(responseData);
       } else {
         throw NetworkException(
-            "Gagal mengunggah dokumen. Status: ${response.statusCode}, Pesan: ${response.body}");
+          "Gagal mengunggah dokumen. Status: ${response.statusCode}, Pesan: ${response.body}",
+        );
       }
     } on SocketException {
-      throw NetworkException("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+      throw NetworkException(
+        "Tidak dapat terhubung ke server. Periksa koneksi Anda.",
+      );
     } on TimeoutException {
       throw NetworkException("Koneksi timeout. Server tidak merespons.");
     } catch (e) {
@@ -110,36 +142,50 @@ class DokumenService {
   }) async {
     final String? token = await _secureStorageService.getAccessToken();
     if (token == null) {
-      throw NetworkException('Authentication token not found. Please log in again.');
+      throw NetworkException(
+        'Authentication token not found. Please log in again.',
+      );
     }
 
-    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/tugas-akhir/dokumen/$id/');
+    final url = Uri.parse(
+      '${AppConfig.baseUrl}/api/v1/tugas-akhir/dokumen/$id/',
+    );
 
     try {
-      var request = http.MultipartRequest('PATCH', url)
-        ..headers['Authorization'] = 'Bearer $token'
-        ..fields['nama_dokumen'] = namaDokumen;
+      var request =
+          http.MultipartRequest('PATCH', url)
+            ..headers['Authorization'] = 'Bearer $token'
+            ..fields['nama_dokumen'] = namaDokumen;
 
       if (file != null) {
-        request.files.add(await http.MultipartFile.fromPath(
-          'file',
-          file.path,
-          filename: basename(file.path),
-        ));
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'file',
+            file.path,
+            filename: basename(file.path),
+          ),
+        );
       }
 
-      final streamedResponse = await request.send().timeout(AppConfig.apiTimeout);
+      final streamedResponse = await request.send().timeout(
+        AppConfig.apiTimeout,
+      );
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(utf8.decode(response.bodyBytes));
+        final Map<String, dynamic> responseData = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
         return DocumentDetails.fromJson(responseData);
       } else {
         throw NetworkException(
-            "Gagal mengedit dokumen. Status: ${response.statusCode}, Pesan: ${response.body}");
+          "Gagal mengedit dokumen. Status: ${response.statusCode}, Pesan: ${response.body}",
+        );
       }
     } on SocketException {
-      throw NetworkException("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+      throw NetworkException(
+        "Tidak dapat terhubung ke server. Periksa koneksi Anda.",
+      );
     } on TimeoutException {
       throw NetworkException("Koneksi timeout. Server tidak merespons.");
     } catch (e) {
@@ -153,32 +199,40 @@ class DokumenService {
   Future<String> getAccessFileUrl(int id) async {
     final String? token = await _secureStorageService.getAccessToken();
     if (token == null) {
-      throw NetworkException('Authentication token not found. Please log in again.');
+      throw NetworkException(
+        'Authentication token not found. Please log in again.',
+      );
     }
 
-    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/tugas-akhir/dokumen/$id/access-file/');
+    final url = Uri.parse(
+      '${AppConfig.baseUrl}/api/v1/tugas-akhir/dokumen/$id/access-file/',
+    );
 
     try {
-      final response = await _client.get(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-        },
-      ).timeout(AppConfig.apiTimeout);
+      final response = await _client
+          .get(url, headers: {'Authorization': 'Bearer $token'})
+          .timeout(AppConfig.apiTimeout);
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(utf8.decode(response.bodyBytes));
+        final Map<String, dynamic> responseData = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
         if (responseData.containsKey('url')) {
           return responseData['url'];
         } else {
-          throw NetworkException('Kunci "url" tidak ditemukan dalam respons API.');
+          throw NetworkException(
+            'Kunci "url" tidak ditemukan dalam respons API.',
+          );
         }
       } else {
         throw NetworkException(
-            "Gagal mendapatkan akses file. Status: ${response.statusCode}, Pesan: ${response.body}");
+          "Gagal mendapatkan akses file. Status: ${response.statusCode}, Pesan: ${response.body}",
+        );
       }
     } on SocketException {
-      throw NetworkException("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+      throw NetworkException(
+        "Tidak dapat terhubung ke server. Periksa koneksi Anda.",
+      );
     } on TimeoutException {
       throw NetworkException("Koneksi timeout. Server tidak merespons.");
     } catch (e) {
@@ -192,23 +246,29 @@ class DokumenService {
   Future<void> deleteDokumen({required int id}) async {
     final String? token = await _secureStorageService.getAccessToken();
     if (token == null) {
-      throw NetworkException('Authentication token not found. Please log in again.');
+      throw NetworkException(
+        'Authentication token not found. Please log in again.',
+      );
     }
 
-    final url = Uri.parse('${AppConfig.baseUrl}/api/v1/tugas-akhir/dokumen/$id/');
+    final url = Uri.parse(
+      '${AppConfig.baseUrl}/api/v1/tugas-akhir/dokumen/$id/',
+    );
 
     try {
-      final response = await _client.delete(
-        url,
-        headers: {'Authorization': 'Bearer $token'},
-      ).timeout(AppConfig.apiTimeout);
+      final response = await _client
+          .delete(url, headers: {'Authorization': 'Bearer $token'})
+          .timeout(AppConfig.apiTimeout);
 
       if (response.statusCode != 204 && response.statusCode != 200) {
         throw NetworkException(
-            "Gagal menghapus dokumen. Status: ${response.statusCode}, Pesan: ${response.body}");
+          "Gagal menghapus dokumen. Status: ${response.statusCode}, Pesan: ${response.body}",
+        );
       }
     } on SocketException {
-      throw NetworkException("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+      throw NetworkException(
+        "Tidak dapat terhubung ke server. Periksa koneksi Anda.",
+      );
     } on TimeoutException {
       throw NetworkException("Koneksi timeout. Server tidak merespons.");
     } catch (e) {
